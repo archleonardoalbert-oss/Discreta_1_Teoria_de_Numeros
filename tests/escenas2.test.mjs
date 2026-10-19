@@ -147,10 +147,10 @@ solo('teo-coeficientes', 'cada paso cambia algo con los valores por defecto y no
   for (const x of ns) for (const y of ns) if (x !== y) assert.ok(Math.abs(x.a.y - y.a.y) >= 16 || Math.abs(x.a.x - y.a.x) > 200, `${x.k} y ${y.k} se solapan`);
 });
 
-solo('teo-menor-combinacion', 'S es un conjunto de símbolos y el PBO señala s₁', async () => {
+solo('teo-menor-combinacion', 'S es un conjunto de símbolos y el PBO señala c₁', async () => {
   const esc = await cargar('teo-menor-combinacion'), e = { ns: [12, 18, 30] };
   const p4 = esc.estado(e, 3);
-  assert.equal(p4.find((n) => n.k === 'S:e0')?.txt, 's₁');
+  assert.equal(p4.find((n) => n.k === 'S:e0')?.txt, 'c₁');
   assert.ok(!p4.some((n) => /^s\d+$/.test(n.k)), 'siguen los puntos de S en la recta');
   const p5 = esc.estado(e, 4);
   assert.ok(p5.some((n) => n.k === 'S:aro') && p5.find((n) => n.k === 'S:e0').c === 'ambar');
@@ -184,8 +184,8 @@ solo('cor-mcm-mcd', 'los rectángulos rotulan sus lados', async () => {
   for (const s of ['|a| = 4', '|b| = 6', '(a,b) = 2', '[a,b] = 12']) assert.ok(t.includes(s), s);
 });
 
-solo('teo-menor-combinacion', 'el orden de S se ve escrito: s₁ < s₂ < s₃ < …', async () => {
-  assert.ok(textos((await cargar('teo-menor-combinacion')).estado({ ns: [12, 18, 30] }, 3)).includes('s₁ < s₂ < s₃ < …'));
+solo('teo-menor-combinacion', 'el orden de S se ve escrito: c₁ < c₂ < c₃ < …', async () => {
+  assert.ok(textos((await cargar('teo-menor-combinacion')).estado({ ns: [12, 18, 30] }, 3)).includes('c₁ < c₂ < c₃ < …'));
 });
 
 const nuevasClaves = (esc, e, i) => { const antes = new Set(esc.estado(e, i - 1).map((n) => n.k)); return esc.estado(e, i).filter((n) => !antes.has(n.k)).map((n) => n.k); };
@@ -239,4 +239,16 @@ solo('ej-coeficientes-3088', 'cada paso reilumina la fila anterior de la tabla y
   const ns = (await cargar('ej-coeficientes-3088')).estado({ a: 3088, b: 456 }, 2);
   assert.ok(ns.find((n) => n.k === 'tc2')?.ref, 'tc2 no se reilumina');
   assert.equal(ns.find((n) => n.k === 'te3')?.c, 'ambar');
+});
+
+solo('teo-menor-combinacion', 'el resto supuesto se dibuja punteado con su etiqueta de combinación y desaparece al cerrar la contradicción', async () => {
+  const esc = await cargar('teo-menor-combinacion'), e = { ns: [12, 18, 30] };
+  const p7 = esc.estado(e, 6);
+  assert.ok(p7.some((n) => n.supuesto && n.txt?.includes('12·(1 − (−1)·2)')), textos(p7));
+  assert.ok(esc.estado(e, 7).some((n) => n.k === 'S:r' && n.supuesto));
+  assert.ok(!esc.estado(e, 8).some((n) => n.k === 'S:r'), 'el r supuesto sigue tras cerrar la contradicción');
+});
+
+solo('teo-solucion-general', 'los dos bloques del intercambio se rotulan con mcm(a, b)', async () => {
+  assert.ok(textos((await cargar('teo-solucion-general')).estado({ a: 6, b: 10, c: 8 }, 1)).includes('mcm(a, b) = 30'));
 });

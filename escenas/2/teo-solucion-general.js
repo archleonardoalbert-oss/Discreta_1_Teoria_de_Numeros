@@ -1,5 +1,5 @@
 // Solución general: desde (x₀, y₀) se puede añadir b/d saltos de a y quitar a/d saltos de b (miden lo mismo, ab/d).
-import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, num, nSaltos, elegir, ANCHO } from '../comun.js';
+import { escenaPorCapas, planPara, carril, rotulo, rotuloDentro, linea, nota, por, num, nSaltos, elegir, ANCHO } from '../comun.js';
 import { recta, punto } from '../primitivas.js';
 import { diofantica } from '../../motor/aritmetica.js';
 
@@ -33,8 +33,8 @@ export default escenaPorCapas({
     ({ a, b, d, pasoX, pasoY, L, p }) => [
       ...carril('t1', p, Y[2], { salto: a, n: pasoX, c: 'violeta', etiqueta: `b/d = ${num(pasoX)}: ${nSaltos(pasoX, a)}` }),
       ...carril('t2', p, Y[3], { salto: b, n: pasoY, c: 'violeta', etiqueta: `a/d = ${num(pasoY)}: ${nSaltos(pasoY, b)}` }),
-      rotulo('tl', p.x(L) + 8, Y[2] + 28, `= ${num(L)}`, 'violeta'),
-      nota('n1', 1, `b/d saltos de a = a/d saltos de b = ab/d = ${num(L)}: se cancelan`),
+      rotuloDentro('tl', p.x(L) + 8, Y[2] + 28, L < 0 ? `= −mcm(a, b) = ${num(L)}` : `= mcm(a, b) = ${L}`, 'violeta'),
+      nota('n1', 1, [`b/d saltos de a = a/d saltos de b = ab/d = ${num(L)}: dos bloques de longitud mcm(a, b) que se cancelan`, `b/d saltos de a = a/d saltos de b = ab/d = ${num(L)}: se cancelan`]),
     ],
     ({ a, b, x0, y0, x1, y1 }) => [nota('n2', 2, [`otra solución (x₁, y₁) = (${num(x1)}, ${num(y1)}):  ${por(a, x0)} + ${por(b, y0)} = ${por(a, x1)} + ${por(b, y1)}`, `otra solución (x₁, y₁) = (${num(x1)}, ${num(y1)}):  ax₀ + by₀ = ax₁ + by₁`])],
     ({ a, b, x0, x1, y0, y1 }) => [nota('n3', 3, [`a(x₀ − x₁) = b(y₁ − y₀):  ${por(a, x0 - x1)} = ${por(b, y1 - y0)}`, 'a(x₀ − x₁) = b(y₁ − y₀)'])],
