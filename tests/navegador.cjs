@@ -143,13 +143,13 @@ t('índice de libro: lista los elementos con su tipo y enlaza a cada página', a
   afirmar(!errores.length, errores.join(' | '));
 });
 
-// PENDIENTE Task 7
-// t('el Libro II lista sus 22 elementos en orden', async (b, pg) => {
-//   await abrir(pg, 'libro.html?l=2');
-//   await pg.waitForSelector('ol.indice-libro a');
-//   const ids = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => new URL(a.href).searchParams.get('e')));
-//   afirmar(ids.length === 22, `hay ${ids.length}`);
-// });
+t('el Libro II lista sus 22 elementos en orden', async (b, pg) => {
+  await abrir(pg, 'libro.html?l=2');
+  await pg.waitForSelector('ol.indice-libro a');
+  const ids = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => new URL(a.href).searchParams.get('e')));
+  afirmar(ids.length === 22, `hay ${ids.length}`);
+  afirmar(ids[0] === 'def-mcd' && ids[21] === 'cor-multiplo-mcm', `orden: ${ids[0]} … ${ids[21]}`);
+});
 
 // ---------------------------------------------------------------- ejecución
 

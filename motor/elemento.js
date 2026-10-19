@@ -2,8 +2,9 @@
 // la demostración paso a paso (izquierda) y la escena animada con sus entradas (derecha).
 import { pintar } from './svg.js';
 import { crearEntradas } from './entradas.js';
+import { MACROS } from './macros.js';
 
-export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedades', EJ: 'Ejemplo' };
+export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedades', EJ: 'Ejemplo', MET: 'Método' };
 const MARCAS = { corregido: 'corregido', añadido: 'añadido · no está en la conferencia' };
 
 const h = (tag, props = {}, ...hijos) => {
@@ -22,7 +23,15 @@ const valoresIniciales = (escena) => Object.fromEntries(escena.entradas.map((e) 
 export const katex = (raiz) => window.renderMathInElement?.(raiz, {
   delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
   throwOnError: false,
+  macros: { ...MACROS },
 });
+
+/** Rótulo de la columna de pasos: deja claro si los pasos son de la conferencia o añadidos. */
+export function rotuloPasos(el) {
+  if (el.pasosAñadidos === 'idea') return 'la idea, paso a paso · añadida';
+  if (el.pasosAñadidos === 'demostracion') return 'demostración paso a paso · añadida, no está en la conferencia';
+  return el.tipo === 'EJ' ? 'ejemplo de la conferencia, paso a paso' : 'demostración de la conferencia, paso a paso';
+}
 
 /** Monta la página. `anterior`/`siguiente`: {href, nombre} o null. */
 export function montarElemento(raiz, { libro, elemento, escena, anterior, siguiente, hrefLibro }) {
@@ -50,7 +59,7 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
       h('p', { className: 'rotulo mono', textContent: 'explicación (no es de la conferencia)' }),
       h('div', { innerHTML: elemento.explicacion })),
     h('div', { className: 'estudio' },
-      h('section', { className: 'columna-pasos' }, h('p', { className: 'rotulo mono', textContent: N > 1 ? 'demostración paso a paso' : 'idea' }), lista),
+      h('section', { className: 'columna-pasos' }, h('p', { className: `rotulo mono${elemento.pasosAñadidos ? ' rotulo-añadido' : ''}`, textContent: rotuloPasos(elemento) }), lista),
       h('section', { className: 'columna-escena' },
         h('div', { className: 'escena' }, svg),
         h('div', { className: 'controles' },
@@ -114,7 +123,7 @@ export async function arrancar() {
     const elemento = libro.elementos[i];
     const escena = (await import(`../${base}escenas/${elemento.escena}.js`)).default;
     const enlace = (x) => x && { href: `elemento.html?${base ? `base=${base}&` : ''}l=${libro.numero}&e=${x.id}`, nombre: x.nombre };
-    document.title = `${elemento.nombre} · Libro ${libro.romano}`;
+    document.title = `${elemento.nombre.replace(/\$/g, '')} · Libro ${libro.romano}`;
     montarElemento(raiz, {
       libro, elemento, escena,
       anterior: enlace(libro.elementos[i - 1]), siguiente: enlace(libro.elementos[i + 1]),
