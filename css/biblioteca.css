@@ -102,6 +102,8 @@ ol.pasos li:hover { background: #ffffff06; }
   .pagina-elemento main { padding: 16px 16px 48px; }
   .estudio { grid-template-columns: minmax(0, 1fr); }
   .columna-escena { position: static; }
+  .escena { overflow-x: auto; }                 /* la escena conserva un tamaño legible y se desplaza dentro de su marco */
+  .escena svg { min-width: 600px; }
   .vecinos { flex-direction: column; }
 }
 

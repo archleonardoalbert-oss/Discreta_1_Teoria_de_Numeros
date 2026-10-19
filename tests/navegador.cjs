@@ -118,6 +118,8 @@ t('elemento: en pantalla estrecha se apila sin scroll horizontal', async (b, pg)
   const ancho = await pg.evaluate(() => document.documentElement.scrollWidth);
   afirmar(ancho <= 400, `scrollWidth ${ancho}`);
   afirmar(await pg.isVisible('.escena svg'), 'escena invisible');
+  const anchoSvg = await pg.evaluate(() => document.querySelector('.escena svg').getBoundingClientRect().width);
+  afirmar(anchoSvg >= 560, `la escena se encoge hasta ser ilegible (${anchoSvg}px)`);
 });
 
 t('elemento: con movimiento reducido las transiciones son instantáneas', async (b, pg) => {
