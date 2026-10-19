@@ -67,6 +67,63 @@ t('pintar reconcilia por clave: A → B → A deja exactamente A, con «nuevo» 
   afirmar(!errores.length, errores.join(' | '));
 });
 
+const FIX = 'elemento.html?base=tests/paginas/&l=0&e=division';
+const cuenta = (pg) => pg.textContent('.cuenta');
+const montada = (pg) => pg.waitForFunction(() => document.querySelector('.escena svg [data-k]'));
+
+t('elemento: ◀ ▶, teclado y clic en una línea mueven el paso', async (b, pg) => {
+  const errores = await abrir(pg, FIX); await montada(pg);
+  afirmar((await cuenta(pg)) === '1/3', `inicio ${await cuenta(pg)}`);
+  await pg.click('[data-a=adelante]');
+  afirmar((await cuenta(pg)) === '2/3', 'adelante');
+  afirmar(await pg.evaluate(() => document.querySelectorAll('ol.pasos > li')[1].classList.contains('actual')), 'li 2 no es actual');
+  await pg.keyboard.press('ArrowLeft');
+  afirmar((await cuenta(pg)) === '1/3', '← no retrocedió');
+  await pg.click('ol.pasos > li:nth-child(3)');
+  afirmar((await cuenta(pg)) === '3/3', 'clic en la línea 3');
+  await pg.click('[data-a=inicio]');
+  afirmar((await cuenta(pg)) === '1/3', 'inicio');
+  afirmar(!errores.length, errores.join(' | '));
+});
+
+t('elemento: cambiar una entrada a mitad de la demostración conserva el paso', async (b, pg) => {
+  await abrir(pg, FIX); await montada(pg);
+  await pg.click('[data-a=adelante]');
+  await pg.fill('.entradas input[data-id=a]', '23');
+  afirmar((await cuenta(pg)) === '2/3', `paso tras editar: ${await cuenta(pg)}`);
+  await pg.waitForTimeout(700);
+  afirmar((await pg.textContent('.escena svg')).includes('23'), 'la escena no muestra 23');
+});
+
+t('elemento: entradas no válidas avisan y no tocan la escena', async (b, pg) => {
+  const errores = await abrir(pg, FIX); await montada(pg);
+  await pg.waitForTimeout(700);
+  const antes = await pg.innerHTML('.escena svg');
+  for (const v of ['0', '-3', '2.5', 'abc', '']) {
+    await pg.fill('.entradas input[data-id=b]', v);
+    afirmar(await pg.isVisible('.aviso'), `sin aviso para «${v}»`);
+    afirmar((await pg.innerHTML('.escena svg')) === antes, `la escena cambió con «${v}»`);
+  }
+  await pg.fill('.entradas input[data-id=b]', '5');
+  afirmar(!(await pg.isVisible('.aviso')), 'el aviso no se fue al volver a un valor válido');
+  afirmar(!errores.length, errores.join(' | '));
+});
+
+t('elemento: en pantalla estrecha se apila sin scroll horizontal', async (b, pg) => {
+  await pg.setViewportSize({ width: 400, height: 800 });
+  await abrir(pg, FIX); await montada(pg);
+  const ancho = await pg.evaluate(() => document.documentElement.scrollWidth);
+  afirmar(ancho <= 400, `scrollWidth ${ancho}`);
+  afirmar(await pg.isVisible('.escena svg'), 'escena invisible');
+});
+
+t('elemento: con movimiento reducido las transiciones son instantáneas', async (b, pg) => {
+  await pg.emulateMedia({ reducedMotion: 'reduce' });
+  await abrir(pg, FIX); await montada(pg);
+  const t = await pg.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--t-paso').trim());
+  afirmar(t === '0s', `--t-paso = ${t}`);
+});
+
 // ---------------------------------------------------------------- ejecución
 
 (async () => {
@@ -77,6 +134,7 @@ t('pintar reconcilia por clave: A → B → A deja exactamente A, con «nuevo» 
     for (const { nombre, fn } of pruebas) {
       if (FILTRO && !nombre.includes(FILTRO)) continue;
       const pg = await b.newPage({ viewport: { width: 1280, height: 900 } });
+      pg.setDefaultTimeout(8000);
       try { await fn(b, pg); ok++; console.log('✓', nombre); }
       catch (e) { mal++; console.log('✗', nombre, '—', e.message.split('\n')[0]); }
       finally { await pg.close(); }
