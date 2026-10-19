@@ -42,8 +42,13 @@ solo('teo-menor-combinacion', 'con [12, 18, 30] el último paso concluye s = d =
   assert.ok(textoVerde(ultimo(await cargar('teo-menor-combinacion'), { ns: [12, 18, 30] }, 12), 's = d = 6'));
 });
 
-solo('teo-divisores-comunes', 'con (12, 18) lista los divisores de 6', async () => {
-  assert.ok(textoVerde(ultimo(await cargar('teo-divisores-comunes'), { a: 12, b: 18 }, 4), '1, 2, 3, 6'));
+const elementos = (ns, id) => ns.filter((n) => new RegExp(`^${id}:e\\d+$`).test(n.k)).map((n) => n.txt);
+
+solo('teo-divisores-comunes', 'con (12, 18) muestra D(12) ∩ D(18) y D(6) como el mismo conjunto', async () => {
+  const ns = ultimo(await cargar('teo-divisores-comunes'), { a: 12, b: 18 }, 4);
+  assert.deepEqual(elementos(ns, 'Di'), ['1', '2', '3', '6']);
+  assert.deepEqual(elementos(ns, 'Dd'), ['1', '2', '3', '6']);
+  assert.ok(textoVerde(ns, 'D(12) ∩ D(18) = D(6)'));
 });
 
 solo('cor-mcd-n', 'con [12, 18, 30] muestra mcd(12, mcd(18, 30)) = 6', async () => {
@@ -151,4 +156,18 @@ solo('teo-menor-combinacion', 'S es un conjunto de símbolos y el PBO señala s�
   assert.ok(p5.some((n) => n.k === 'S:aro') && p5.find((n) => n.k === 'S:e0').c === 'ambar');
   const p8 = esc.estado(e, 7), r = p8.find((n) => n.k === 'S:r');
   assert.ok(r && r.c === 'ambar' && r.a.x < p8.find((n) => n.k === 'S:e0').a.x, 'r no aparece a la izquierda de s₁');
+});
+
+solo('def-primos-relativos', 'los divisores son conjuntos con sus números y la intersección es {1}', async () => {
+  const esc = await cargar('def-primos-relativos');
+  assert.deepEqual(elementos(esc.estado({ a: 8, b: 15 }, 1), 'Da'), ['1', '2', '4', '8']);
+  const ns = ultimo(esc, { a: 8, b: 15 }, 4);
+  assert.deepEqual(elementos(ns, 'Dab'), ['1']);
+  assert.ok(ns.filter((n) => /^Da:e\d+$/.test(n.k) && n.c === 'verde').map((n) => n.txt).join() === '1');
+});
+
+solo('prop-signos', 'D(a) = D(−a) como conjunto con los divisores', async () => {
+  const ns = (await cargar('prop-signos')).estado({ a: 12, b: 18 }, 1);
+  assert.deepEqual(elementos(ns, 'Da'), ['1', '2', '3', '4', '6', '12']);
+  assert.ok(ns.some((n) => n.k === 'Da:n' && n.txt.includes('D(12) = D(−12)')));
 });
