@@ -64,6 +64,9 @@ t('pintar reconcilia por clave: A → B → A deja exactamente A, con «nuevo» 
   const cx = await pg.evaluate(() => getComputedStyle(document.querySelector('#s [data-k=p]')).cx);
   afirmar(cx === '50px', `el punto no volvió a cx=50 (cx=${cx})`);
   afirmar(await pg.evaluate(() => document.querySelector('#s [data-k=tx]').textContent) === 'a = 17', 'texto del rótulo');
+  await pg.evaluate(() => window.prueba([{ k: 'grueso', t: 'line', a: { x1: 0, y1: 0, x2: 10, y2: 0 }, c: 'ambar', ancho: 4 }]));
+  const grosor = await pg.evaluate(() => getComputedStyle(document.querySelector('#s [data-k=grueso]')).strokeWidth);
+  afirmar(grosor === '4px', `ancho del trazo: ${grosor}`);
   afirmar(!errores.length, errores.join(' | '));
 });
 

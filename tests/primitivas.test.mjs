@@ -64,3 +64,17 @@ test('la cuadrícula rotula su unidad y las reglas dobles numeran 0…k', () => 
 });
 
 test('TOPE_SALTOS es 400', () => assert.equal(TOPE_SALTOS, 400));
+
+test('las marcas de la recta dejan sitio a números largos', () => {
+  const p = planRecta({ min: -72000, max: 2000, ancho: 680 });
+  const ancho = (m) => String(m).length * 8 + 12;
+  for (let i = 1; i < p.marcas.length; i++)
+    assert.ok(p.x(p.marcas[i]) - p.x(p.marcas[i - 1]) >= ancho(p.marcas[i]), `marcas ${p.marcas[i - 1]} y ${p.marcas[i]} demasiado juntas`);
+});
+
+test('un carril con saltos agrupados no rotula cada arco y lo dice en su etiqueta', async () => {
+  const { carril, planPara } = await import('../escenas/comun.js');
+  const ns = carril('c', planPara([0, 456 * 149]), 100, { salto: 456, n: 149, etiqueta: '149 saltos de 456' });
+  assert.ok(!ns.some((n) => n.txt?.startsWith('×')));
+  assert.ok(ns.find((n) => n.k === 'c:et').txt.includes('cada arco'));
+});

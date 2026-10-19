@@ -1,5 +1,5 @@
 // Ayudantes reutilizables para escribir escenas de cualquier libro.
-import { planRecta, r1 } from '../motor/escala.js';
+import { planRecta, agrupar, r1 } from '../motor/escala.js';
 import { saltos } from './primitivas.js';
 
 export const ANCHO = 680;   // ancho estándar de las escenas (viewBox)
@@ -42,8 +42,9 @@ export function planPara(valores, ancho = ANCHO) {
 /** Carril: una línea base propia con n saltos de `salto` desde `desde` y su etiqueta a la izquierda. */
 export function carril(id, plan, y, { salto, n, c = 'cian', etiqueta, desde = 0 }) {
   const ns = [linea(`${id}:base`, plan.x(plan.min), y, plan.x(plan.max), y, 'muy-tenue')];
-  ns.push(...saltos(id, plan, { desde, salto, n, y, c, alturaMax: 12, numerar: false }));
-  if (etiqueta) ns.push(rotulo(`${id}:et`, plan.x(plan.min), y - 17, etiqueta, c));
+  ns.push(...saltos(id, plan, { desde, salto, n, y, c, alturaMax: 12, numerar: false, rotularGrupos: false }));
+  const g = agrupar(Math.abs(salto) * plan.escala, n);
+  if (etiqueta) ns.push(rotulo(`${id}:et`, plan.x(plan.min), y - 17, g > 1 ? `${etiqueta}  (cada arco = ${g} saltos)` : etiqueta, c));
   return ns;
 }
 
@@ -55,5 +56,11 @@ export function filas(id, lineas, { x, y, dy = 22, actual = -1, anchor = 'start'
 /** Línea de la «pizarra» de la escena (arriba a la izquierda): los resultados de cada paso quedan escritos. */
 export const nota = (k, fila, txt, c = 'texto') => rotulo(k, 24, 28 + fila * 22, txt, c);
 
+/** Entero con signo menos tipográfico (−). */
+export const num = (x) => (x < 0 ? `−${-x}` : `${x}`);
+
 /** a·(x) con paréntesis si x es negativo. */
-export const por = (a, x) => `${a}·${x < 0 ? `(${x})` : x}`;
+export const por = (a, x) => `${num(a)}·${x < 0 ? `(${num(x)})` : x}`;
+
+/** «n saltos de s», aclarando el sentido cuando n es negativo. */
+export const nSaltos = (n, s) => (n < 0 ? `${-n} saltos de ${num(s)} hacia la izquierda` : `${n} saltos de ${num(s)}`);

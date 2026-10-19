@@ -17,6 +17,7 @@ function aplicar(el, n) {
     else el.setAttribute(k, v);
   }
   if (n.t === 'text' && el.textContent !== n.txt) el.textContent = n.txt;
+  el.style.strokeWidth = n.ancho ? `${n.ancho}px` : '';
 }
 
 function clases(el, n, nuevo) {

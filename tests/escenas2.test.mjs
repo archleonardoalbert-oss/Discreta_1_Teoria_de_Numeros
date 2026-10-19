@@ -61,3 +61,44 @@ solo('teo-divide-producto', 'valida las hipótesis y concluye a | bₙ', async (
   assert.ok(esc.validar({ a: 7, bs: [3, 5, 8] }), '7 no divide a 120');
   assert.ok(textoVerde(ultimo(esc, { a: 4, bs: [3, 5, 8] }, 5), '4 | 8'));
 });
+
+solo('cor-mcd-resto', 'con (40, 12) concluye mcd(40, 12) = mcd(12, 4) = 4', async () => {
+  assert.ok(textoVerde(ultimo(await cargar('cor-mcd-resto'), { a: 40, b: 12 }, 5), 'mcd(12, 4) = 4'));
+});
+
+solo('def-diofantica', 'encuentra una solución o dice que no la hay', async () => {
+  const esc = await cargar('def-diofantica');
+  assert.ok(textoVerde(ultimo(esc, { a: 3, b: 5, c: 7 }, 4), '= 7'));
+  assert.ok(textos(ultimo(esc, { a: 4, b: 6, c: 7 }, 4)).includes('no hay solución'));
+});
+
+solo('teo-diofantica-solucion', 'con (6, 10, 8) llega a c = 8 multiplicando por k = 4', async () => {
+  const ns = ultimo(await cargar('teo-diofantica-solucion'), { a: 6, b: 10, c: 8 }, 6);
+  assert.ok(textoVerde(ns, '= 8') && textos(ns).includes('k = 4'));
+});
+
+solo('teo-euclides', 'con 2 filas no falla en ningún paso y concluye el mcd', async () => {
+  const esc = await cargar('teo-euclides');
+  assert.ok(esc.validar({ a: 10, b: 20 }), 'debe exigir a > b');
+  for (let i = 0; i < 7; i++) esc.estado({ a: 21, b: 6 }, i);
+  assert.ok(textoVerde(ultimo(esc, { a: 21, b: 6 }, 7), '= 3'));
+});
+
+solo('ej-euclides-3088', 'reproduce las 7 filas y concluye 8', async () => {
+  const ns = ultimo(await cargar('ej-euclides-3088'), { a: 3088, b: 456 }, 8);
+  const t = textos(ns);
+  for (const f of ['3088 = 6·456 + 352', '24 = 1·16 + 8', '16 = 2·8 + 0']) assert.ok(t.includes(f), f);
+  assert.ok(textoVerde(ns, '= 8'));
+});
+
+solo('teo-coeficientes', 'con (150, 42) comprueba a·A_k + b·B_k = 6', async () => {
+  assert.ok(textoVerde(ultimo(await cargar('teo-coeficientes'), { a: 150, b: 42 }, 5), '= 6'));
+});
+
+solo('ej-coeficientes-3088', 'rellena la tabla de la conferencia y aterriza en 8', async () => {
+  const ns = ultimo(await cargar('ej-coeficientes-3088'), { a: 3088, b: 456 }, 7);
+  const t = textos(ns);
+  for (const f of ['B₂ = 1 − 1·(−1) = 2', 'B₆ = 17 − 6·(−22) = 149']) assert.ok(t.includes(f), f);
+  assert.ok(ns.some((n) => n.k === 'fin:p'), 'falta el punto de llegada');
+  assert.ok(textoVerde(ns, '8 = mcd(3088, 456) = 3088·(−22) + 456·149'));
+});

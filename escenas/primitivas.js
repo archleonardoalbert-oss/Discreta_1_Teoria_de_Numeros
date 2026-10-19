@@ -17,7 +17,7 @@ export function recta(id, plan, y) {
 }
 
 /** n saltos de longitud `salto` desde `desde`; n o salto negativos ⇒ hacia la izquierda. */
-export function saltos(id, plan, { desde, salto, n, y, c = 'cian', alturaMax = 40, numerar = true }) {
+export function saltos(id, plan, { desde, salto, n, y, c = 'cian', alturaMax = 40, numerar = true, rotularGrupos = true }) {
   const paso = Math.abs(salto) * Math.sign(salto * n || 1), total = Math.abs(n);
   const g = agrupar(Math.abs(salto) * plan.escala, total);
   const ns = [];
@@ -26,7 +26,7 @@ export function saltos(id, plan, { desde, salto, n, y, c = 'cian', alturaMax = 4
     const x0 = plan.x(desde + paso * i), x1 = plan.x(desde + paso * (i + cuantos));
     const ancho = Math.abs(x1 - x0), h = Math.min(alturaMax, Math.max(Math.min(10, alturaMax), ancho * 0.45));
     ns.push({ k: `${id}:a${j}`, t: 'path', a: { d: `M ${x0} ${y} Q ${r1((x0 + x1) / 2)} ${r1(y - 2 * h)} ${x1} ${y}` }, c });
-    const etiqueta = g > 1 ? `×${cuantos}` : numerar && ancho >= 16 ? String(i + 1) : null;
+    const etiqueta = g > 1 ? (rotularGrupos ? `×${cuantos}` : null) : numerar && ancho >= 16 ? String(i + 1) : null;
     if (etiqueta) ns.push(texto(`${id}:t${j}`, (x0 + x1) / 2, y - h - 6, etiqueta, c, { 'text-anchor': 'middle' }));
   }
   return ns;
