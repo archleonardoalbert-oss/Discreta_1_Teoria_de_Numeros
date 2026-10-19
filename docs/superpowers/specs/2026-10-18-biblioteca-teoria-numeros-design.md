@@ -224,3 +224,25 @@ con nombre o número propio es una página).
 Diseño concreto de cada escena dentro del idioma de §4 y los principios de §9; arquitectura interna; colores
 semánticos exactos; mini-ilustraciones de las portadas de los libros III–V refinadas; topes de escala;
 redacción de explicaciones llanas y demostraciones añadidas (marcadas).
+
+## 14. Reorganización según la investigación (2026-10-19)
+
+Informe: `~/reports/Visualizar teoría de números.md`. Aprobado por el usuario («todo lo demás está perfecto»),
+**manteniendo la paleta actual** (no Okabe–Ito; solo medir y ajustar contraste).
+
+Motor:
+- **Reiluminar lo que se usa**: un paso puede marcar como referencia nodos de pasos anteriores; se ven encendidos
+  solo en ese paso (regla 4 del informe: la referencia es perceptiva, no memorística).
+- **Hipotético punteado**: lo supuesto en una contradicción se dibuja con trazo punteado y desaparece al cerrarla.
+- **Vista de tira**: todos los estados de la demostración en miniatura; pulsar uno lleva a ese paso.
+- **Color compartido fórmula ↔ dibujo** en KaTeX (`\htmlClass`): r en ámbar, saltos/divisor en cian, etc.
+
+Escenas del Libro II:
+- Algoritmo de Euclides como **rectángulo cortado en cuadrados** (un cociente por paso; el último lado es el mcd),
+  con lupa del rectángulo-resto actual porque los cuadrados se vuelven diminutos.
+- Ejemplo 3088/456: cada resto lleva escrita su expresión rᵢ = 3088·sᵢ + 456·tᵢ, que se calcula con una sola resta
+  a partir de las dos anteriores (memoria dentro del dibujo).
+- Coeficientes Aᵢ, Bᵢ: en cada paso se reiluminan la fila de Euclides cuyo cociente se usa y la fila anterior de la tabla.
+- Bézout: el resto r supuesto hereda su etiqueta de combinación y se dibuja punteado; los elementos de S son
+  c₁, c₂, c₃, … (decisión del constructor: s₁, s₂ ya son coeficientes en la conferencia).
+- Solución general: los dos bloques rotulados «mcm(a, b)».
