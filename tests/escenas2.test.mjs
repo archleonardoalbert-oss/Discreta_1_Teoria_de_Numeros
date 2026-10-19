@@ -207,3 +207,22 @@ solo('def-primos-relativos', 'el último paso solo añade la intersección y la 
   const k = nuevasClaves(await cargar('def-primos-relativos'), { a: 8, b: 15 }, 3);
   assert.ok(!k.some((x) => x.startsWith('lc')), `añade también el carril: ${k}`);
 });
+
+solo('teo-euclides', 'rectángulo cortado en cuadrados con lupa del resto actual', async () => {
+  const esc = await cargar('teo-euclides'), e = { a: 150, b: 42 };
+  const p0 = esc.estado(e, 0);
+  assert.equal(p0.filter((n) => /^E0:s\d+$/.test(n.k)).length, 3, 'la fila 1 corta 3 cuadrados de 42');
+  assert.ok(p0.some((n) => n.k.startsWith('L')), 'falta la lupa');
+  const p3 = esc.estado(e, 3);
+  assert.ok(p3.some((n) => /^E3:s\d+$/.test(n.k) && n.c === 'verde'), 'el último cuadrado (lado = mcd) va en verde');
+});
+
+solo('teo-euclides', 'la lupa solo muestra el corte actual (sin piezas de lupas anteriores)', async () => {
+  const esc = await cargar('teo-euclides'), e = { a: 150, b: 42 };
+  const filas = [[3, 24], [1, 18], [1, 6], [3, 0]];          // 150=3·42+24, 42=1·24+18, 24=1·18+6, 18=3·6+0
+  [0, 1, 2, 3].forEach((paso) => {
+    const h = [1, 2, 3, 4][paso], [q, r] = filas[h - 1];
+    const lupa = esc.estado(e, paso).filter((n) => n.t === 'rect' && /^L/.test(n.k));
+    assert.equal(lupa.length, q + (r > 0 ? 1 : 0), `paso ${paso + 1}: ${lupa.map((n) => n.k)}`);
+  });
+});
