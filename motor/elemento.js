@@ -47,6 +47,7 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
   const cuenta = h('span', { className: 'cuenta mono' });
   const aviso = h('p', { className: 'aviso', role: 'status', hidden: true });
   const caja = h('div', { className: 'entradas' });
+  const tira = h('div', { className: 'tira', hidden: true, role: 'dialog', 'aria-label': 'todos los pasos' });
   const leyenda = h('ul', { className: 'leyenda mono', 'aria-label': 'leyenda de colores' });
   const boton = (a, txt, titulo) => h('button', { type: 'button', textContent: txt, title: titulo, dataset: { a } });
 
@@ -68,8 +69,8 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
         leyenda,
         h('div', { className: 'controles' },
           boton('inicio', '⏮', 'al primer paso'), boton('atras', '◀', 'paso anterior (←)'),
-          cuenta, boton('adelante', '▶', 'paso siguiente (→)')),
-        caja, aviso)),
+          cuenta, boton('adelante', '▶', 'paso siguiente (→)'), boton('tira', '▦ tira', 'ver todos los pasos')),
+        tira, caja, aviso)),
     h('nav', { className: 'vecinos' },
       anterior ? h('a', { href: anterior.href, className: 'ant', textContent: `← ${anterior.nombre}` }) : h('span'),
       siguiente ? h('a', { href: siguiente.href, className: 'sig', textContent: `${siguiente.nombre} →` }) : h('span')));
@@ -111,6 +112,22 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
   raiz.querySelector('[data-a=atras]').addEventListener('click', () => ir(paso - 1));
   raiz.querySelector('[data-a=adelante]').addEventListener('click', () => ir(paso + 1));
   lista.addEventListener('click', (ev) => { const li = ev.target.closest('li'); if (li) ir(Number(li.dataset.i)); });
+  // Vista de tira: una miniatura estática por paso; pulsar una lleva a ese paso.
+  const abrirTira = () => {
+    const { ancho, alto } = escena.vista(e);
+    tira.replaceChildren(...elemento.pasos.map((_, i) => {
+      const mini = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      mini.setAttribute('viewBox', `0 0 ${ancho} ${alto}`);
+      pintar(mini, null, escena.estado(e, i), { animar: false, referencia: i > 0 ? escena.estado(e, i - 1) : null });
+      const b = h('button', { type: 'button', className: `miniatura${i === paso ? ' actual' : ''}`, title: `paso ${i + 1}` },
+        h('span', { className: 'mono', textContent: String(i + 1) }), h('div', { className: 'escena' }, mini));
+      b.addEventListener('click', () => { tira.hidden = true; ir(i); });
+      return b;
+    }));
+    tira.hidden = false;
+  };
+  raiz.querySelector('[data-a=tira]').addEventListener('click', () => (tira.hidden ? abrirTira() : (tira.hidden = true)));
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') tira.hidden = true; });
   document.addEventListener('keydown', (ev) => {
     if (ev.target.closest?.('input, textarea') || ev.altKey || ev.ctrlKey || ev.metaKey) return;
     if (ev.key === 'ArrowRight') { ev.preventDefault(); ir(paso + 1); }

@@ -92,6 +92,11 @@ ol.pasos li:hover { background: #ffffff06; }
 .leyenda { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 8px 2px 0; padding: 0; font-size: 12px; color: var(--texto-2); }
 .leyenda li { display: flex; align-items: center; gap: 6px; }
 .leyenda .muestra { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+.tira { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 4px 0 12px; max-height: 60vh; overflow: auto; }
+.tira .miniatura { background: none; border: 1px solid var(--borde-2); border-radius: 8px; padding: 4px; cursor: pointer; text-align: left; color: var(--texto-2); }
+.tira .miniatura.actual, .tira .miniatura:hover { border-color: var(--ambar); }
+.tira .miniatura .escena { padding: 2px; border: 0; }
+.tira .miniatura svg { min-width: 0 !important; }
 .controles { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
 .controles button, .mas-menos { background: var(--panel); border: 1px solid var(--borde-2); color: var(--texto); border-radius: 8px; padding: 5px 12px; font-size: 15px; cursor: pointer; }
 .controles button:hover, .mas-menos:hover:not(:disabled) { border-color: var(--ambar); }

@@ -104,6 +104,19 @@ t('elemento: ◀ ▶, teclado y clic en una línea mueven el paso', async (b, pg
   afirmar(!errores.length, errores.join(' | '));
 });
 
+t('elemento: la vista de tira muestra todos los pasos y lleva al elegido', async (b, pg) => {
+  const errores = await abrir(pg, FIX); await montada(pg);
+  await pg.click('[data-a=tira]');
+  afirmar((await pg.locator('.tira .miniatura').count()) === 3, 'no hay 3 miniaturas');
+  afirmar((await pg.locator('.tira .miniatura svg [data-k]').count()) > 0, 'miniaturas vacías');
+  await pg.click('.tira .miniatura:nth-child(3)');
+  afirmar((await cuenta(pg)) === '3/3', `tras clic: ${await cuenta(pg)}`);
+  afirmar(!(await pg.isVisible('.tira')), 'la tira no se cerró');
+  await pg.click('[data-a=tira]'); await pg.keyboard.press('Escape');
+  afirmar(!(await pg.isVisible('.tira')), 'Esc no cierra la tira');
+  afirmar(!errores.length, errores.join(' | '));
+});
+
 t('elemento: cambiar una entrada a mitad de la demostración conserva el paso', async (b, pg) => {
   await abrir(pg, FIX); await montada(pg);
   await pg.click('[data-a=adelante]');
