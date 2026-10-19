@@ -51,3 +51,13 @@ test('las erratas detectadas están corregidas y marcadas', () => {
   assert.ok(!el('def-mcm').enunciado.includes('de de') && el('def-mcm').marcaEnunciado === 'corregido');
   assert.ok(!/comúnes/.test(JSON.stringify(libro)));
 });
+
+test('el enunciado de Euclides tiene todas las filas del PDF', () => {
+  const e = libro.elementos.find((x) => x.id === 'teo-euclides').enunciado;
+  assert.ok(e.includes('r_2 &= q_4 * r_3 + r_4'), 'falta r₂ = q₄*r₃ + r₄');
+});
+
+test('la demostración añadida de cor-multiplo-mcm cubre a y b con signo', () => {
+  const t = libro.elementos.find((x) => x.id === 'cor-multiplo-mcm').pasos.map((p) => p.texto).join(' ');
+  assert.ok(t.includes('|a|') && t.includes('|b|'), t);
+});

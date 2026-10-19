@@ -129,3 +129,15 @@ solo('cor-mcm-mcd', 'con (4, 6) rotula 12 × 2 = 24', async () => {
 solo('cor-multiplo-mcm', 'con (4, 6) los múltiplos comunes son saltos de 12', async () => {
   assert.ok(textoVerde(ultimo(await cargar('cor-multiplo-mcm'), { a: 4, b: 6 }, 3), '12, 24, 36'));
 });
+
+solo('teo-menor-combinacion', 'los cuadrados de negativos van entre paréntesis', async () => {
+  assert.ok(textos((await cargar('teo-menor-combinacion')).estado({ ns: [-5, 10] }, 1)).includes('(−5)²'));
+});
+
+solo('teo-coeficientes', 'cada paso cambia algo con los valores por defecto y no solapa textos cuando b | a', async () => {
+  const esc = await cargar('teo-coeficientes');
+  const def = { a: 150, b: 42 };
+  for (let i = 1; i < 5; i++) assert.notDeepEqual(esc.estado(def, i), esc.estado(def, i - 1), `el paso ${i + 1} no cambia nada`);
+  const ns = esc.estado({ a: 10, b: 5 }, 4).filter((n) => n.t === 'text');
+  for (const x of ns) for (const y of ns) if (x !== y) assert.ok(Math.abs(x.a.y - y.a.y) >= 16 || Math.abs(x.a.x - y.a.x) > 200, `${x.k} y ${y.k} se solapan`);
+});

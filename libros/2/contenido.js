@@ -189,7 +189,7 @@ export default {
     {
       id: 'teo-euclides', tipo: 'TEO', nombre: 'Algoritmo de Euclides',
       enunciado: R`Sean $a, b$, $a \in \Z$, $b \in \Z$, $a \gt b$, si se realizan los siguientes cálculos:
-        $$\begin{aligned} a &= q_1 * b + r_1 & 0 &\le r_1 \lt b\\ b &= q_2 * r_1 + r_2 & 0 &\le r_2 \lt r_1\\ r_1 &= q_3 * r_2 + r_3 & 0 &\le r_3 \lt r_2\\ &\;\;\vdots\\ r_{k-2} &= q_k * r_{k-1} + r_k & 0 &\le r_k \lt r_{k-1}\\ r_{k-1} &= q_{k+1} * r_k & 0 &= r_{k+1} \end{aligned}$$
+        $$\begin{aligned} a &= q_1 * b + r_1 & 0 &\le r_1 \lt b\\ b &= q_2 * r_1 + r_2 & 0 &\le r_2 \lt r_1\\ r_1 &= q_3 * r_2 + r_3 & 0 &\le r_3 \lt r_2\\ r_2 &= q_4 * r_3 + r_4 & 0 &\le r_4 \lt r_3\\ &\;\;\vdots\\ r_{k-2} &= q_k * r_{k-1} + r_k & 0 &\le r_k \lt r_{k-1}\\ r_{k-1} &= q_{k+1} * r_k & 0 &= r_{k+1} \end{aligned}$$
         donde $r_k$ es el último resto diferente de 0, entonces $r_k = \mcd(a,b)$`,
       explicacion: R`Cada división cambia el par $(a, b)$ por $(b, r)$, más pequeño, sin cambiar el mcd. El resto de una fila es el salto de la siguiente. Cuando un resto da 0, el salto que se estaba usando cabe exacto: ese es el mcd.`,
       pasos: [
@@ -313,8 +313,8 @@ export default {
       explicacion: R`Los puntos donde coinciden los saltos de $a$ y de $b$ están separados exactamente por $[a,b]$: son los saltos de $[a,b]$.`,
       pasosAñadidos: 'demostracion',
       pasos: [
-        { texto: R`Por el teorema, todo múltiplo común de $a$ y $b$ es $m = k\frac{ab}{(a,b)}$ con $k \in \Z$.` },
-        { texto: R`Por el corolario anterior, $\frac{ab}{(a,b)} = [a,b]$ (para $a, b$ positivos).` },
+        { texto: R`Los múltiplos de $a$ son los de $|a|$ y los de $b$ son los de $|b|$. Por el teorema, todo múltiplo común es $m = k\frac{|a| * |b|}{(a,b)}$ con $k \in \Z$.` },
+        { texto: R`Por el corolario anterior, $\frac{|a| * |b|}{(a,b)} = \frac{|a * b|}{(a,b)} = [a,b]$.` },
         { texto: R`Luego $m = k[a,b]$: $m$ es múltiplo de $[a,b]$.` },
       ],
       escena: '2/cor-multiplo-mcm',

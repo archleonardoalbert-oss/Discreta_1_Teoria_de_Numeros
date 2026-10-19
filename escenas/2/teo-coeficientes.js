@@ -20,9 +20,11 @@ export default escenaPorCapas({
   },
   alto: ({ yRes }) => yRes + 30,
   capas: [
-    ({ tabla, k, yRes, b, mcd }) => k ? tabla(1) : [rotulo('n0', 24, yRes - 6, `b | a: el mcd es b = ${b} = a·0 + b·1`, 'texto')],
+    ({ tabla, k, yRes, b }) => k ? tabla(1) : [rotulo('n0', 24, yRes - 24, `b | a: el mcd es b = ${b} = a·0 + b·1`, 'texto')],
     ({ tabla, k }) => (k ? tabla(Math.min(2, k)) : []),
-    ({ tabla, k }) => (k ? tabla(Math.max(1, k - 1)) : []),
+    ({ tabla, k, yRes }) => (!k ? [] : k <= 3
+      ? [...tabla(Math.max(1, k - 1)), rotulo('nm', 24, yRes - 24, `(con estos números no hay filas intermedias: k = ${k})`, 'tenue')]
+      : tabla(k - 1)),
     ({ tabla, k }) => (k ? tabla(k) : []),
     ({ a, b, c, mcd, yRes }) => [rotulo('res', ANCHO / 2, yRes, `r_k = a·A_k + b·B_k = ${por(a, c.x)} + ${por(b, c.y)} = ${mcd}`, 'verde', 'middle')],
   ],

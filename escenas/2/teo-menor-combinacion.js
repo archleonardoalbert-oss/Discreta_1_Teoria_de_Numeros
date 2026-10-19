@@ -1,5 +1,5 @@
 // El mcd es la menor combinación lineal positiva: S son los puntos positivos alcanzables; su mínimo s cae en todos los aᵢ.
-import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, ANCHO } from '../comun.js';
+import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, num, ANCHO } from '../comun.js';
 import { recta, punto, llave } from '../primitivas.js';
 import { combinacionMcd, division } from '../../motor/aritmetica.js';
 
@@ -24,7 +24,7 @@ export default escenaPorCapas({
       ...ns.flatMap((v, i) => punto(`a${i}`, p, v, EJE, { c: 'ciruela', etiqueta: `${nombre(i)} = ${v}` })),
       nota('n0', 0, `a₁x₁ + … + aₙxₙ con a = (${ns.join(', ')})`),
     ],
-    ({ ns, suma }) => [nota('n1', 1, `xᵢ = aᵢ:  ${ns.map((v) => `${v}²`).join(' + ')} = ${suma} ≥ 0`)],
+    ({ ns, suma }) => [nota('n1', 1, `xᵢ = aᵢ:  ${ns.map((v) => (v < 0 ? `(${num(v)})²` : `${v}²`)).join(' + ')} = ${suma} ≥ 0`)],
     ({ suma }) => [nota('n2', 2, `algún aᵢ ≠ 0 ⇒ ${suma} > 0: existe una combinación positiva`)],
     ({ p, multiplos }) => [
       ...multiplos.map((m) => ({ k: `s${m}`, t: 'circle', a: { cx: p.x(m), cy: SY, r: 3.5 }, c: 'violeta' })),
