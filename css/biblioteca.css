@@ -9,7 +9,7 @@
   --borde-2: #1d2132;
   --texto: #d6d1c2;
   --texto-2: #a9a596;
-  --tenue: #5c6175;
+  --tenue: #737890;               /* 4,8:1 sobre #000 (AA); antes #5c6175, 3,4:1 */
   --muy-tenue: #2c3040;
   --cian: #3aa9bb;
   --ciruela: #b8509f;
@@ -50,6 +50,7 @@ a:hover { text-decoration: underline; }
 .escena .hueco[data-k] { fill: none; stroke: var(--c); stroke-width: 1.6; }
 .escena .fijo { opacity: 1; }
 .escena .hecho { opacity: .62; }
+.escena text.hecho { opacity: .85; }      /* la memoria escrita debe seguir legible: ≥ 4,5:1 en cian, ámbar y verde */
 .escena .nuevo { opacity: 1; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--c) 70%, transparent)); }
 .escena .ref { opacity: 1; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 55%, transparent)); }
 .escena .supuesto { stroke-dasharray: .035 .025 !important; }

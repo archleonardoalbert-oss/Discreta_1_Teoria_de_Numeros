@@ -124,6 +124,15 @@ t('elemento: la r de la demostración tiene el color del resto', async (b, pg) =
   afirmar(color === ambar, `color de r: ${color} (ámbar ${ambar})`);
 });
 
+t('contraste: los textos de pasos anteriores siguen legibles y el gris tenue llega a AA', async (b, pg) => {
+  await abrir(pg, 'elemento.html?l=2&e=def-mcd'); await montada(pg);
+  await pg.click('[data-a=adelante]'); await pg.waitForTimeout(700);
+  const op = await pg.evaluate(() => getComputedStyle(document.querySelector('.escena svg text.hecho')).opacity);
+  afirmar(Number(op) >= 0.85, `opacidad de texto hecho: ${op}`);
+  const tenue = await pg.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--tenue').trim());
+  afirmar(tenue === '#737890', `--tenue = ${tenue}`);
+});
+
 t('elemento: cambiar una entrada a mitad de la demostración conserva el paso', async (b, pg) => {
   await abrir(pg, FIX); await montada(pg);
   await pg.click('[data-a=adelante]');
