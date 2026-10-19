@@ -87,3 +87,45 @@ export function reglasDobles(id, plan, { b, k, y, abajo = true }) {
   }
   return ns;
 }
+
+const LETRA = 7.8;   // ancho aproximado de un carácter de la escena (JetBrains Mono, 13 px)
+const largo = (s) => [...String(s)].length * LETRA;
+
+/** Símbolos genéricos ordenados: simbolos('s', 3) → ['s₁', 's₂', 's₃', '…']. */
+export function simbolos(letra, n) {
+  const sub = (i) => String(i).split('').map((c) => '₀₁₂₃₄₅₆₇₈₉'[c]).join('');
+  return [...Array.from({ length: n }, (_, i) => `${letra}${sub(i + 1)}`), '…'];
+}
+
+/**
+ * Conjunto: «nombre = { e₁, e₂, … }» con la condición que lo define debajo. Los elementos se escriben en el orden
+ * dado (de menor a mayor) y pasan a otra fila si no caben. `señalado`: índice del elemento que se marca (PBO).
+ */
+export function conjunto(id, { x, y, nombre, elementos, definicion, c = 'violeta', señalado = -1, ancho = 680, etiquetaSeñalado = 'mínimo (PBO)' }) {
+  const ns = [texto(`${id}:n`, x, y, `${nombre} = {`, c)];
+  const x0 = x + largo(`${nombre} = { `);
+  let cx = x0, cy = y;
+  elementos.forEach((e, i) => {
+    const w = largo(e), coma = i < elementos.length - 1 ? largo(', ') : largo(' }');
+    if (cx + w + coma > ancho - 8 && cx > x0) { cx = x0; cy += 24; }
+    const marcado = i === señalado;
+    ns.push(texto(`${id}:e${i}`, cx, cy, String(e), marcado ? 'ambar' : c));
+    if (marcado) {
+      ns.push({ k: `${id}:aro`, t: 'circle', a: { cx: r1(cx + w / 2), cy: r1(cy - 4), r: r1(Math.max(11, w / 2 + 6)) }, c: 'ambar', hueco: true });
+      ns.push(texto(`${id}:min`, cx + w / 2, cy + 24, etiquetaSeñalado, 'ambar', { 'text-anchor': 'middle' }));
+    }
+    cx += w;
+    if (i < elementos.length - 1) { ns.push(texto(`${id}:c${i}`, cx, cy, ',', c)); cx += largo(', '); }
+  });
+  ns.push(texto(`${id}:cierra`, cx + LETRA / 2, cy, '}', c));
+  if (definicion) ns.push(texto(`${id}:def`, x, cy + (señalado >= 0 ? 46 : 24), definicion, 'tenue'));
+  return ns;
+}
+
+/** Producto como rectángulo: `filas` × `cols` cuadraditos con los dos lados rotulados y la unidad visible. */
+export function rectangulo(id, { x, y, filas, cols, lado, c = 'cian', etiquetaFilas, etiquetaCols, unidad = '1' }) {
+  const ns = cuadricula(id, { x, y, filas, cols, lado, c, unidad });
+  if (etiquetaFilas) ns.push(texto(`${id}:lf`, x - 8, y + (filas * lado) / 2 + 4, etiquetaFilas, c, { 'text-anchor': 'end' }));
+  if (etiquetaCols) ns.push(texto(`${id}:lc`, x + (cols * lado) / 2, y - 8, etiquetaCols, c, { 'text-anchor': 'middle' }));
+  return ns;
+}

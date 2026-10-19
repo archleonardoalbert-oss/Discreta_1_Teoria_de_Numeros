@@ -47,6 +47,7 @@ a:hover { text-decoration: underline; }
 .escena circle[data-k] { fill: var(--c); stroke: none; }
 .escena path[data-k], .escena line[data-k] { fill: none; stroke: var(--c); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
 .escena rect[data-k] { fill: color-mix(in srgb, var(--c) 30%, transparent); stroke: var(--c); stroke-width: 1; }
+.escena .hueco[data-k] { fill: none; stroke: var(--c); stroke-width: 1.6; }
 .escena .fijo { opacity: 1; }
 .escena .hecho { opacity: .62; }
 .escena .nuevo { opacity: 1; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--c) 70%, transparent)); }

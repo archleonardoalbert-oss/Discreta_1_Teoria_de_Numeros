@@ -78,3 +78,28 @@ test('un carril con saltos agrupados no rotula cada arco y lo dice en su etiquet
   assert.ok(!ns.some((n) => n.txt?.startsWith('×')));
   assert.ok(ns.find((n) => n.k === 'c:et').txt.includes('cada arco'));
 });
+
+test('conjunto: elementos en orden, definición escrita y el señalado con su aro', async () => {
+  const { conjunto, simbolos } = await import('../escenas/primitivas.js');
+  assert.deepEqual(simbolos('s', 3), ['s₁', 's₂', 's₃', '…']);
+  const ns = conjunto('S', { x: 20, y: 40, nombre: 'S', elementos: ['s₁', 's₂', 's₃'], definicion: 'd > 0', señalado: 0 });
+  const el = (i) => ns.find((n) => n.k === `S:e${i}`);
+  assert.deepEqual([0, 1, 2].map((i) => el(i).txt), ['s₁', 's₂', 's₃']);
+  assert.ok(el(0).a.x < el(1).a.x && el(1).a.x < el(2).a.x);
+  assert.ok(ns.some((n) => n.txt === 'd > 0'));
+  const aro = ns.find((n) => n.k === 'S:aro');
+  assert.ok(aro && Math.abs(aro.a.cx - el(0).a.x) < 12 && el(0).c === 'ambar');
+});
+
+test('conjunto con muchos números no se sale del ancho', async () => {
+  const { conjunto } = await import('../escenas/primitivas.js');
+  const ns = conjunto('D', { x: 24, y: 40, nombre: 'D(720)', elementos: [1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 30, 36, 40, 45, 48, 60, 72, 80, 90, 120, 144, 180, 240, 360, 720].map(String), ancho: 680 });
+  for (const n of ns.filter((n) => n.t === 'text')) assert.ok(n.a.x + [...n.txt].length * 7.8 <= 680, `${n.k} se sale`);
+});
+
+test('rectángulo: celdas filas × columnas y lados rotulados', async () => {
+  const { rectangulo } = await import('../escenas/primitivas.js');
+  const ns = rectangulo('R', { x: 40, y: 40, filas: 4, cols: 6, lado: 12, c: 'cian', etiquetaFilas: 'a = 4', etiquetaCols: 'b = 6' });
+  assert.equal(ns.filter((n) => n.k.startsWith('R:c')).length, 24);
+  assert.ok(ns.some((n) => n.txt === 'a = 4') && ns.some((n) => n.txt === 'b = 6'));
+});
