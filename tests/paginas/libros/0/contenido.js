@@ -1,6 +1,6 @@
 // Libro de prueba para los tests de navegador.
 export default {
-  numero: 0, romano: '0', titulo: 'Libro de prueba', color: 'cian',
+  numero: 0, romano: '0', titulo: 'Libro de prueba', color: 'cian', conferencia: 'prueba',
   elementos: [
     {
       id: 'division', tipo: 'TEO', nombre: 'Algoritmo de la División (prueba)',

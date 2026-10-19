@@ -124,6 +124,33 @@ t('elemento: con movimiento reducido las transiciones son instantáneas', async 
   afirmar(t === '0s', `--t-paso = ${t}`);
 });
 
+t('portada: 5 libros de frente y solo el II se puede abrir', async (b, pg) => {
+  const errores = await abrir(pg, 'index.html');
+  await pg.waitForSelector('.portada');
+  afirmar((await pg.locator('.portada').count()) === 5, 'no hay 5 portadas');
+  const enlaces = await pg.$$eval('a.portada', (as) => as.map((a) => a.getAttribute('href')));
+  afirmar(JSON.stringify(enlaces) === JSON.stringify(['libro.html?l=2']), `enlaces: ${enlaces}`);
+  afirmar((await pg.locator('.portada svg').count()) === 5, 'faltan ilustraciones');
+  afirmar(!errores.length, errores.join(' | '));
+});
+
+t('índice de libro: lista los elementos con su tipo y enlaza a cada página', async (b, pg) => {
+  const errores = await abrir(pg, 'libro.html?base=tests/paginas/&l=0');
+  await pg.waitForSelector('ol.indice-libro a');
+  const hrefs = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => a.getAttribute('href')));
+  afirmar(JSON.stringify(hrefs) === JSON.stringify(['elemento.html?base=tests/paginas/&l=0&e=division']), `hrefs: ${hrefs}`);
+  afirmar((await pg.textContent('ol.indice-libro')).includes('Teorema'), 'sin etiqueta de tipo');
+  afirmar(!errores.length, errores.join(' | '));
+});
+
+// PENDIENTE Task 7
+// t('el Libro II lista sus 22 elementos en orden', async (b, pg) => {
+//   await abrir(pg, 'libro.html?l=2');
+//   await pg.waitForSelector('ol.indice-libro a');
+//   const ids = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => new URL(a.href).searchParams.get('e')));
+//   afirmar(ids.length === 22, `hay ${ids.length}`);
+// });
+
 // ---------------------------------------------------------------- ejecución
 
 (async () => {
