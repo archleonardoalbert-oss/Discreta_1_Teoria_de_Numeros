@@ -50,3 +50,18 @@ test('escenaPorCapas conserva la leyenda propia de la escena', () => {
   const esc = escenaPorCapas({ entradas: [], alto: 10, capas: [() => []], leyenda: { cian: 'saltos de a' } });
   assert.deepEqual(esc.leyenda, { cian: 'saltos de a' });
 });
+
+test('ref solo se ve en su propio paso; quitar elimina una clave', () => {
+  const esc = escenaPorCapas({
+    entradas: [], alto: 10,
+    capas: [
+      () => [rotulo('x', 0, 0, 'x'), rotulo('h', 0, 10, 'supuesto')],
+      () => [{ ...rotulo('x', 0, 0, 'x'), ref: true }],
+      () => [{ k: 'h', quitar: true }],
+    ],
+  });
+  assert.equal(esc.estado({}, 1).find((n) => n.k === 'x').ref, true);
+  assert.equal(esc.estado({}, 2).find((n) => n.k === 'x').ref, undefined);
+  assert.ok(!esc.estado({}, 2).some((n) => n.k === 'h'));
+  assert.ok(esc.estado({}, 1).some((n) => n.k === 'h'));
+});

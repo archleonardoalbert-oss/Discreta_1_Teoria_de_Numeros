@@ -15,6 +15,7 @@ export const linea = (k, x1, y1, x2, y2, c = 'muy-tenue') =>
 /**
  * Escena hecha de capas: el paso i muestra base + capas 0…i (lo anterior se queda dibujado).
  * Si una capa posterior emite una clave ya existente, la sustituye en su sitio (sirve para recolorear).
+ * `ref: true` reilumina una pieza anterior solo en el paso de esa capa; `{ k, quitar: true }` la elimina.
  * `preparar(e)` calcula una vez lo que necesitan las capas; reciben {...e, ...preparar(e)}.
  */
 export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas, leyenda }) {
@@ -25,8 +26,13 @@ export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = A
       const ctx = { ...e, ...preparar(e) };
       const nodos = new Map();
       for (const n of base(ctx)) nodos.set(n.k, n);
-      for (const capa of capas.slice(0, Math.min(paso, capas.length - 1) + 1))
-        for (const n of capa(ctx)) nodos.set(n.k, n);
+      const ultima = Math.min(paso, capas.length - 1);
+      capas.slice(0, ultima + 1).forEach((capa, i) => {
+        for (const n of capa(ctx)) {
+          if (n.quitar) nodos.delete(n.k);              // { k, quitar: true }: esa pieza deja de dibujarse
+          else if (!n.ref || i === ultima) nodos.set(n.k, n);   // ref: solo se reilumina en su propio paso
+        }
+      });
       return [...nodos.values()];
     },
   };

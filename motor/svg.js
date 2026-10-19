@@ -21,7 +21,7 @@ function aplicar(el, n) {
 }
 
 function clases(el, n, nuevo) {
-  el.setAttribute('class', [`c-${n.c || 'texto'}`, n.fijo ? 'fijo' : nuevo ? 'nuevo' : 'hecho', ...(n.hueco ? ['hueco'] : [])].join(' '));
+  el.setAttribute('class', [`c-${n.c || 'texto'}`, n.fijo ? 'fijo' : nuevo ? 'nuevo' : n.ref ? 'ref' : 'hecho', ...(n.hueco ? ['hueco'] : []), ...(n.supuesto ? ['supuesto'] : [])].join(' '));
 }
 
 // Primer hermano tras `nodo` (o el primero del svg) que no se esté desvaneciendo.

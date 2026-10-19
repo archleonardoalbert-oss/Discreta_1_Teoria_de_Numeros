@@ -51,6 +51,9 @@ a:hover { text-decoration: underline; }
 .escena .fijo { opacity: 1; }
 .escena .hecho { opacity: .62; }
 .escena .nuevo { opacity: 1; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--c) 70%, transparent)); }
+.escena .ref { opacity: 1; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 55%, transparent)); }
+.escena .supuesto { stroke-dasharray: .035 .025 !important; }
+.escena text.supuesto { font-style: italic; opacity: .85; }
 .escena .entra { opacity: 0; stroke-dashoffset: 1; }
 .escena .sale { opacity: 0; }
 .escena .sin-anim [data-k] { transition: none; }

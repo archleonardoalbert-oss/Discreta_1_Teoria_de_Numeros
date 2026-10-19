@@ -70,6 +70,21 @@ t('pintar reconcilia por clave: A → B → A deja exactamente A, con «nuevo» 
   afirmar(!errores.length, errores.join(' | '));
 });
 
+t('pintar: «ref» enciende una pieza anterior y «supuesto» la dibuja punteada', async (b, pg) => {
+  await abrir(pg, 'tests/paginas/svg.html');
+  await pg.waitForFunction(() => window.listo);
+  await pg.evaluate(() => window.prueba([{ k: 'r', t: 'line', a: { x1: 0, y1: 10, x2: 50, y2: 10 }, c: 'ambar' }]));
+  await pg.evaluate(() => window.prueba([
+    { k: 'r', t: 'line', a: { x1: 0, y1: 10, x2: 50, y2: 10 }, c: 'ambar', ref: true },
+    { k: 'h', t: 'line', a: { x1: 0, y1: 30, x2: 50, y2: 30 }, c: 'ambar', supuesto: true },
+  ]));
+  await pg.waitForTimeout(700);
+  const r = await pg.evaluate(() => { const el = document.querySelector('#s [data-k=r]'); return { ref: el.classList.contains('ref'), op: getComputedStyle(el).opacity }; });
+  afirmar(r.ref && r.op === '1', `ref: ${JSON.stringify(r)}`);
+  const dash = await pg.evaluate(() => getComputedStyle(document.querySelector('#s [data-k=h]')).strokeDasharray);
+  afirmar(dash && dash !== 'none' && dash !== '1px' && dash !== '1', `supuesto sin punteado: ${dash}`);
+});
+
 const FIX = 'elemento.html?base=tests/paginas/&l=0&e=division';
 const cuenta = (pg) => pg.textContent('.cuenta');
 const montada = (pg) => pg.waitForFunction(() => document.querySelector('.escena svg [data-k]'));
