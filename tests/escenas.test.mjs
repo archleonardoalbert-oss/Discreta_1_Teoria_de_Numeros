@@ -48,6 +48,11 @@ for (const l of libros) {
           const ks = ns.map((n) => n.k);
           assert.equal(new Set(ks).size, ks.length, `claves repetidas (${JSON.stringify(e)}, paso ${i})`);
           assert.deepEqual(esc.estado(e, i), ns, 'no determinista');
+          for (const n of ns.filter((n) => n.t === 'text')) {
+            const w = [...n.txt].length * 7.8, x = n.a.x, anc = n.a['text-anchor'] ?? 'start';
+            const [x0, x1] = anc === 'middle' ? [x - w / 2, x + w / 2] : anc === 'end' ? [x - w, x] : [x, x + w];
+            assert.ok(x0 >= -4 && x1 <= ancho + 4, `texto ${n.k} «${n.txt}» se sale (${Math.round(x0)}…${Math.round(x1)} de ${ancho}) con ${JSON.stringify(e)} paso ${i}`);
+          }
           for (const n of ns) for (const [x, y] of puntos(n))
             assert.ok(x >= -30 && x <= ancho + 30 && y >= -30 && y <= alto + 30, `${n.k} fuera de la vista (${x}, ${y}) con ${JSON.stringify(e)} paso ${i}`);
           assert.ok(ns.filter((n) => n.t === 'path').length <= 400, 'demasiados arcos');

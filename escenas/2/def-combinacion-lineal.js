@@ -1,5 +1,5 @@
 // Combinación lineal: b₁ saltos de a₁ y luego b₂ saltos de a₂; se termina en c.
-import { escenaPorCapas, planPara, carril, rotulo, linea, ANCHO } from '../comun.js';
+import { escenaPorCapas, planPara, carril, rotulo, rotuloDentro, linea, ANCHO } from '../comun.js';
 import { recta, punto } from '../primitivas.js';
 
 const Y1 = 64, Y2 = 128, EJE = 184;
@@ -22,7 +22,7 @@ export default escenaPorCapas({
     ({ a1, b1, p1, p }) => [
       ...carril('c1', p, Y1, { salto: a1, n: b1, c: 'cian', etiqueta: `b₁ = ${b1} saltos de a₁ = ${a1}` }),
       linea('g1', p.x(p1), Y1, p.x(p1), Y2),
-      rotulo('r1', p.x(p1) + 6, Y1 + 16, `a₁·b₁ = ${p1}`, 'cian'),
+      rotuloDentro('r1', p.x(p1) + 6, Y1 + 16, `a₁·b₁ = ${p1}`, 'cian'),
     ],
     ({ a2, b2, p1, c, p }) => [
       ...carril('c2', p, Y2, { salto: a2, n: b2, desde: p1, c: 'violeta', etiqueta: `b₂ = ${b2} saltos de a₂ = ${a2}` }),

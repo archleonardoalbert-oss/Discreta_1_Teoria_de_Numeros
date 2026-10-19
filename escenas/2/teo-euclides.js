@@ -1,5 +1,5 @@
 // Algoritmo de Euclides: cada fila usa como salto el resto de la anterior, hasta que un salto cabe exacto.
-import { escenaPorCapas, rotulo, ANCHO } from '../comun.js';
+import { escenaPorCapas, rotulo, cadena, elegir, ANCHO } from '../comun.js';
 import { carrilesEuclides, altoEuclides } from '../piezas/euclides.js';
 import { euclides } from '../../motor/aritmetica.js';
 
@@ -23,8 +23,8 @@ export default escenaPorCapas({
     ({ filas }) => carrilesEuclides('e', filas, { y0: Y0, dy: DY, hasta: 2 }),
     ({ filas }) => carrilesEuclides('e', filas, { y0: Y0, dy: DY, hasta: filas.length - 1 }),
     ({ filas }) => carrilesEuclides('e', filas, { y0: Y0, dy: DY, verdeFinal: true }),
-    ({ restos, yNotas }) => [rotulo('n0', 24, yNotas, `restos: ${restos.join(' > ')} — bajan y llegan a 0 (PBO)`, 'texto')],
-    ({ filas, yNotas }) => [rotulo('n1', 24, yNotas + 24, filas.map((f) => `mcd(${f.a}, ${f.b})`).join(' = '), 'texto')],
+    ({ restos, yNotas }) => [rotulo('n0', 24, yNotas, elegir([`restos: ${restos.join(' > ')} — bajan y llegan a 0 (PBO)`, `restos: ${restos.join(' > ')}`, `restos: ${restos.slice(0, 3).join(' > ')} > … > ${restos.at(-1)} (PBO)`], ANCHO - 48), 'texto')],
+    ({ filas, yNotas }) => [rotulo('n1', 24, yNotas + 24, cadena(filas.map((f) => `mcd(${f.a}, ${f.b})`)), 'texto')],
     ({ a, b, mcd, yNotas }) => [rotulo('res', ANCHO / 2, yNotas + 56, `último resto ≠ 0:  r_k = ${mcd} = mcd(${a}, ${b})`, 'verde', 'middle')],
   ],
 });

@@ -53,8 +53,29 @@ export function filas(id, lineas, { x, y, dy = 22, actual = -1, anchor = 'start'
   return lineas.map((txt, i) => rotulo(`${id}:${i}`, x, y + i * dy, txt, i === actual ? 'ambar' : 'texto', anchor));
 }
 
-/** Línea de la «pizarra» de la escena (arriba a la izquierda): los resultados de cada paso quedan escritos. */
-export const nota = (k, fila, txt, c = 'texto') => rotulo(k, 24, 28 + fila * 22, txt, c);
+/** Ancho aproximado de un texto de la escena (JetBrains Mono a 13 px). */
+export const ANCHO_LETRA = 7.8;
+export const cabe = (txt, px) => [...txt].length * ANCHO_LETRA <= px;
+/** De varias redacciones (de la más completa a la más corta), la primera que cabe en `px`. */
+export const elegir = (opciones, px) => [].concat(opciones).find((t) => cabe(t, px)) ?? [].concat(opciones).at(-1);
+
+/** Rótulo que, si no cabe a la derecha de x, se ancla a la izquierda o contra el borde. */
+export function rotuloDentro(k, x, y, txt, c = 'texto', ancho = ANCHO) {
+  const w = [...txt].length * ANCHO_LETRA;
+  if (x + w <= ancho - 4) return rotulo(k, x, y, txt, c);
+  if (x - w >= 4) return rotulo(k, x, y, txt, c, 'end');
+  return rotulo(k, ancho - 4, y, txt, c, 'end');
+}
+
+/** Línea de la «pizarra» de la escena (arriba a la izquierda): los resultados de cada paso quedan escritos.
+ *  `txt` puede ser una lista de redacciones: se usa la más completa que cabe. */
+export const nota = (k, fila, txt, c = 'texto') => rotulo(k, 24, 28 + fila * 22, elegir(txt, ANCHO - 48), c);
+
+/** Cadena «x₁ = x₂ = … = xₙ», abreviada con «…» si no cabe en px. */
+export function cadena(partes, px = ANCHO - 48) {
+  const larga = partes.join(' = ');
+  return cabe(larga, px) || partes.length <= 3 ? larga : `${partes[0]} = ${partes[1]} = … = ${partes.at(-1)}`;
+}
 
 /** Entero con signo menos tipográfico (−). */
 export const num = (x) => (x < 0 ? `−${-x}` : `${x}`);

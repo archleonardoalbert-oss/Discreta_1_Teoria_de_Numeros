@@ -1,5 +1,5 @@
 // Solución general: desde (x₀, y₀) se puede añadir b/d saltos de a y quitar a/d saltos de b (miden lo mismo, ab/d).
-import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, num, nSaltos, ANCHO } from '../comun.js';
+import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, num, nSaltos, elegir, ANCHO } from '../comun.js';
 import { recta, punto } from '../primitivas.js';
 import { diofantica } from '../../motor/aritmetica.js';
 
@@ -36,13 +36,16 @@ export default escenaPorCapas({
       rotulo('tl', p.x(L) + 8, Y[2] + 28, `= ${num(L)}`, 'violeta'),
       nota('n1', 1, `b/d saltos de a = a/d saltos de b = ab/d = ${num(L)}: se cancelan`),
     ],
-    ({ a, b, x0, y0, x1, y1 }) => [nota('n2', 2, `otra solución (x₁, y₁) = (${num(x1)}, ${num(y1)}):  ${por(a, x0)} + ${por(b, y0)} = ${por(a, x1)} + ${por(b, y1)}`)],
-    ({ a, b, x0, x1, y0, y1 }) => [nota('n3', 3, `a(x₀ − x₁) = b(y₁ − y₀):  ${por(a, x0 - x1)} = ${por(b, y1 - y0)}`)],
-    ({ a, b, d, x0, x1, y0, y1 }) => [nota('n4', 4, `÷ d = ${d}:  ${por(a / d, x0 - x1)} = ${por(b / d, y1 - y0)}`)],
+    ({ a, b, x0, y0, x1, y1 }) => [nota('n2', 2, [`otra solución (x₁, y₁) = (${num(x1)}, ${num(y1)}):  ${por(a, x0)} + ${por(b, y0)} = ${por(a, x1)} + ${por(b, y1)}`, `otra solución (x₁, y₁) = (${num(x1)}, ${num(y1)}):  ax₀ + by₀ = ax₁ + by₁`])],
+    ({ a, b, x0, x1, y0, y1 }) => [nota('n3', 3, [`a(x₀ − x₁) = b(y₁ − y₀):  ${por(a, x0 - x1)} = ${por(b, y1 - y0)}`, 'a(x₀ − x₁) = b(y₁ − y₀)'])],
+    ({ a, b, d, x0, x1, y0, y1 }) => [nota('n4', 4, [`÷ d = ${d}:  ${por(a / d, x0 - x1)} = ${por(b / d, y1 - y0)}`, `÷ d = ${d}:  (a/d)(x₀ − x₁) = (b/d)(y₁ − y₀)`])],
     ({ a, b, d }) => [nota('n5', 5, `b/d = ${num(b / d)} divide a (a/d)(x₀ − x₁)`)],
     ({ a, b, d }) => [nota('n6', 6, `(${num(a / d)}, ${num(b / d)}) = 1  ⇒  b/d | x₀ − x₁`)],
     ({ pasoX, pasoY }) => [nota('n7', 7, `x₁ = x₀ + k·${num(pasoX)},  y₁ = y₀ − k·${num(pasoY)}`)],
-    ({ x0, y0, pasoX, pasoY }) => [rotulo('res', ANCHO / 2, EJE + 50,
-      `x = ${num(x0)} + k·${num(pasoX)},  y = ${num(y0)} − k·${num(pasoY)}:  ${[-1, 0, 1, 2].map((k) => `(${num(x0 + k * pasoX)}, ${num(y0 - k * pasoY)})`).join(' ')} …`, 'verde', 'middle')],
+    ({ x0, y0, pasoX, pasoY }) => {
+      const general = `x = ${num(x0)} + k·${num(pasoX)},  y = ${num(y0)} − k·${num(pasoY)}`;
+      const pares = (ks) => ks.map((k) => `(${num(x0 + k * pasoX)}, ${num(y0 - k * pasoY)})`).join(' ');
+      return [rotulo('res', ANCHO / 2, EJE + 50, elegir([`${general}:  ${pares([-1, 0, 1, 2])} …`, `${general}:  ${pares([0, 1])} …`, general], ANCHO - 8), 'verde', 'middle')];
+    },
   ],
 });
