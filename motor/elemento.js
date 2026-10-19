@@ -77,7 +77,9 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
     svg.setAttribute('viewBox', `0 0 ${ancho} ${alto}`);
     svg.setAttribute('aria-label', `${elemento.nombre}, paso ${paso + 1} de ${N}`);
     const actual = escena.estado(e, paso);
-    pintar(svg, previo, actual, { animar });
+    // lo «nuevo» es lo que introduce este paso respecto al anterior, venga de donde venga el usuario
+    const referencia = paso > 0 ? escena.estado(e, paso - 1) : null;
+    pintar(svg, previo, actual, { animar, referencia });
     previo = actual;
     cuenta.textContent = `${paso + 1}/${N}`;
     [...lista.children].forEach((li, i) => { li.className = i < paso ? 'hecho' : i === paso ? 'actual' : 'futuro'; });

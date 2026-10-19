@@ -156,6 +156,17 @@ t('el Libro II lista sus 22 elementos en orden', async (b, pg) => {
   afirmar(ids[0] === 'def-mcd' && ids[21] === 'cor-multiplo-mcm', `orden: ${ids[0]} … ${ids[21]}`);
 });
 
+t('elemento: el resaltado de un paso es el mismo llegando con ▶, con ◀ o saltando con clic', async (b, pg) => {
+  await abrir(pg, 'elemento.html?l=2&e=def-mcd'); await montada(pg);
+  const nuevos = () => pg.evaluate(() => [...document.querySelectorAll('.escena svg .nuevo:not(.sale)')].map((n) => n.dataset.k).sort().join());
+  await pg.click('[data-a=adelante]'); await pg.click('[data-a=adelante]');
+  const yendo = await nuevos();
+  await pg.click('[data-a=adelante]'); await pg.click('[data-a=atras]');
+  afirmar((await nuevos()) === yendo, 'al volver con ◀ el resaltado cambia');
+  await pg.click('[data-a=inicio]'); await pg.click('ol.pasos > li:nth-child(3)');
+  afirmar((await nuevos()) === yendo, 'al saltar con clic el resaltado cambia');
+});
+
 // Recorre, para cada libro y cada elemento cuya escena ya existe, todos los pasos hacia delante y hacia atrás.
 const fs = require('node:fs');
 for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.test(d))) {

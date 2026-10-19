@@ -31,10 +31,13 @@ function siguienteVivo(nodo, svg) {
   return s;
 }
 
-/** Pinta `actual` sobre `svg`; `previo` es el estado pintado antes (o null). */
-export function pintar(svg, previo, actual, { animar = true } = {}) {
+/**
+ * Pinta `actual` sobre `svg`; `previo` es el estado pintado antes (o null).
+ * `referencia`: estado contra el que se decide qué es «nuevo» (por defecto, `previo`).
+ */
+export function pintar(svg, previo, actual, { animar = true, referencia = previo } = {}) {
   svg.classList.toggle('sin-anim', !animar);
-  const nuevos = marcarNuevos(previo, actual);
+  const nuevos = marcarNuevos(referencia, actual);
   const vivos = new Map([...svg.querySelectorAll(':scope > [data-k]')].map((el) => [el.dataset.k, el]));
   const quedan = new Set(actual.map((n) => n.k));
   const ms = animar ? duracion(svg) : 0;
