@@ -84,3 +84,12 @@ test('coeficientes con un cero', () => {
     assert.equal(a * c.x + b * c.y, mcd(a, b), `${a}, ${b}`);
   }
 });
+
+test('Euclides extendido hacia delante: cada resto con su expresión a·s + b·t', async () => {
+  const { euclidesExtendido } = await import('../motor/aritmetica.js');
+  const f = euclidesExtendido(3088, 456);
+  assert.deepEqual(f.map((x) => [x.r, x.s, x.t]).slice(0, 2), [[352, 1, -6], [104, -1, 7]]);
+  const ultimoNoNulo = f.at(-2);
+  assert.deepEqual([ultimoNoNulo.r, ultimoNoNulo.s, ultimoNoNulo.t], [8, -22, 149]);
+  for (const x of f) if (x.r) assert.equal(3088 * x.s + 456 * x.t, x.r);
+});

@@ -226,3 +226,17 @@ solo('teo-euclides', 'la lupa solo muestra el corte actual (sin piezas de lupas 
     assert.equal(lupa.length, q + (r > 0 ? 1 : 0), `paso ${paso + 1}: ${lupa.map((n) => n.k)}`);
   });
 });
+
+solo('ej-euclides-3088', 'cada resto lleva su expresión y el paso reilumina los dos restos que usa', async () => {
+  const esc = await cargar('ej-euclides-3088'), e = { a: 3088, b: 456 };
+  assert.ok(textos(esc.estado(e, 0)).includes('352 = 3088·1 + 456·(−6)'));
+  assert.ok(textos(esc.estado(e, 7)).includes('8 = 3088·(−22) + 456·149'));
+  const p3 = esc.estado(e, 2);
+  assert.ok(p3.filter((n) => n.ref).length >= 2, 'no reilumina los restos anteriores');
+});
+
+solo('ej-coeficientes-3088', 'cada paso reilumina la fila anterior de la tabla y resalta la fila de Euclides cuyo cociente usa', async () => {
+  const ns = (await cargar('ej-coeficientes-3088')).estado({ a: 3088, b: 456 }, 2);
+  assert.ok(ns.find((n) => n.k === 'tc2')?.ref, 'tc2 no se reilumina');
+  assert.equal(ns.find((n) => n.k === 'te3')?.c, 'ambar');
+});

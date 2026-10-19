@@ -14,7 +14,7 @@ export function filasVisibles(n) {
 }
 
 /** Nodos de las filas 0…hasta−1 de `filas` (euclides(a, b).filas), empezando en y0, una cada dy. */
-export function carrilesEuclides(id, filas, { y0, dy = 46, hasta = filas.length, ancho = ANCHO, verdeFinal = false }) {
+export function carrilesEuclides(id, filas, { y0, dy = 46, hasta = filas.length, ancho = ANCHO, verdeFinal = false, etiquetaResto = (i, f) => `r = ${f.r}` }) {
   const visibles = filasVisibles(filas.length);
   const ns = [];
   visibles.forEach((i, slot) => {
@@ -26,7 +26,7 @@ export function carrilesEuclides(id, filas, { y0, dy = 46, hasta = filas.length,
     ns.push(...carril(`${id}${i}`, p, y, { salto: f.b, n: f.q, c, etiqueta: textoFila(f) }));
     if (f.r > 0) {
       ns.push({ k: `${id}${i}:r`, t: 'line', a: { x1: p.x(f.q * f.b), y1: y, x2: p.x(f.a), y2: y }, c: 'ambar', ancho: 4 });
-      ns.push(rotulo(`${id}${i}:rt`, r1(p.x(f.a)), y - 17, `r = ${f.r}`, 'ambar', 'end'));
+      ns.push(rotulo(`${id}${i}:rt`, r1(p.x(f.a)), y - 17, etiquetaResto(i, f), 'ambar', 'end'));
     } else {
       ns.push(rotulo(`${id}${i}:rt`, r1(p.x(f.a)), y - 17, 'r = 0: cabe exacto', c === 'verde' ? 'verde' : 'tenue', 'end'));
     }

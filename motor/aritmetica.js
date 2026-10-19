@@ -100,3 +100,13 @@ export function combinacionMcd(ns) {
   }
   return { d, coefs };
 }
+
+/** Euclides extendido hacia delante: cada fila a = q·b + r lleva r = A·s + B·t (A, B las entradas originales). */
+export function euclidesExtendido(A, B) {
+  let p2 = { s: 1, t: 0 }, p1 = { s: 0, t: 1 };          // A = A·1 + B·0,  B = A·0 + B·1
+  return euclides(A, B).filas.map((f) => {
+    const actual = { s: p2.s - f.q * p1.s, t: p2.t - f.q * p1.t };
+    [p2, p1] = [p1, actual];
+    return { ...f, ...actual };
+  });
+}

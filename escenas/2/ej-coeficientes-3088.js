@@ -21,7 +21,7 @@ export default escenaPorCapas({
   alto: ({ eje }) => eje + 64,
   capas: [
     ...Array.from({ length: FILAS_TABLA }, (_, i) => ({ filas, c, k }) =>
-      tablaCoeficientes('t', filas, c.pasos, { y0: Y0, dy: DY, hasta: i === FILAS_TABLA - 1 ? k : Math.min(i + 1, k), usada: -1 })),
+      { const hasta = i === FILAS_TABLA - 1 ? k : Math.min(i + 1, k); return tablaCoeficientes('t', filas, c.pasos, { y0: Y0, dy: DY, hasta, usada: hasta >= 1 ? k - hasta : -1 }); }),
     ({ a, b, c, mcd, yRecta, eje, p }) => [
       ...recta('eje', p, eje),
       ...carril('l1', p, yRecta, { salto: a, n: c.x, c: 'cian', etiqueta: nSaltos(c.x, a) }),

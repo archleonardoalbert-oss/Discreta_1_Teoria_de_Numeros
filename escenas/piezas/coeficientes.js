@@ -18,6 +18,7 @@ export function tablaCoeficientes(id, filas, pasos, { y0, dy = 26, hasta, xTabla
   const k = pasos.length;
   const ns = filas.map((f, j) => rotulo(`${id}e${j}`, 24, y0 + j * dy, textoFila(f), j === usada ? 'ambar' : 'tenue'));
   for (let i = 1; i <= Math.min(hasta, k); i++)
-    ns.push(rotulo(`${id}c${i}`, xTabla, y0 + (i - 1) * dy, textoCoeficiente(pasos, i, k), i === hasta ? 'ambar' : 'texto'));
+    ns.push({ ...rotulo(`${id}c${i}`, xTabla, y0 + (i - 1) * dy, textoCoeficiente(pasos, i, k), i === hasta ? 'ambar' : 'texto'),
+      ...(i === hasta - 1 ? { ref: true } : {}) });     // la fila anterior se usa en este paso: se reilumina
   return ns;
 }
