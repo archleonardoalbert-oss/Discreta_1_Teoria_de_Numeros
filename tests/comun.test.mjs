@@ -45,3 +45,8 @@ test('filas: una línea de texto por fila, con la actual resaltada', () => {
   assert.deepEqual(f.map((n) => n.txt), ['3088 = 6·456 + 352', '456 = 1·352 + 104']);
   assert.equal(f[1].c, 'ambar');
 });
+
+test('escenaPorCapas conserva la leyenda propia de la escena', () => {
+  const esc = escenaPorCapas({ entradas: [], alto: 10, capas: [() => []], leyenda: { cian: 'saltos de a' } });
+  assert.deepEqual(esc.leyenda, { cian: 'saltos de a' });
+});

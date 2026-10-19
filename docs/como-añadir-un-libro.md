@@ -61,7 +61,7 @@ Piezas disponibles:
 | `escenas/piezas/` | `euclides.js` (divisiones apiladas), `coeficientes.js` (tabla Aᵢ, Bᵢ), `multiplos.js` (dos saltadores y coincidencias) |
 | `motor/aritmetica.js` | `division`, `mcd`, `mcm`, `divisores`, `euclides`, `coeficientes`, `combinacionMcd`, `diofantica` |
 
-Colores con significado: saltos y divisores en **cian**, número objetivo en **ciruela**, resto en **ámbar**,
+Colores con significado (la leyenda bajo cada escena los explica sola; una escena puede precisar el texto con `leyenda: { cian: 'saltos de a' }`): saltos y divisores en **cian**, número objetivo en **ciruela**, resto en **ámbar**,
 conjuntos auxiliares en **violeta** y conclusión en **verde**. Un movimiento por paso; los números que use el
 texto del paso tienen que estar escritos en el dibujo.
 

@@ -5,6 +5,8 @@ import { crearEntradas } from './entradas.js';
 import { MACROS } from './macros.js';
 
 export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedades', EJ: 'Ejemplo', MET: 'Método' };
+// Significado fijo de cada color en todas las escenas (una escena puede precisarlo con `leyenda`).
+export const LEYENDA = { cian: 'saltos / divisor', ciruela: 'número dado', ambar: 'resto · paso actual', violeta: 'auxiliar (conjuntos, reglas)', verde: 'resultado' };
 const MARCAS = { corregido: 'corregido', añadido: 'añadido · no está en la conferencia' };
 
 const h = (tag, props = {}, ...hijos) => {
@@ -45,6 +47,7 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
   const cuenta = h('span', { className: 'cuenta mono' });
   const aviso = h('p', { className: 'aviso', role: 'status', hidden: true });
   const caja = h('div', { className: 'entradas' });
+  const leyenda = h('ul', { className: 'leyenda mono', 'aria-label': 'leyenda de colores' });
   const boton = (a, txt, titulo) => h('button', { type: 'button', textContent: txt, title: titulo, dataset: { a } });
 
   raiz.replaceChildren(
@@ -62,6 +65,7 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
       h('section', { className: 'columna-pasos' }, h('p', { className: `rotulo mono${elemento.pasosAñadidos ? ' rotulo-añadido' : ''}`, textContent: rotuloPasos(elemento) }), lista),
       h('section', { className: 'columna-escena' },
         h('div', { className: 'escena' }, svg),
+        leyenda,
         h('div', { className: 'controles' },
           boton('inicio', '⏮', 'al primer paso'), boton('atras', '◀', 'paso anterior (←)'),
           cuenta, boton('adelante', '▶', 'paso siguiente (→)')),
@@ -81,6 +85,9 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
     const referencia = paso > 0 ? escena.estado(e, paso - 1) : null;
     pintar(svg, previo, actual, { animar, referencia });
     previo = actual;
+    const colores = Object.keys(LEYENDA).filter((c) => actual.some((n) => n.c === c));
+    leyenda.replaceChildren(...colores.map((c) =>
+      h('li', { dataset: { color: c } }, h('i', { className: `muestra c-${c}` }), (escena.leyenda?.[c]) ?? LEYENDA[c])));
     cuenta.textContent = `${paso + 1}/${N}`;
     [...lista.children].forEach((li, i) => { li.className = i < paso ? 'hecho' : i === paso ? 'actual' : 'futuro'; });
   };

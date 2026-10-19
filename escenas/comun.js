@@ -17,9 +17,9 @@ export const linea = (k, x1, y1, x2, y2, c = 'muy-tenue') =>
  * Si una capa posterior emite una clave ya existente, la sustituye en su sitio (sirve para recolorear).
  * `preparar(e)` calcula una vez lo que necesitan las capas; reciben {...e, ...preparar(e)}.
  */
-export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas }) {
+export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas, leyenda }) {
   return {
-    entradas, validar, capas: capas.length,
+    entradas, validar, capas: capas.length, leyenda,
     vista: (e) => ({ ancho, alto: typeof alto === 'function' ? alto({ ...e, ...preparar(e) }) : alto }),
     estado(e, paso) {
       const ctx = { ...e, ...preparar(e) };

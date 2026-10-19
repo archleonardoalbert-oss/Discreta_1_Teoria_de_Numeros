@@ -167,6 +167,17 @@ t('elemento: el resaltado de un paso es el mismo llegando con ▶, con ◀ o sal
   afirmar((await nuevos()) === yendo, 'al saltar con clic el resaltado cambia');
 });
 
+t('elemento: la leyenda explica solo los colores que hay en la escena', async (b, pg) => {
+  await abrir(pg, 'elemento.html?l=2&e=def-mcd'); await montada(pg);
+  for (let i = 0; i < 3; i++) await pg.click('[data-a=adelante]');
+  await pg.waitForTimeout(700);
+  const enEscena = await pg.evaluate(() => [...new Set([...document.querySelectorAll('.escena svg [data-k]:not(.sale)')]
+    .map((n) => [...n.classList].find((c) => c.startsWith('c-'))?.slice(2)))].filter((c) => !['tenue', 'muy-tenue', 'texto'].includes(c)).sort().join());
+  const enLeyenda = await pg.$$eval('.leyenda [data-color]', (xs) => xs.map((x) => x.dataset.color).sort().join());
+  afirmar(enLeyenda && enLeyenda === enEscena, `leyenda «${enLeyenda}» ≠ colores de la escena «${enEscena}»`);
+  afirmar((await pg.textContent('.leyenda')).includes('resultado'), 'sin significado del verde');
+});
+
 // Recorre, para cada libro y cada elemento cuya escena ya existe, todos los pasos hacia delante y hacia atrás.
 const fs = require('node:fs');
 for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.test(d))) {
