@@ -39,6 +39,7 @@ export function euclides(a, b) {
 export function coeficientes(a, b) {
   let A = Math.abs(a), B = Math.abs(b);
   if (B === 0) return { pasos: [], x: signo(a), y: 0 };
+  if (A === 0) return { pasos: [], x: 0, y: signo(b) };
   const cambio = A < B;
   if (cambio) [A, B] = [B, A];
   const filas = euclides(A, B).filas;
@@ -87,4 +88,15 @@ export function divisores(n) {
   const bajos = [], altos = [];
   for (let d = 1; d * d <= n; d++) if (n % d === 0) { bajos.push(d); if (d * d !== n) altos.unshift(n / d); }
   return [...bajos, ...altos];
+}
+
+/** mcd de n números y coeficientes exactos con Σ coefs[i]·ns[i] = mcd (combinando de dos en dos). */
+export function combinacionMcd(ns) {
+  let d = 0, coefs = [];
+  for (const v of ns) {
+    const { x, y } = coeficientes(d, v);
+    coefs = [...coefs.map((c) => c * x), y];
+    d = mcd(d, v);
+  }
+  return { d, coefs };
 }

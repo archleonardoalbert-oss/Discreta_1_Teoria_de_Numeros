@@ -35,3 +35,29 @@ solo('def-primos-relativos', 'distingue primos relativos de los que no lo son', 
   assert.ok(textoVerde(ultimo(esc, { a: 8, b: 15 }, 4), 'primos relativos'));
   assert.ok(!textoVerde(ultimo(esc, { a: 8, b: 12 }, 4), 'son primos relativos'));
 });
+
+const textos = (ns) => ns.filter((n) => n.t === 'text').map((n) => n.txt).join(' | ');
+
+solo('teo-menor-combinacion', 'con [12, 18, 30] el último paso concluye s = d = 6', async () => {
+  assert.ok(textoVerde(ultimo(await cargar('teo-menor-combinacion'), { ns: [12, 18, 30] }, 12), 's = d = 6'));
+});
+
+solo('teo-divisores-comunes', 'con (12, 18) lista los divisores de 6', async () => {
+  assert.ok(textoVerde(ultimo(await cargar('teo-divisores-comunes'), { a: 12, b: 18 }, 4), '1, 2, 3, 6'));
+});
+
+solo('cor-mcd-n', 'con [12, 18, 30] muestra mcd(12, mcd(18, 30)) = 6', async () => {
+  assert.ok(textoVerde(ultimo(await cargar('cor-mcd-n'), { ns: [12, 18, 30] }, 4), '= 6'));
+});
+
+solo('cor-cocientes-coprimos', 'con (3088, 456) rotula 386 y 57', async () => {
+  const t = textos(ultimo(await cargar('cor-cocientes-coprimos'), { a: 3088, b: 456 }, 4));
+  assert.ok(t.includes('386') && t.includes('57'), t);
+});
+
+solo('teo-divide-producto', 'valida las hipótesis y concluye a | bₙ', async () => {
+  const esc = await cargar('teo-divide-producto');
+  assert.ok(esc.validar({ a: 4, bs: [2, 5, 8] }), 'mcd(4, 2) ≠ 1 debería rechazarse');
+  assert.ok(esc.validar({ a: 7, bs: [3, 5, 8] }), '7 no divide a 120');
+  assert.ok(textoVerde(ultimo(esc, { a: 4, bs: [3, 5, 8] }, 5), '4 | 8'));
+});

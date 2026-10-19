@@ -51,3 +51,9 @@ export function carril(id, plan, y, { salto, n, c = 'cian', etiqueta, desde = 0 
 export function filas(id, lineas, { x, y, dy = 22, actual = -1, anchor = 'start' }) {
   return lineas.map((txt, i) => rotulo(`${id}:${i}`, x, y + i * dy, txt, i === actual ? 'ambar' : 'texto', anchor));
 }
+
+/** Línea de la «pizarra» de la escena (arriba a la izquierda): los resultados de cada paso quedan escritos. */
+export const nota = (k, fila, txt, c = 'texto') => rotulo(k, 24, 28 + fila * 22, txt, c);
+
+/** a·(x) con paréntesis si x es negativo. */
+export const por = (a, x) => `${a}·${x < 0 ? `(${x})` : x}`;

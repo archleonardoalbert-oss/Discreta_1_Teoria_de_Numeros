@@ -60,18 +60,25 @@ export function cuadricula(id, { x, y, filas, cols, lado, c = 'cian', unidad = '
   return ns;
 }
 
-/** Dos reglas: abajo en unidades; arriba una marca cada b, numeradas 0…k (cambio de escala explícito). */
-export function reglasDobles(id, plan, { b, k, y }) {
-  const arriba = y - 44, ns = [
-    { k: `${id}:ab`, t: 'line', a: { x1: plan.x(0), y1: y, x2: plan.x(b * k), y2: y }, c: 'tenue' },
+/** Dos reglas: abajo en unidades; arriba una marca cada b, numeradas 0…k (cambio de escala explícito).
+ *  Con muchas marcas se numeran (y se guían) solo las que caben, siempre la última.
+ *  `abajo: false` omite la regla inferior cuando la recta principal ya está en `y`. */
+export function reglasDobles(id, plan, { b, k, y, abajo = true }) {
+  const arriba = y - 44, px = Math.abs(b) * plan.escala;
+  const cadaEtiqueta = Math.max(1, Math.ceil(28 / px)), cadaMarca = Math.max(1, Math.ceil(4 / px));
+  const ns = [
+    ...(abajo ? [{ k: `${id}:ab`, t: 'line', a: { x1: plan.x(0), y1: y, x2: plan.x(b * k), y2: y }, c: 'tenue' }] : []),
     { k: `${id}:ar`, t: 'line', a: { x1: plan.x(0), y1: arriba, x2: plan.x(b * k), y2: arriba }, c: 'violeta' },
   ];
   for (let i = 0; i <= k; i++) {
+    const etiqueta = i % cadaEtiqueta === 0 || i === k;
+    if (!etiqueta && i % cadaMarca !== 0) continue;
     const xi = plan.x(b * i);
     ns.push({ k: `${id}:m${i}`, t: 'line', a: { x1: xi, y1: arriba - 5, x2: xi, y2: arriba + 5 }, c: 'violeta' });
+    if (!etiqueta) continue;
     ns.push(texto(`${id}:n${i}`, xi, arriba - 10, String(i), 'violeta', { 'text-anchor': 'middle' }));
     ns.push({ k: `${id}:g${i}`, t: 'line', a: { x1: xi, y1: arriba + 5, x2: xi, y2: y }, c: 'muy-tenue' });
-    ns.push(texto(`${id}:v${i}`, xi, y + 18, String(b * i), 'tenue', { 'text-anchor': 'middle' }));
+    if (abajo) ns.push(texto(`${id}:v${i}`, xi, y + 18, String(b * i), 'tenue', { 'text-anchor': 'middle' }));
   }
   return ns;
 }

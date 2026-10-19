@@ -68,3 +68,19 @@ test('menor combinación lineal positiva = mcd', () => {
   assert.equal(m.valor, 6);
   assert.equal(m.coefs.reduce((s, x, i) => s + x * [12, 18, 30][i], 0), 6);
 });
+
+test('combinacionMcd: coeficientes exactos para n números', async () => {
+  const { combinacionMcd } = await import('../motor/aritmetica.js');
+  for (const ns of [[12, 18, 30], [3088, 456], [-12, 18, 7, 40], [0, 9]]) {
+    const { d, coefs } = combinacionMcd(ns);
+    assert.equal(d, mcd(...ns));
+    assert.equal(coefs.reduce((s, x, i) => s + x * ns[i], 0), d, String(ns));
+  }
+});
+
+test('coeficientes con un cero', () => {
+  for (const [a, b] of [[0, 12], [12, 0], [0, -5], [-7, 0]]) {
+    const c = coeficientes(a, b);
+    assert.equal(a * c.x + b * c.y, mcd(a, b), `${a}, ${b}`);
+  }
+});
