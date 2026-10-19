@@ -171,3 +171,15 @@ solo('prop-signos', 'D(a) = D(−a) como conjunto con los divisores', async () =
   assert.deepEqual(elementos(ns, 'Da'), ['1', '2', '3', '4', '6', '12']);
   assert.ok(ns.some((n) => n.k === 'Da:n' && n.txt.includes('D(12) = D(−12)')));
 });
+
+solo('teo-multiplos-comunes', 'el producto ab es un rectángulo a × b y una de sus d tiras mide ab/d', async () => {
+  const ns = ultimo(await cargar('teo-multiplos-comunes'), { a: 4, b: 6 }, 5);
+  assert.equal(ns.filter((n) => /^R:c\d+-\d+$/.test(n.k)).length, 24);
+  assert.equal(ns.filter((n) => /^R:c\d+-\d+$/.test(n.k) && n.c === 'verde').length, 12);
+  assert.ok(textos(ns).includes('ab/d = 12'), textos(ns));
+});
+
+solo('cor-mcm-mcd', 'los rectángulos rotulan sus lados', async () => {
+  const t = textos(ultimo(await cargar('cor-mcm-mcd'), { a: 4, b: 6 }, 4));
+  for (const s of ['|a| = 4', '|b| = 6', '(a,b) = 2', '[a,b] = 12']) assert.ok(t.includes(s), s);
+});
