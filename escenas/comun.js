@@ -30,7 +30,7 @@ export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = A
       capas.slice(0, ultima + 1).forEach((capa, i) => {
         for (const n of capa(ctx)) {
           if (n.quitar) nodos.delete(n.k);              // { k, quitar: true }: esa pieza deja de dibujarse
-          else if (!n.ref || i === ultima) nodos.set(n.k, n);   // ref: solo se reilumina en su propio paso
+          else nodos.set(n.k, n.ref && i !== ultima ? { ...n, ref: undefined } : n);   // ref: solo se reilumina en su propio paso
         }
       });
       return [...nodos.values()];

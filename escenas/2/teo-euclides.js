@@ -25,6 +25,7 @@ export default escenaPorCapas({
       return [
         rotulo('Et', 24, Y0 - 14, `rectángulo ${a} × ${b}`, 'texto'),
         ...rectanguloEuclides('E', filas, { x: 24, y: Y0, ...CAJA, hasta: h }),
+        ...(f.r === 0 ? [{ k: 'E:resto', quitar: true }] : []),   // ya no queda nada por cortar
         rotulo('Lt', XL, Y0 - 14, `lupa: ${textoFila(f)}`, 'ambar'),
         // cada fila tiene su propia lupa; las de otras filas se retiran (las capas se acumulan)
         ...filas.flatMap((g, j) => (j === h - 1 ? [] : rectanguloEuclides(`L${j}_`, [g], { x: XL, y: Y0, ...CAJA }).map((n) => ({ k: n.k, quitar: true })))),
@@ -38,7 +39,7 @@ export default escenaPorCapas({
   capas: [
     ({ vista }) => vista(1),
     ({ filas, vista }) => vista(Math.min(2, filas.length)),
-    ({ filas, vista }) => vista(Math.max(1, filas.length - 1)),
+    ({ filas, vista }) => vista(Math.max(Math.min(2, filas.length), filas.length - 1)),   // nunca retrocede
     ({ filas, vista }) => vista(filas.length),
     ({ restos, yNotas }) => [rotulo('n0', 24, yNotas, elegir([`restos: ${restos.join(' > ')} — bajan y llegan a 0 (PBO)`, `restos: ${restos.join(' > ')}`, `restos: ${restos.slice(0, 3).join(' > ')} > … > ${restos.at(-1)} (PBO)`], ANCHO - 48), 'texto')],
     ({ filas, yNotas }) => [rotulo('n1', 24, yNotas + 24, cadena(filas.map((f) => `mcd(${f.a}, ${f.b})`)), 'texto')],

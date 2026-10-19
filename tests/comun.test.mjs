@@ -65,3 +65,13 @@ test('ref solo se ve en su propio paso; quitar elimina una clave', () => {
   assert.ok(!esc.estado({}, 2).some((n) => n.k === 'h'));
   assert.ok(esc.estado({}, 1).some((n) => n.k === 'h'));
 });
+
+test('fuera de su paso, una pieza reiluminada conserva su último aspecto (no vuelve al de capas anteriores)', () => {
+  const esc = escenaPorCapas({
+    entradas: [], alto: 10,
+    capas: [() => [rotulo('x', 0, 0, 'fila', 'ambar')], () => [{ ...rotulo('x', 0, 0, 'fila', 'texto'), ref: true }], () => []],
+  });
+  const x = esc.estado({}, 2).find((n) => n.k === 'x');
+  assert.equal(x.c, 'texto');
+  assert.ok(!x.ref);
+});

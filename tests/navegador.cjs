@@ -133,6 +133,13 @@ t('contraste: los textos de pasos anteriores siguen legibles y el gris tenue lle
   afirmar(tenue === '#737890', `--tenue = ${tenue}`);
 });
 
+t('KaTeX no llena la consola de avisos por los colores', async (b, pg) => {
+  const avisos = [];
+  pg.on('console', (m) => { if (m.type() === 'warning') avisos.push(m.text()); });
+  await pg.goto(BASE + 'elemento.html?l=2&e=cor-mcd-resto', { waitUntil: 'load' }); await montada(pg);
+  afirmar(!avisos.length, `avisos: ${avisos.slice(0, 2).join(' | ')}`);
+});
+
 t('elemento: cambiar una entrada a mitad de la demostración conserva el paso', async (b, pg) => {
   await abrir(pg, FIX); await montada(pg);
   await pg.click('[data-a=adelante]');

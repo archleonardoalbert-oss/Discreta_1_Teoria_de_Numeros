@@ -27,6 +27,7 @@ export const katex = (raiz) => window.renderMathInElement?.(raiz, {
   throwOnError: false,
   macros: { ...MACROS },
   trust: TRUST,
+  strict: (codigo) => (codigo === 'htmlExtension' ? 'ignore' : 'warn'),   // \htmlClass es intencionado (colores)
 });
 
 /** Rótulo de la columna de pasos: deja claro si los pasos son de la conferencia o añadidos. */

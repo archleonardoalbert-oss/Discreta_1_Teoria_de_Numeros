@@ -252,3 +252,23 @@ solo('teo-menor-combinacion', 'el resto supuesto se dibuja punteado con su etiqu
 solo('teo-solucion-general', 'los dos bloques del intercambio se rotulan con mcm(a, b)', async () => {
   assert.ok(textos((await cargar('teo-solucion-general')).estado({ a: 6, b: 10, c: 8 }, 1)).includes('mcm(a, b) = 30'));
 });
+
+solo('teo-euclides', 'al terminar no queda contorno de resto y los pasos nunca retroceden', async () => {
+  const esc = await cargar('teo-euclides');
+  assert.ok(!esc.estado({ a: 150, b: 42 }, 3).some((n) => n.k === 'E:resto'), 'sigue el contorno del resto');
+  const filasLupa = (i) => esc.estado({ a: 5, b: 2 }, i).find((n) => n.k === 'Lt').txt;
+  assert.notEqual(filasLupa(2), filasLupa(0), 'con 2 filas el paso 3 vuelve a la lupa del paso 1');
+  const ambar = esc.estado({ a: 5, b: 2 }, 2).filter((n) => /^F:\d+$/.test(n.k) && n.c === 'ambar');
+  assert.equal(ambar.length, 1, 'más de una fila marcada como actual');
+});
+
+solo('teo-menor-combinacion', 'al cerrar la contradicción no queda nada supuesto y se avisa de que con estos números vale 0', async () => {
+  const esc = await cargar('teo-menor-combinacion'), e = { ns: [12, 18, 30] };
+  assert.ok(!esc.estado(e, 8).some((n) => n.supuesto), 'queda algo supuesto en «r = 0»');
+  assert.ok(esc.estado(e, 6).find((n) => n.k === 'hr').txt.includes('vale 0'));
+});
+
+solo('ej-coeficientes-3088', 'al final solo hay una fila actual en la tabla', async () => {
+  const ns = (await cargar('ej-coeficientes-3088')).estado({ a: 3088, b: 456 }, 6);
+  assert.equal(ns.filter((n) => /^tc\d+$/.test(n.k) && n.c === 'ambar').length, 1);
+});

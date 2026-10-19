@@ -41,7 +41,7 @@ export default escenaPorCapas({
       const terminos = ns.map((v, i) => (i === 0 ? `${num(v)}·(1 − ${par(coefs[0])}·${q})` : `${num(v)}·(−${par(coefs[i])}·${q})`));
       return [
         { ...nota('n4', 4, 'si r > 0:  r = a₁(1 − s₁q) + a₂(−s₂q) + … sería combinación positiva'), supuesto: true },
-        { ...nota('hr', 5, [`   r = ${terminos.join(' + ')}`, '   r heredaría la forma a₁x₁ + … + aₙxₙ'], 'ambar'), supuesto: true },
+        { ...nota('hr', 5, [`   r = ${terminos.join(' + ')}  (con estos números vale 0)`, `   r = ${terminos.join(' + ')}  (aquí vale 0)`, '   r heredaría la forma a₁x₁ + … + aₙxₙ (aquí vale 0)'], 'ambar'), supuesto: true },
       ];
     },
     () => {
@@ -54,7 +54,7 @@ export default escenaPorCapas({
       ];
     },
     ({ ns, d, p }) => [
-      ...['S:r', 'S:rl', 'S:rt'].map((k) => ({ k, quitar: true })),   // se cierra la contradicción
+      ...['S:r', 'S:rl', 'S:rt', 'n4', 'hr'].map((k) => ({ k, quitar: true })),   // se cierra la contradicción: fuera lo supuesto
       ...carril('ls', p, YS, { salto: d, n: Math.floor(p.max / d), c: 'cian', etiqueta: `r = 0: los saltos de s = ${d} caen en todos los aᵢ` }),
       ...carril('ls-', p, YS, { salto: d, n: -Math.floor(-p.min / d), c: 'cian' }).filter((n) => n.t === 'path'),
       ...ns.map((v, i) => linea(`g${i}`, p.x(v), YS, p.x(v), EJE)),
