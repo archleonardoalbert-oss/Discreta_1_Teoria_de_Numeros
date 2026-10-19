@@ -2,7 +2,7 @@
 // la demostración paso a paso (izquierda) y la escena animada con sus entradas (derecha).
 import { pintar } from './svg.js';
 import { crearEntradas } from './entradas.js';
-import { MACROS } from './macros.js';
+import { MACROS, TRUST } from './macros.js';
 
 export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedades', EJ: 'Ejemplo', MET: 'Método' };
 // Significado fijo de cada color en todas las escenas (una escena puede precisarlo con `leyenda`).
@@ -26,6 +26,7 @@ export const katex = (raiz) => window.renderMathInElement?.(raiz, {
   delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
   throwOnError: false,
   macros: { ...MACROS },
+  trust: TRUST,
 });
 
 /** Rótulo de la columna de pasos: deja claro si los pasos son de la conferencia o añadidos. */

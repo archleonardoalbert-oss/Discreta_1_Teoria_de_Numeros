@@ -117,6 +117,13 @@ t('elemento: la vista de tira muestra todos los pasos y lleva al elegido', async
   afirmar(!errores.length, errores.join(' | '));
 });
 
+t('elemento: la r de la demostración tiene el color del resto', async (b, pg) => {
+  await abrir(pg, 'elemento.html?l=2&e=cor-mcd-resto'); await montada(pg);
+  const color = await pg.evaluate(() => { const el = document.querySelector('ol.pasos .k-ambar'); return el && getComputedStyle(el).color; });
+  const ambar = await pg.evaluate(() => { const d = document.createElement('i'); d.style.color = 'var(--ambar)'; document.body.append(d); return getComputedStyle(d).color; });
+  afirmar(color === ambar, `color de r: ${color} (ámbar ${ambar})`);
+});
+
 t('elemento: cambiar una entrada a mitad de la demostración conserva el paso', async (b, pg) => {
   await abrir(pg, FIX); await montada(pg);
   await pg.click('[data-a=adelante]');

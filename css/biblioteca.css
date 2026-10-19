@@ -156,3 +156,7 @@ ol.indice-libro .tipo { justify-self: start; }
   ol.indice-libro a { grid-template-columns: 3ch 1fr; }
   ol.indice-libro .nombre { grid-column: 2; }
 }
+
+/* símbolos de la demostración con el color de su pieza en el dibujo */
+.k-ambar { color: var(--ambar); } .k-cian { color: var(--cian); } .k-ciruela { color: var(--ciruela); }
+.k-violeta { color: var(--violeta); } .k-verde { color: var(--verde); }

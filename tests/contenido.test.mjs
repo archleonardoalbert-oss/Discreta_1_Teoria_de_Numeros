@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import libro from '../libros/2/contenido.js';
-import { MACROS } from '../motor/macros.js';
+import { MACROS, TRUST } from '../motor/macros.js';
 
 const katex = createRequire(import.meta.url)('../vendor/katex/katex.min.js');
 const IDS = ['def-mcd', 'prop-signos', 'teo-divide-mcd', 'def-primos-relativos', 'def-combinacion-lineal',
@@ -34,7 +34,7 @@ test('todas las fórmulas compilan en KaTeX y no tienen «<» pegado a una letra
   for (const e of libro.elementos)
     for (const s of textos(e))
       for (const f of formulas(s)) {
-        assert.doesNotThrow(() => katex.renderToString(f.tex, { displayMode: f.display, throwOnError: true, macros: { ...MACROS } }), `${e.id}: ${f.tex}`);
+        assert.doesNotThrow(() => katex.renderToString(f.tex, { displayMode: f.display, throwOnError: true, macros: { ...MACROS }, trust: TRUST }), `${e.id}: ${f.tex}`);
         assert.ok(!/<[A-Za-z]/.test(f.tex), `${e.id}: «<» pegado a letra en ${f.tex}`);
       }
 });
@@ -60,4 +60,11 @@ test('el enunciado de Euclides tiene todas las filas del PDF', () => {
 test('la demostración añadida de cor-multiplo-mcm cubre a y b con signo', () => {
   const t = libro.elementos.find((x) => x.id === 'cor-multiplo-mcm').pasos.map((p) => p.texto).join(' ');
   assert.ok(t.includes('|a|') && t.includes('|b|'), t);
+});
+
+test('el resto r se colorea igual en la demostración que en el dibujo', () => {
+  for (const id of ['cor-mcd-resto', 'teo-menor-combinacion']) {
+    const t = libro.elementos.find((x) => x.id === id).pasos.map((p) => p.texto).join(' ');
+    assert.ok(t.includes(String.raw`\cResto{r}`), id);
+  }
 });
