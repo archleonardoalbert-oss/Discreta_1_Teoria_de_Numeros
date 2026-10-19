@@ -1,0 +1,35 @@
+@import url('../vendor/fuentes/fuentes.css'); /* todo local: la biblioteca funciona sin conexión */
+
+/* ============ tokens: biblioteca nocturna (más oscura que el curso DP, acentos apagados) ============ */
+:root {
+  --fondo: #000;
+  --panel: #040406;
+  --panel-2: #030304;
+  --borde: #121420;
+  --borde-2: #1d2132;
+  --texto: #d6d1c2;
+  --texto-2: #a9a596;
+  --tenue: #5c6175;
+  --muy-tenue: #2c3040;
+  --cian: #3aa9bb;
+  --ciruela: #b8509f;
+  --ambar: #c99448;
+  --verde: #4aa97c;
+  --violeta: #7d6cc4;
+  --lectura: 'Lectura', Georgia, serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --t-paso: .55s;
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) { :root { --t-paso: 0s; } }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--fondo); color: var(--texto);
+  font: 18px/1.78 var(--lectura);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--cian); text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: #3aa9bb44; }
+.mono, code, input, button { font-family: var(--mono); font-variant-ligatures: none; }
