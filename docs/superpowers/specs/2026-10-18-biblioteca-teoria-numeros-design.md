@@ -61,7 +61,21 @@ PDF renderizado** (p. ej. `pdftoppm -png`), no del texto extraído.
 
 Es el «idioma» común de toda la web; se mantiene igual en todas las conferencias para no reaprenderlo.
 
-- **Recta numérica con saltos** (base de todo). `a | b` ⇔ saltando de longitud `a` desde 0 se cae exactamente en
+**Actualización 2026-10-19 (tras calificar el Libro II, palabras del usuario):** «la recta numérica es bastante
+buena pero no es suficiente». Hay **tres idiomas** y cada concepto usa el suyo:
+
+1. **Recta con saltos**: divisibilidad, división con resto, sumas, combinaciones lineales («avanzar»).
+2. **Rectángulo de cuadraditos**: todo producto `a·b` = `a` cuadraditos por `b` cuadraditos, con los lados
+   rotulados y la unidad visible. No se representan productos como saltos repetidos cuando el producto es el
+   protagonista.
+3. **Conjunto**: un contenedor `{ … }` con sus elementos y, al lado, la condición que lo define (siempre claro
+   quiénes son). Dos variantes:
+   - **Conjunto definido por una propiedad** dentro de una demostración (p. ej. `S` del PBO): elementos **solo con
+     símbolos** (`s₁, s₂, s₃, …`), dibujados **ordenados de menor a mayor desde el principio**; el PBO **solo
+     señala el de la izquierda** (el mínimo).
+   - **Conjunto concreto** (p. ej. divisores de 12): elementos con **sus números reales**, `D(12) = {1, 2, 3, 4, 6, 12}`.
+
+- **Recta numérica con saltos**. `a | b` ⇔ saltando de longitud `a` desde 0 se cae exactamente en
   `b` tras `q` saltos. Si `a ∤ b`, `r` es la distancia mínima a `b` a la que se queda sin pasarse.
 - **Negativos** (palabras del usuario): la recta se extiende a la izquierda de 0 y un coeficiente negativo
   son **saltos hacia la izquierda**. `3088·(−22)` = 22 saltos de 3088 hacia la izquierda desde 0;
