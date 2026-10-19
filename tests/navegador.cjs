@@ -151,6 +151,29 @@ t('el Libro II lista sus 22 elementos en orden', async (b, pg) => {
   afirmar(ids[0] === 'def-mcd' && ids[21] === 'cor-multiplo-mcm', `orden: ${ids[0]} … ${ids[21]}`);
 });
 
+// Recorre, para cada libro y cada elemento cuya escena ya existe, todos los pasos hacia delante y hacia atrás.
+const fs = require('node:fs');
+for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.test(d))) {
+  t(`recorrido del libro ${l}: todos los pasos sin errores, KaTeX correcto y vuelta exacta al inicio`, async (b, pg) => {
+    const { default: libro } = await import(path.join(RAIZ, 'libros', l, 'contenido.js'));
+    const hechos = libro.elementos.filter((e) => fs.existsSync(path.join(RAIZ, 'escenas', `${e.escena}.js`)));
+    afirmar(hechos.length, 'ninguna escena');
+    for (const el of hechos) {
+      const errores = await abrir(pg, `elemento.html?l=${l}&e=${el.id}`);
+      await pg.waitForFunction(() => document.querySelector('.escena svg [data-k]'));
+      const inicio = await pg.evaluate(() => [...document.querySelectorAll('.escena svg [data-k]')].map((n) => n.dataset.k).sort().join());
+      for (let i = 1; i < el.pasos.length; i++) await pg.click('[data-a=adelante]');
+      afirmar((await pg.textContent('.cuenta')) === `${el.pasos.length}/${el.pasos.length}`, `${el.id}: no llegó al último paso`);
+      for (let i = 1; i < el.pasos.length; i++) await pg.click('[data-a=atras]');
+      await pg.waitForTimeout(800);
+      const vuelta = await pg.evaluate(() => [...document.querySelectorAll('.escena svg [data-k]')].map((n) => n.dataset.k).sort().join());
+      afirmar(vuelta === inicio, `${el.id}: al volver al paso 1 los nodos no coinciden`);
+      afirmar(!(await pg.locator('.katex-error').count()), `${el.id}: fórmula KaTeX rota`);
+      afirmar(!errores.length, `${el.id}: ${errores.join(' | ')}`);
+    }
+  });
+}
+
 // ---------------------------------------------------------------- ejecución
 
 (async () => {

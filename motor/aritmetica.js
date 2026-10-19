@@ -80,3 +80,11 @@ export function menorCombinacionPositiva(ns, radio) {
     coefs[i]++;
   }
 }
+
+/** Divisores positivos de n (n ≠ 0), en orden creciente. */
+export function divisores(n) {
+  n = Math.abs(n);
+  const bajos = [], altos = [];
+  for (let d = 1; d * d <= n; d++) if (n % d === 0) { bajos.push(d); if (d * d !== n) altos.unshift(n / d); }
+  return [...bajos, ...altos];
+}
