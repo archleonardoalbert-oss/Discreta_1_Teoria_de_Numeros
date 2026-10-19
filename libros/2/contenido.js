@@ -283,7 +283,7 @@ export default {
     {
       id: 'teo-multiplos-comunes', tipo: 'TEO', nombre: R`Todo múltiplo común es $k\frac{a * b}{(a,b)}$`,
       enunciado: R`Sean $a, b$, $a \in \Z_+$, $b \in \Z_+$, todo múltiplo común de $a$ y $b$ se expresa como $k\frac{a * b}{(a,b)}$ donde $k \in \Z$`,
-      explicacion: R`Mide un rectángulo de $a$ por $b$ cuadraditos con bloques de lado $d = (a,b)$: el número que aparece, $\frac{ab}{d}$, es el primer punto donde coinciden los saltos de $a$ y de $b$, y todo múltiplo común es un número entero de veces ese tramo.`,
+      explicacion: R`Los saltos de $a$ y los de $b$ coinciden por primera vez en $\frac{ab}{d}$, con $d = (a,b)$. Todo múltiplo común es un número entero de veces ese tramo.`,
       pasos: [
         { texto: R`Sea $m$ múltiplo común de $a$ y $b$, entonces $m = k_1a = k_2b$` },
         { texto: R`$k_1\frac{a}{(a,b)} = k_2\frac{b}{(a,b)}$` },

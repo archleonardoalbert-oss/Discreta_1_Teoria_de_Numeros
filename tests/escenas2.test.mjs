@@ -102,3 +102,30 @@ solo('ej-coeficientes-3088', 'rellena la tabla de la conferencia y aterriza en 8
   assert.ok(ns.some((n) => n.k === 'fin:p'), 'falta el punto de llegada');
   assert.ok(textoVerde(ns, '8 = mcd(3088, 456) = 3088·(−22) + 456·149'));
 });
+
+solo('teo-solucion-general', 'con (6, 10, 8) muestra el intercambio b/d saltos de a = a/d saltos de b = 30', async () => {
+  const esc = await cargar('teo-solucion-general');
+  assert.ok(esc.validar({ a: 6, b: 10, c: 7 }), 'sin solución debe avisar');
+  const ns = ultimo(esc, { a: 6, b: 10, c: 8 }, 9);
+  assert.ok(textos(ns).includes('= 30'), textos(ns));
+  assert.ok(textoVerde(ns, 'x = '));
+});
+
+solo('def-mcm', 'con (4, 6) termina en 12 y rechaza a = 0', async () => {
+  const esc = await cargar('def-mcm');
+  assert.ok(esc.validar({ a: 0, b: 6 }));
+  assert.ok(textoVerde(ultimo(esc, { a: 4, b: 6 }, 4), '= 12'));
+});
+
+solo('teo-multiplos-comunes', 'con (4, 6) concluye m = k·ab/d con ab/d = 12', async () => {
+  assert.ok(textoVerde(ultimo(await cargar('teo-multiplos-comunes'), { a: 4, b: 6 }, 5), '12'));
+});
+
+solo('cor-mcm-mcd', 'con (4, 6) rotula 12 × 2 = 24', async () => {
+  const ns = ultimo(await cargar('cor-mcm-mcd'), { a: 4, b: 6 }, 4);
+  assert.ok(textos(ns).includes('12 × 2 = 24'), textos(ns));
+});
+
+solo('cor-multiplo-mcm', 'con (4, 6) los múltiplos comunes son saltos de 12', async () => {
+  assert.ok(textoVerde(ultimo(await cargar('cor-multiplo-mcm'), { a: 4, b: 6 }, 3), '12, 24, 36'));
+});
