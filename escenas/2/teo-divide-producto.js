@@ -23,11 +23,11 @@ export default escenaPorCapas({
     const P = producto(bs.slice(1)), lado = Math.max(4, Math.min(16, Math.floor(ANCHO_MAX / P), Math.floor(ALTO_MAX / bs[0])));
     return { P, lado, ...coeficientes(a, bs[0]) };
   },
-  alto: ({ bs, lado }) => Y + bs[0] * lado + 48,
+  alto: ({ bs, lado }) => Y + bs[0] * lado + 40,
   capas: [
     ({ a, bs, P, lado, x, y }) => [
       ...rectangulo('q', { x: X, y: Y, filas: bs[0], cols: P, lado, c: 'tenue', etiquetaFilas: `b₁ = ${bs[0]}`, etiquetaCols: `${bs.slice(1).join('·')} = ${P}` }),
-      rotulo('dim', 24, Y - 30, `${bs[0]} filas × ${P} columnas = ${bs[0] * P}`, 'texto'),
+      rotulo('dim', X, Y + bs[0] * lado + 22, `${bs[0]} filas × ${P} columnas = ${bs[0] * P}`, 'texto'),
       nota('n0', 0, `${a} | ${bs[0]}·${P};  (${a}, ${bs[0]}) = 1:  ${por(a, x)} + ${por(bs[0], y)} = 1`),
     ],
     ({ a, bs, P, x, y }) => [nota('n1', 1, `· ${P}:  ${a}·${P}·${x < 0 ? `(${x})` : x} + ${bs[0]}·${P}·${y < 0 ? `(${y})` : y} = ${P}`)],

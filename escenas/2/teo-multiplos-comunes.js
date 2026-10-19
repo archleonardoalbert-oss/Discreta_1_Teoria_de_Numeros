@@ -27,17 +27,19 @@ export default escenaPorCapas({
     ],
     ({ a, b, d, k1, k2 }) => [nota('n1', 1, `÷ d = ${d}:  k₁·(a/d) = k₂·(b/d):  ${k1}·${a / d} = ${k2}·${b / d}`)],
     ({ a, b, d, k1 }) => [nota('n2', 2, `b/d = ${b / d} | k₁·(a/d) = ${k1}·${a / d}  y  (${a / d}, ${b / d}) = 1`)],
-    ({ b, d, k1 }) => [nota('n3', 3, `⇒ b/d | k₁:  k₁ = k·(b/d) = ${k1 / (b / d)}·${b / d}`)],
-    ({ a, b, d, L, m, lado, p }) => {
+    ({ a, b, d, k1, L, lado }) => {
       const tira = b / d;     // las b columnas en d tiras de b/d columnas: una tira tiene a·(b/d) = ab/d cuadraditos
       const celdas = rectangulo('R', { x: RX, y: RY, filas: a, cols: b, lado, c: 'tenue', etiquetaFilas: `a = ${a}`, etiquetaCols: `b = ${b}` })
         .map((n) => { const k = /^R:c\d+-(\d+)$/.exec(n.k); if (!k) return n; const j = Math.floor(k[1] / tira); return { ...n, c: j === 0 ? 'verde' : j % 2 ? 'violeta' : 'tenue' }; });
       return [
-        ...carril('ll', p, YL, { salto: L, n: K, c: 'verde', etiqueta: `saltos de ab/d = ${a}·${b}/${d} = ${L}` }),
+        nota('n3', 3, `⇒ b/d | k₁:  k₁ = k·(b/d) = ${k1 / tira}·${tira},  y m = k₁·a = k·a·(b/d)`),
         ...celdas,
-        rotulo('Rt', RX, RY + a * lado + 22, `${d} tiras de b/d = ${tira} columnas; una tira: a·(b/d) = ${a}·${tira} = ab/d = ${L}`, 'verde'),
-        rotulo('res', ANCHO / 2, RY + a * lado + 54, `m = k·ab/(a,b) = ${K}·${L} = ${m}`, 'verde', 'middle'),
+        rotulo('Rt', RX, RY + a * lado + 22, `${d} ${d === 1 ? 'tira' : 'tiras'} de b/d = ${tira} columnas; una tira: a·(b/d) = ${a}·${tira} = ab/d = ${L}`, 'verde'),
       ];
     },
+    ({ a, b, d, L, m, lado, p }) => [
+      ...carril('ll', p, YL, { salto: L, n: K, c: 'verde', etiqueta: `saltos de ab/d = ${a}·${b}/${d} = ${L}` }),
+      rotulo('res', ANCHO / 2, RY + a * lado + 54, `m = k·ab/(a,b) = ${K}·${L} = ${m}`, 'verde', 'middle'),
+    ],
   ],
 });

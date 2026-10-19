@@ -183,3 +183,27 @@ solo('cor-mcm-mcd', 'los rectángulos rotulan sus lados', async () => {
   const t = textos(ultimo(await cargar('cor-mcm-mcd'), { a: 4, b: 6 }, 4));
   for (const s of ['|a| = 4', '|b| = 6', '(a,b) = 2', '[a,b] = 12']) assert.ok(t.includes(s), s);
 });
+
+solo('teo-menor-combinacion', 'el orden de S se ve escrito: s₁ < s₂ < s₃ < …', async () => {
+  assert.ok(textos((await cargar('teo-menor-combinacion')).estado({ ns: [12, 18, 30] }, 3)).includes('s₁ < s₂ < s₃ < …'));
+});
+
+const nuevasClaves = (esc, e, i) => { const antes = new Set(esc.estado(e, i - 1).map((n) => n.k)); return esc.estado(e, i).filter((n) => !antes.has(n.k)).map((n) => n.k); };
+
+solo('teo-multiplos-comunes', 'el rectángulo llega en su propio paso (k₁ = k·b/d) y el último solo añade el salto ab/d y la conclusión', async () => {
+  const esc = await cargar('teo-multiplos-comunes'), e = { a: 4, b: 6 };
+  assert.ok(nuevasClaves(esc, e, 3).some((k) => k.startsWith('R:c')), 'el rectángulo no aparece en el paso 4');
+  assert.ok(!nuevasClaves(esc, e, 4).some((k) => k.startsWith('R:')), 'el último paso vuelve a meter el rectángulo');
+  assert.ok(textos(esc.estado({ a: 3, b: 5 }, 4)).includes('1 tira de'), 'singular con d = 1');
+});
+
+solo('teo-divisores-comunes', 'D(a) ∩ D(b) aparece al decir «c | a y c | b» y D(d) al decir «c | d»', async () => {
+  const esc = await cargar('teo-divisores-comunes'), e = { a: 12, b: 18 };
+  assert.ok(nuevasClaves(esc, e, 1).some((k) => k.startsWith('Di:')) && !nuevasClaves(esc, e, 1).some((k) => k.startsWith('Dd:')));
+  assert.ok(nuevasClaves(esc, e, 2).some((k) => k.startsWith('Dd:')));
+});
+
+solo('def-primos-relativos', 'el último paso solo añade la intersección y la conclusión', async () => {
+  const k = nuevasClaves(await cargar('def-primos-relativos'), { a: 8, b: 15 }, 3);
+  assert.ok(!k.some((x) => x.startsWith('lc')), `añade también el carril: ${k}`);
+});

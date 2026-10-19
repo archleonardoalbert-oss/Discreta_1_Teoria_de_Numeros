@@ -5,8 +5,7 @@ import { recta, punto, conjunto, simbolos } from '../primitivas.js';
 import { combinacionMcd, division } from '../../motor/aritmetica.js';
 
 const SY = 220, YS = 312, EJE = 372, SX = 24;
-const DEF_S = 'd > 0  y  d = a₁x₁ + a₂x₂ + … + aₙxₙ  con xᵢ enteros';
-const xPrimero = SX + [...'S = { '].length * 7.8;   // donde conjunto() escribe s₁
+const DEF_S = 'd > 0  y  d = a₁x₁ + a₂x₂ + … + aₙxₙ  con xᵢ enteros;   s₁ < s₂ < s₃ < …';
 const S = (señalado = -1) => conjunto('S', { x: SX, y: SY, nombre: 'S', elementos: simbolos('s', 3), definicion: DEF_S, señalado });
 const nombre = (i) => `a${'₁₂₃₄'[i]}`;
 
@@ -37,12 +36,15 @@ export default escenaPorCapas({
       ...carril('ls', p, YS, { salto: d, n: q, c: 'cian', etiqueta: `${nombre(0)} = s·q + r:  ${ns[0]} = ${por(d, q)} + ${ns[0] - d * q}` }),
     ],
     () => [nota('n4', 4, 'si r > 0:  r = a₁(1 − s₁q) + a₂(−s₂q) + … sería combinación positiva', 'texto')],
-    () => [
+    () => {
+      const xPrimero = S().find((n) => n.k === 'S:e0').a.x;   // donde conjunto() escribe s₁
+      return [
       nota('n5', 5, 'y r < s = s₁, pero s₁ es el menor de S: ¡contradicción!', 'ambar'),
       rotulo('S:r', xPrimero - 18, SY - 22, 'r', 'ambar'),
       linea('S:rl', xPrimero - 8, SY - 20, xPrimero - 2, SY - 12, 'ambar'),
       rotulo('S:rt', xPrimero + 4, SY - 22, '← tendría que ir antes de s₁, el mínimo: imposible', 'ambar'),
-    ],
+      ];
+    },
     ({ ns, d, p }) => [
       ...carril('ls', p, YS, { salto: d, n: Math.floor(p.max / d), c: 'cian', etiqueta: `r = 0: los saltos de s = ${d} caen en todos los aᵢ` }),
       ...carril('ls-', p, YS, { salto: d, n: -Math.floor(-p.min / d), c: 'cian' }).filter((n) => n.t === 'path'),

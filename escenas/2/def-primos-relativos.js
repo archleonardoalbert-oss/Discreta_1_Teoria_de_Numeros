@@ -1,9 +1,9 @@
 // Primos relativos: los conjuntos de divisores D(a) y D(b) solo comparten el 1.
-import { escenaPorCapas, planPara, carril, rotulo, ANCHO } from '../comun.js';
+import { escenaPorCapas, planPara, rotulo, ANCHO } from '../comun.js';
 import { recta, punto, conjunto } from '../primitivas.js';
 import { divisores, mcd } from '../../motor/aritmetica.js';
 
-const YA = 34, YB = 64, YI = 98, YL = 150, EJE = 204, X = 24;
+const YA = 34, YB = 64, YI = 98, EJE = 168, X = 24;
 const D = (id, nombre, ns, c, comunes = []) => {
   const nodos = conjunto(id, { x: X, y: id === 'Da' ? YA : YB, nombre, elementos: ns.map(String), c });
   return nodos.map((n) => (/:e\d+$/.test(n.k) && comunes.includes(Number(n.txt)) ? { ...n, c: 'verde' } : n));
@@ -27,7 +27,6 @@ export default escenaPorCapas({
     ({ a, b, d, comunes, p }) => [
       ...D('Da', `D(${a})`, divisores(a), 'cian', comunes), ...D('Db', `D(${b})`, divisores(b), 'cian', comunes),
       ...conjunto('Dab', { x: X, y: YI, nombre: `D(${a}) ∩ D(${b})`, elementos: comunes.map(String), c: d === 1 ? 'verde' : 'ambar' }),
-      ...carril('lc', p, YL, { salto: d, n: Math.floor(Math.max(a, b) / d), c: d === 1 ? 'verde' : 'ambar', etiqueta: `salto común más largo: ${d}` }),
       d === 1
         ? rotulo('res', ANCHO / 2, EJE + 46, `mcd = 1: ${a} y ${b} son primos relativos`, 'verde', 'middle')
         : rotulo('res', ANCHO / 2, EJE + 46, `mcd = ${d} ≠ 1: ${a} y ${b} no son primos relativos`, 'ambar', 'middle'),
