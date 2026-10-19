@@ -141,3 +141,14 @@ solo('teo-coeficientes', 'cada paso cambia algo con los valores por defecto y no
   const ns = esc.estado({ a: 10, b: 5 }, 4).filter((n) => n.t === 'text');
   for (const x of ns) for (const y of ns) if (x !== y) assert.ok(Math.abs(x.a.y - y.a.y) >= 16 || Math.abs(x.a.x - y.a.x) > 200, `${x.k} y ${y.k} se solapan`);
 });
+
+solo('teo-menor-combinacion', 'S es un conjunto de símbolos y el PBO señala s₁', async () => {
+  const esc = await cargar('teo-menor-combinacion'), e = { ns: [12, 18, 30] };
+  const p4 = esc.estado(e, 3);
+  assert.equal(p4.find((n) => n.k === 'S:e0')?.txt, 's₁');
+  assert.ok(!p4.some((n) => /^s\d+$/.test(n.k)), 'siguen los puntos de S en la recta');
+  const p5 = esc.estado(e, 4);
+  assert.ok(p5.some((n) => n.k === 'S:aro') && p5.find((n) => n.k === 'S:e0').c === 'ambar');
+  const p8 = esc.estado(e, 7), r = p8.find((n) => n.k === 'S:r');
+  assert.ok(r && r.c === 'ambar' && r.a.x < p8.find((n) => n.k === 'S:e0').a.x, 'r no aparece a la izquierda de s₁');
+});
