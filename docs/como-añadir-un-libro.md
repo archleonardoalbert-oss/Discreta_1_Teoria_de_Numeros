@@ -52,11 +52,17 @@ export default escenaPorCapas({
 });
 ```
 
+**Tres idiomas visuales** (decisión del usuario, spec §4): la **recta con saltos** para dividir, sumar y combinar;
+el **rectángulo de cuadraditos** para cualquier producto; el **conjunto** para «sea S = {…}». Los conjuntos definidos
+por una propiedad dentro de una demostración (el S del PBO) van **solo con símbolos** ordenados (`simbolos('s', 3)`),
+y el PBO señala el de la izquierda (`señalado: 0`). Los conjuntos concretos, como los divisores, van con sus
+números reales.
+
 Piezas disponibles:
 
 | Dónde | Qué |
 |---|---|
-| `escenas/primitivas.js` | `recta`, `saltos` (negativos hacia la izquierda; agrupa si no caben), `punto`, `llave`, `cuadricula` (con su unidad), `reglasDobles` (cambio de escala) |
+| `escenas/primitivas.js` | `recta`, `saltos` (negativos hacia la izquierda; agrupa si no caben), `punto`, `llave`, `cuadricula` (con su unidad), `rectangulo` (producto con lados rotulados), `conjunto` (con su definición; `señalado` para el PBO), `simbolos`, `reglasDobles` (cambio de escala) |
 | `escenas/comun.js` | `escenaPorCapas`, `planPara`, `carril` (fila de saltos con etiqueta), `nota` (pizarra de resultados), `rotulo`, `linea`, `filas`, `num`, `por`, `nSaltos` |
 | `escenas/piezas/` | `euclides.js` (divisiones apiladas), `coeficientes.js` (tabla Aᵢ, Bᵢ), `multiplos.js` (dos saltadores y coincidencias) |
 | `motor/aritmetica.js` | `division`, `mcd`, `mcm`, `divisores`, `euclides`, `coeficientes`, `combinacionMcd`, `diofantica` |
@@ -71,6 +77,7 @@ texto del paso tienen que estar escritos en el dibujo.
 node --test 'tests/*.test.mjs'      # incluye el test genérico de TODAS las escenas de todos los libros
 tests/navegador.sh                  # recorre cada paso de cada libro en Chromium sin ventana
 herramientas/ver.sh 'elemento.html?l=1&e=teo-algo' salida.png 3   # render de un paso para revisarlo
+node herramientas/fuzz-textos.mjs 1     # miles de entradas aleatorias: ningún texto fuera de la vista
 ```
 
 El test genérico (`tests/escenas.test.mjs`) comprueba en cada escena, con valores por defecto y aleatorios,
