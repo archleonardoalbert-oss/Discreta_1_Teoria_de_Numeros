@@ -44,6 +44,29 @@ t('sin internet: ninguna petición sale del servidor local y las fuentes cargan'
   } finally { await ctx.close(); }
 });
 
+t('pintar reconcilia por clave: A → B → A deja exactamente A, con «nuevo» solo en lo cambiado', async (b, pg) => {
+  const errores = await abrir(pg, 'tests/paginas/svg.html');
+  await pg.waitForFunction(() => window.listo);
+  const A = [
+    { k: 'eje', t: 'line', a: { x1: 10, y1: 100, x2: 390, y2: 100 }, c: 'tenue', fijo: true },
+    { k: 'p', t: 'circle', a: { cx: 50, cy: 100, r: 5 }, c: 'ciruela' },
+    { k: 'arco', t: 'path', a: { d: 'M 10 100 Q 30 60 50 100' }, c: 'cian' },
+    { k: 'tx', t: 'text', a: { x: 50, y: 80 }, txt: 'a = 17', c: 'ciruela' },
+  ];
+  const B = [A[0], { ...A[1], a: { cx: 120, cy: 100, r: 5 } }, A[3], { k: 'nuevo', t: 'rect', a: { x: 5, y: 5, width: 20, height: 20 }, c: 'ambar' }];
+  for (const estado of [A, B, A]) await pg.evaluate((e) => window.prueba(e), estado);
+  await pg.waitForTimeout(1000);
+  const dom = await pg.evaluate(() => [...document.querySelectorAll('#s [data-k]')].map((n) => ({ k: n.dataset.k, nuevo: n.classList.contains('nuevo') })));
+  afirmar(JSON.stringify(dom.map((d) => d.k).sort()) === JSON.stringify(A.map((n) => n.k).sort()), `claves en el DOM: ${dom.map((d) => d.k)}`);
+  const esperados = (await pg.evaluate(([x, y]) => window.nuevos(x, y), [B, A])).sort();
+  const marcados = dom.filter((d) => d.nuevo).map((d) => d.k).sort();
+  afirmar(JSON.stringify(marcados) === JSON.stringify(esperados), `nuevos ${marcados} ≠ esperados ${esperados}`);
+  const cx = await pg.evaluate(() => getComputedStyle(document.querySelector('#s [data-k=p]')).cx);
+  afirmar(cx === '50px', `el punto no volvió a cx=50 (cx=${cx})`);
+  afirmar(await pg.evaluate(() => document.querySelector('#s [data-k=tx]').textContent) === 'a = 17', 'texto del rótulo');
+  afirmar(!errores.length, errores.join(' | '));
+});
+
 // ---------------------------------------------------------------- ejecución
 
 (async () => {

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>prueba svg</title>
+<link rel="icon" href="../../favicon.svg"><link rel="stylesheet" href="../../css/biblioteca.css"></head>
+<body><div class="escena"><svg id="s" viewBox="0 0 400 200" width="400" height="200"></svg></div>
+<script type="module">
+import { pintar } from '../../motor/svg.js';
+import { marcarNuevos } from '../../motor/nodos.js';
+const svg = document.getElementById('s');
+let previo = null;
+window.prueba = (actual) => { pintar(svg, previo, actual, { animar: true }); previo = actual; };
+window.nuevos = (a, b) => [...marcarNuevos(a, b)];
+window.listo = true;
+</script></body></html>

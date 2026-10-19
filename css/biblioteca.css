@@ -33,3 +33,23 @@ a { color: var(--cian); text-decoration: none; }
 a:hover { text-decoration: underline; }
 ::selection { background: #3aa9bb44; }
 .mono, code, input, button { font-family: var(--mono); font-variant-ligatures: none; }
+
+/* ============ escena SVG ============ */
+.escena svg { display: block; width: 100%; height: auto; overflow: visible; font: 13px var(--mono); font-variant-ligatures: none; }
+.c-cian { --c: var(--cian); } .c-ciruela { --c: var(--ciruela); } .c-ambar { --c: var(--ambar); }
+.c-verde { --c: var(--verde); } .c-violeta { --c: var(--violeta); } .c-tenue { --c: var(--tenue); }
+.c-muy-tenue { --c: var(--muy-tenue); } .c-texto { --c: var(--texto); }
+.escena [data-k] {
+  transition: opacity var(--t-paso), cx var(--t-paso), cy var(--t-paso), r var(--t-paso), x var(--t-paso), y var(--t-paso),
+              width var(--t-paso), height var(--t-paso), d var(--t-paso), stroke-dashoffset var(--t-paso), fill var(--t-paso), stroke var(--t-paso);
+}
+.escena text[data-k] { fill: var(--c); stroke: none; }
+.escena circle[data-k] { fill: var(--c); stroke: none; }
+.escena path[data-k], .escena line[data-k] { fill: none; stroke: var(--c); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.escena rect[data-k] { fill: color-mix(in srgb, var(--c) 30%, transparent); stroke: var(--c); stroke-width: 1; }
+.escena .fijo { opacity: 1; }
+.escena .hecho { opacity: .62; }
+.escena .nuevo { opacity: 1; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--c) 70%, transparent)); }
+.escena .entra { opacity: 0; stroke-dashoffset: 1; }
+.escena .sale { opacity: 0; }
+.escena .sin-anim [data-k] { transition: none; }
