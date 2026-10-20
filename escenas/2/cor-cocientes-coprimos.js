@@ -1,9 +1,11 @@
 // a/d y b/d son primos relativos: en una regla donde cada marca vale d, ya no queda salto común mayor que 1.
-import { escenaPorCapas, planPara, carril, rotulo, nota, por, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, carril, rotulo, nota, por, ANCHO } from '../comun.js';
 import { recta, punto, reglasDobles } from '../primitivas.js';
 import { combinacionMcd } from '../../motor/aritmetica.js';
 
 const EJE = 236;
+
+const ALTO0 = () => EJE + 60;
 
 export default escenaPorCapas({
   entradas: [
@@ -14,9 +16,9 @@ export default escenaPorCapas({
     const { d, coefs } = combinacionMcd([a, b]);
     return { d, coefs, A: a / d, B: b / d, k: Math.max(a, b) / d, p: planPara([a, b]) };
   },
-  alto: EJE + 60,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p }) => recta('eje', p, EJE),
-  capas: [
+  capas: conPuentes([
     ({ a, b, d, coefs, p }) => [
       ...punto('pa', p, a, EJE, { c: 'ciruela', etiqueta: `a = ${a}` }),
       ...punto('pb', p, b, EJE, { c: 'ciruela', etiqueta: `b = ${b}` }),
@@ -30,5 +32,7 @@ export default escenaPorCapas({
     ],
     ({ A, B }) => [nota('n2', 2, `todo divisor común de ${A} y ${B} divide a 1`)],
     ({ A, B }) => [rotulo('res', ANCHO / 2, EJE + 52, `mcd(a/d, b/d) = mcd(${A}, ${B}) = 1: son primos relativos`, 'verde', 'middle')],
-  ],
+  ], {
+    1: () => ['d | a y d | b: a/d y b/d son enteros; se divide entre d ≠ 0', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

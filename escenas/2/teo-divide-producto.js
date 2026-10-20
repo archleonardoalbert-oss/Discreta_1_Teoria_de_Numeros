@@ -1,10 +1,12 @@
 // a | b₁·b₂⋯bₙ y a primo relativo con b₁ … bₙ₋₁ ⇒ a | bₙ. El producto como rectángulo de b₁ filas × (b₂⋯bₙ) columnas.
-import { escenaPorCapas, rotulo, nota, por, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, nota, por, ANCHO } from '../comun.js';
 import { cuadricula, rectangulo } from '../primitivas.js';
 import { mcd, coeficientes } from '../../motor/aritmetica.js';
 
 const X = 110, Y = 168, ANCHO_MAX = ANCHO - 190, ALTO_MAX = 150;
 const producto = (xs) => xs.reduce((s, v) => s * v, 1);
+
+const ALTO0 = ({ bs, lado }) => Y + bs[0] * lado + 40;
 
 export default escenaPorCapas({
   entradas: [
@@ -23,8 +25,8 @@ export default escenaPorCapas({
     const P = producto(bs.slice(1)), lado = Math.max(4, Math.min(16, Math.floor(ANCHO_MAX / P), Math.floor(ALTO_MAX / bs[0])));
     return { P, lado, ...coeficientes(a, bs[0]) };
   },
-  alto: ({ bs, lado }) => Y + bs[0] * lado + 40,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ a, bs, P, lado, x, y }) => [
       ...rectangulo('q', { x: X, y: Y, filas: bs[0], cols: P, lado, c: 'tenue', etiquetaFilas: `b₁ = ${bs[0]}`, etiquetaCols: `${bs.slice(1).join('·')} = ${P}` }),
       rotulo('dim', X, Y + bs[0] * lado + 22, `${bs[0]} filas × ${P} columnas = ${bs[0] * P}`, 'texto'),
@@ -38,5 +40,8 @@ export default escenaPorCapas({
     ],
     ({ a, bs, P }) => [nota('n3', 3, `caso general: ${a} | ${bs[0]}·(${bs.slice(1).join('·')}) y (${a}, ${bs[0]}) = 1 ⇒ ${a} | ${P}`)],
     ({ a, bs }) => [rotulo('res', ANCHO / 2, 28 + 4 * 22, `quitando b₂ … bₙ₋₁ uno a uno:  ${a} | ${bs.at(-1)}`, 'verde', 'middle')],
-  ],
+  ], {
+    2: () => ['a | ab₂x (tiene el factor a) y a | b₁b₂y (hipótesis)', 'texto'],
+    4: () => ['es una inducción en el número de factores', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

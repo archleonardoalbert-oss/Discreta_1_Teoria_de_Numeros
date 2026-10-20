@@ -1,6 +1,6 @@
 // El mcd es la menor combinación lineal positiva. S es un conjunto de símbolos ordenados (c₁ < c₂ < …; s₁, s₂ son
 // los coeficientes de la conferencia): el PBO señala c₁ = s; un resto r > 0 tendría que ir a su izquierda (contradicción); y s cae en todos los aᵢ.
-import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, num, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, carril, rotulo, linea, nota, por, num, ANCHO } from '../comun.js';
 import { recta, punto, conjunto, simbolos } from '../primitivas.js';
 import { combinacionMcd, division } from '../../motor/aritmetica.js';
 
@@ -8,6 +8,8 @@ const SY = 238, YS = 328, EJE = 388, SX = 24;
 const DEF_S = 'd > 0  y  d = a₁x₁ + a₂x₂ + … + aₙxₙ  con xᵢ enteros;   c₁ < c₂ < c₃ < …';
 const S = (señalado = -1) => conjunto('S', { x: SX, y: SY, nombre: 'S', elementos: simbolos('c', 3), definicion: DEF_S, señalado });
 const nombre = (i) => `a${'₁₂₃₄'[i]}`;
+
+const ALTO0 = () => EJE + 84;
 
 export default escenaPorCapas({
   entradas: [{ id: 'ns', etiqueta: 'a₁…aₙ', valor: [12, 18, 30], min: -60, max: 60, lista: { min: 2, max: 4 } }],
@@ -18,9 +20,9 @@ export default escenaPorCapas({
     const p = planPara([...ns, -M, M]);
     return { d, coefs, p, suma: ns.reduce((s, v) => s + v * v, 0), ...division(ns[0], d) };
   },
-  alto: EJE + 84,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p }) => recta('eje', p, EJE),
-  capas: [
+  capas: conPuentes([
     ({ ns, p }) => [
       ...ns.flatMap((v, i) => punto(`a${i}`, p, v, EJE, { c: 'ciruela', etiqueta: `${nombre(i)} = ${v}` })),
       nota('n0', 0, `a₁x₁ + … + aₙxₙ con a = (${ns.join(', ')})`),
@@ -62,5 +64,9 @@ export default escenaPorCapas({
     ({ ns }) => [nota('n6', 7, `d = mayor divisor común de (${ns.join(', ')})  ⇒  s ≤ d`)],
     () => [nota('n7', 8, 'd divide a toda combinación lineal ⇒ d | s ⇒ d ≤ s')],
     ({ ns, d }) => [rotulo('res', ANCHO / 2, EJE + 78, `d ≤ s ≤ d:  s = d = ${d} = mcd(${ns.join(', ')})`, 'verde', 'middle')],
-  ],
+  ], {
+    2: () => ['cada aᵢ² ≥ 0 y aₖ² > 0: la suma es al menos aₖ² > 0', 'texto'],
+    6: () => ['se agrupa por aᵢ: los coeficientes 1 − s₁q, −s₂q, … son enteros', 'texto'],
+    10: () => ['d | aᵢ ⇒ d | aᵢxᵢ ⇒ d divide a la suma, y s es una suma así', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

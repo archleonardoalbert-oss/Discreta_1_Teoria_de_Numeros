@@ -1,9 +1,11 @@
 // Solución general: desde (x₀, y₀) se puede añadir b/d saltos de a y quitar a/d saltos de b (miden lo mismo, ab/d).
-import { escenaPorCapas, planPara, carril, rotulo, rotuloDentro, linea, nota, por, num, nSaltos, elegir, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, carril, rotulo, rotuloDentro, linea, nota, por, num, nSaltos, elegir, ANCHO } from '../comun.js';
 import { recta, punto } from '../primitivas.js';
 import { diofantica } from '../../motor/aritmetica.js';
 
 const Y = [236, 284, 340, 388], EJE = 450;
+
+const ALTO0 = () => EJE + 60;
 
 export default escenaPorCapas({
   entradas: [
@@ -20,9 +22,9 @@ export default escenaPorCapas({
     const x1 = x0 + pasoX, y1 = y0 - pasoY, L = a * pasoX;
     return { x0, y0, d, pasoX, pasoY, x1, y1, L, p: planPara([c, a * x0, L, a * x1]) };
   },
-  alto: EJE + 60,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p }) => recta('eje', p, EJE),
-  capas: [
+  capas: conPuentes([
     ({ a, b, c, x0, y0, p }) => [
       ...carril('s1', p, Y[0], { salto: a, n: x0, c: 'cian', etiqueta: `x₀ = ${num(x0)}: ${nSaltos(x0, a)}` }),
       ...carril('s2', p, Y[1], { salto: b, n: y0, desde: a * x0, c: 'cian', etiqueta: `y₀ = ${num(y0)}: ${nSaltos(y0, b)}` }),
@@ -47,5 +49,10 @@ export default escenaPorCapas({
       const pares = (ks) => ks.map((k) => `(${num(x0 + k * pasoX)}, ${num(y0 - k * pasoY)})`).join(' ');
       return [rotulo('res', ANCHO / 2, EJE + 50, elegir([`${general}:  ${pares([-1, 0, 1, 2])} …`, `${general}:  ${pares([0, 1])} …`, general], ANCHO - 8), 'verde', 'middle')];
     },
-  ],
+  ], {
+    1: () => ['a·k·b/d − b·k·a/d = 0: la suma no cambia', 'texto'],
+    3: () => ['se divide entre (a, b) para tener coeficientes coprimos', 'texto'],
+    6: () => ['m | n·x y (m, n) = 1 ⇒ m | x', 'texto'],
+    7: () => ['sustituyendo x₁ y dividiendo entre b/(a,b) sale y₁', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

@@ -1,9 +1,11 @@
 // Divisores comunes = divisores del mcd: los saltos comunes caen en d, y los que caen en d caen en a y b.
-import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, carril, rotulo, linea, nota, por, ANCHO } from '../comun.js';
 import { recta, punto, conjunto } from '../primitivas.js';
 import { divisores, combinacionMcd } from '../../motor/aritmetica.js';
 
 const MAX = 4, DY = 46, Y0 = 92;
+
+const ALTO0 = ({ ejeY }) => ejeY + 120;
 
 export default escenaPorCapas({
   entradas: [
@@ -15,9 +17,9 @@ export default escenaPorCapas({
     const todos = divisores(d), mostrados = todos.slice(-MAX);
     return { d, coefs, todos, mostrados, p: planPara([a, b]), ejeY: Y0 + mostrados.length * DY };
   },
-  alto: ({ ejeY }) => ejeY + 120,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p, ejeY }) => recta('eje', p, ejeY),
-  capas: [
+  capas: conPuentes([
     ({ a, b, d, coefs, p, ejeY }) => [
       ...punto('pa', p, a, ejeY, { c: 'ciruela', etiqueta: `a = ${a}` }),
       ...punto('pb', p, b, ejeY, { c: 'ciruela', etiqueta: `b = ${b}` }),
@@ -40,5 +42,7 @@ export default escenaPorCapas({
       ...conjunto('Dd', { x: 24, y: ejeY + 74, nombre: `D(${d})`, elementos: todos.map(String), c: 'verde' }),
       rotulo('res', ANCHO / 2, ejeY + 108, `D(${a}) ∩ D(${b}) = D(${d}): son el mismo conjunto`, 'verde', 'middle'),
     ],
-  ],
+  ], {
+    1: () => ['c | a ⇒ c | ax;  c | b ⇒ c | by;  y divide a la suma', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

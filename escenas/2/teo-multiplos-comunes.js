@@ -1,11 +1,13 @@
 // Todo múltiplo común es k·ab/(a,b): m = k₁a = k₂b, se divide por d y la coprimalidad obliga a b/d | k₁.
-import { escenaPorCapas, carril, rotulo, nota, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, carril, rotulo, nota, ANCHO } from '../comun.js';
 import { planRecta } from '../../motor/escala.js';
 import { recta, punto, rectangulo } from '../primitivas.js';
 import { dosSaltadores } from '../piezas/multiplos.js';
 import { mcd } from '../../motor/aritmetica.js';
 
 const YA = 150, YB = 198, YL = 246, EJE = 304, K = 2, RX = 110, RY = EJE + 74;
+
+const ALTO0 = ({ a, lado }) => RY + a * lado + 76;
 
 export default escenaPorCapas({
   entradas: [
@@ -17,9 +19,9 @@ export default escenaPorCapas({
     const lado = Math.max(3, Math.min(14, Math.floor(420 / b), Math.floor(160 / a)));
     return { d, L, m, k1: m / a, k2: m / b, lado, p: planRecta({ min: -m * 0.04, max: m * 1.06, ancho: ANCHO }) };
   },
-  alto: ({ a, lado }) => RY + a * lado + 76,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p }) => recta('eje', p, EJE),
-  capas: [
+  capas: conPuentes([
     ({ a, b, m, k1, k2, p }) => [
       ...dosSaltadores(p, { a, b, hasta: m, yA: YA, yB: YB }),
       ...punto('pm', p, m, EJE, { c: 'ciruela', etiqueta: `m = ${m}` }),
@@ -41,5 +43,7 @@ export default escenaPorCapas({
       ...carril('ll', p, YL, { salto: L, n: K, c: 'verde', etiqueta: `saltos de ab/d = ${a}·${b}/${d} = ${L}` }),
       rotulo('res', ANCHO / 2, RY + a * lado + 54, `m = k·ab/(a,b) = ${K}·${L} = ${m}`, 'verde', 'middle'),
     ],
-  ],
+  ], {
+    1: () => ['se dividió k₁a = k₂b entre (a, b): coeficientes coprimos', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

@@ -1,10 +1,12 @@
 // ax + by = c tiene solución ⇔ (a,b) | c. Con saltos de a y b solo se aterriza en múltiplos de d;
 // y a c = k·d se llega repitiendo k veces la combinación que da d.
-import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, num, nSaltos, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, carril, rotulo, linea, nota, por, num, nSaltos, ANCHO } from '../comun.js';
 import { recta, punto, llave } from '../primitivas.js';
 import { combinacionMcd } from '../../motor/aritmetica.js';
 
 const Y1 = 166, Y2 = 214, EJE = 276, MAX_PUNTOS = 60;
+
+const ALTO0 = () => EJE + 92;
 
 export default escenaPorCapas({
   entradas: [
@@ -19,9 +21,9 @@ export default escenaPorCapas({
     const ext = k === null ? [c] : [c, a * x0, a * x0 * k, d];
     return { d, x0, y0, k, p: planPara(ext) };
   },
-  alto: EJE + 92,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p }) => recta('eje', p, EJE),
-  capas: [
+  capas: conPuentes([
     ({ c, d, p }) => {
       const puntos = [];
       for (let m = Math.ceil(p.min / d) * d; m <= p.max && puntos.length < MAX_PUNTOS; m += d)
@@ -52,5 +54,8 @@ export default escenaPorCapas({
         linea('g2', p.x(c), Y2, p.x(c), EJE),
         rotulo('res', ANCHO / 2, EJE + 84, `k = ${num(k)}:  ${por(a, x0 * k)} + ${por(b, y0 * k)} = ${num(c)}`, 'verde', 'middle'),
       ],
-  ],
+  ], {
+    1: () => ['d | a y d | b ⇒ d | ax + by (divisores comunes)', 'texto'],
+    3: () => ['Bézout: el mcd es combinación lineal de a y b', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });
