@@ -3,6 +3,7 @@
 import { pintar } from './svg.js';
 import { crearEntradas } from './entradas.js';
 import { MACROS, TRUST } from './macros.js';
+import { moverCamara } from './camara.js';
 
 export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedades', EJ: 'Ejemplo', MET: 'Método' };
 // Significado fijo de cada color en todas las escenas (una escena puede precisarlo con `leyenda`).
@@ -81,7 +82,9 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
 
   const dibujar = (animar) => {
     const { ancho, alto } = escena.vista(e);
-    svg.setAttribute('viewBox', `0 0 ${ancho} ${alto}`);
+    // la escena puede acercar la cámara a una zona en un paso (zoom); si no, se ve entera
+    const ms = animar && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 750 : 0;
+    moverCamara(svg, escena.camara?.(e, paso) ?? [0, 0, ancho, alto], ms);
     svg.setAttribute('aria-label', `${elemento.nombre}, paso ${paso + 1} de ${N}`);
     const actual = escena.estado(e, paso);
     // lo «nuevo» es lo que introduce este paso respecto al anterior, venga de donde venga el usuario

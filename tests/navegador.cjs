@@ -78,7 +78,7 @@ t('pintar: «ref» enciende una pieza anterior y «supuesto» la dibuja punteada
     { k: 'r', t: 'line', a: { x1: 0, y1: 10, x2: 50, y2: 10 }, c: 'ambar', ref: true },
     { k: 'h', t: 'line', a: { x1: 0, y1: 30, x2: 50, y2: 30 }, c: 'ambar', supuesto: true },
   ]));
-  await pg.waitForTimeout(700);
+  await pg.waitForTimeout(1100);
   const r = await pg.evaluate(() => { const el = document.querySelector('#s [data-k=r]'); return { ref: el.classList.contains('ref'), op: getComputedStyle(el).opacity }; });
   afirmar(r.ref && r.op === '1', `ref: ${JSON.stringify(r)}`);
   const dash = await pg.evaluate(() => getComputedStyle(document.querySelector('#s [data-k=h]')).strokeDasharray);
@@ -88,6 +88,60 @@ t('pintar: «ref» enciende una pieza anterior y «supuesto» la dibuja punteada
 const FIX = 'elemento.html?base=tests/paginas/&l=0&e=division';
 const cuenta = (pg) => pg.textContent('.cuenta');
 const montada = (pg) => pg.waitForFunction(() => document.querySelector('.escena svg [data-k]'));
+
+t('cinemática: lo que nace «desde» otra pieza parte de su posición y llega a la suya', async (b, pg) => {
+  await abrir(pg, 'tests/paginas/svg.html');
+  await pg.waitForFunction(() => window.listo);
+  await pg.evaluate(() => window.prueba([{ k: 'src', t: 'circle', a: { cx: 20, cy: 20, r: 6 }, c: 'cian' }]));
+  const inicial = await pg.evaluate(() => {
+    window.prueba([{ k: 'src', t: 'circle', a: { cx: 20, cy: 20, r: 6 }, c: 'cian' }, { k: 'hijo', t: 'rect', a: { x: 200, y: 100, width: 30, height: 30 }, c: 'ambar', desde: 'src' }]);
+    return document.querySelector('#s [data-k=hijo]').style.transform;
+  });
+  afirmar(inicial.includes('translate'), `no parte de la pieza origen: «${inicial}»`);
+  await pg.waitForTimeout(1500);
+  const final = await pg.evaluate(() => getComputedStyle(document.querySelector('#s [data-k=hijo]')).transform);
+  afirmar(final === 'none', `no llegó a su sitio: ${final}`);
+});
+
+t('cinemática: las piezas nuevas aparecen escalonadas (a mitad, las primeras ya se ven más que las últimas)', async (b, pg) => {
+  await abrir(pg, 'tests/paginas/svg.html');
+  await pg.waitForFunction(() => window.listo);
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' }]));
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' },
+    ...Array.from({ length: 20 }, (_, i) => ({ k: `n${i}`, t: 'circle', a: { cx: 20 + 15 * i, cy: 20, r: 5 }, c: 'cian' }))]));
+  await pg.waitForTimeout(300);
+  const [primera, ultima] = await pg.evaluate(() => ['n0', 'n19'].map((k) => Number(getComputedStyle(document.querySelector(`#s [data-k=${k}]`)).opacity)));
+  afirmar(primera > ultima + 0.1, `opacidades a los 300 ms: n0 ${primera}, n19 ${ultima}`);
+});
+
+t('cinemática: «orden» agrupa la entrada por significado (los del mismo orden a la vez)', async (b, pg) => {
+  await abrir(pg, 'tests/paginas/svg.html');
+  await pg.waitForFunction(() => window.listo);
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' }]));
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' },
+    { k: 'a1', t: 'circle', a: { cx: 20, cy: 20, r: 5 }, c: 'cian', orden: 0 }, { k: 'a2', t: 'circle', a: { cx: 40, cy: 20, r: 5 }, c: 'cian', orden: 0 },
+    { k: 'b1', t: 'circle', a: { cx: 60, cy: 20, r: 5 }, c: 'cian', orden: 3 }]));
+  await pg.waitForTimeout(250);
+  const [a1, a2, b1] = await pg.evaluate(() => ['a1', 'a2', 'b1'].map((k) => Number(getComputedStyle(document.querySelector(`#s [data-k=${k}]`)).opacity)));
+  afirmar(Math.abs(a1 - a2) < 0.05 && a1 > b1 + 0.1, `a1 ${a1}, a2 ${a2}, b1 ${b1}`);
+});
+
+t('cinemática: lo reiluminado late una vez', async (b, pg) => {
+  await abrir(pg, 'tests/paginas/svg.html');
+  await pg.waitForFunction(() => window.listo);
+  await pg.evaluate(() => window.prueba([{ k: 'r', t: 'circle', a: { cx: 20, cy: 20, r: 6 }, c: 'ambar' }]));
+  await pg.evaluate(() => window.prueba([{ k: 'r', t: 'circle', a: { cx: 20, cy: 20, r: 6 }, c: 'ambar', ref: true }]));
+  const anim = await pg.evaluate(() => getComputedStyle(document.querySelector('#s [data-k=r]')).animationName);
+  afirmar(anim === 'pulso', `animación: ${anim}`);
+});
+
+t('cinemática: la cámara hace zoom a lo que pide el paso', async (b, pg) => {
+  await abrir(pg, FIX); await montada(pg);
+  await pg.click('[data-a=adelante]'); await pg.click('[data-a=adelante]');
+  await pg.waitForTimeout(1500);
+  const vb = await pg.evaluate(() => document.querySelector('.escena svg').getAttribute('viewBox'));
+  afirmar(vb === '200 60 440 140', `viewBox ${vb}`);
+});
 
 t('elemento: ◀ ▶, teclado y clic en una línea mueven el paso', async (b, pg) => {
   const errores = await abrir(pg, FIX); await montada(pg);
@@ -180,12 +234,12 @@ t('elemento: con movimiento reducido las transiciones son instantáneas', async 
   afirmar(t === '0s', `--t-paso = ${t}`);
 });
 
-t('portada: 5 libros de frente y solo el II se puede abrir', async (b, pg) => {
+t('portada: 5 libros de frente y se abren el II y el III', async (b, pg) => {
   const errores = await abrir(pg, 'index.html');
   await pg.waitForSelector('.portada');
   afirmar((await pg.locator('.portada').count()) === 5, 'no hay 5 portadas');
   const enlaces = await pg.$$eval('a.portada', (as) => as.map((a) => a.getAttribute('href')));
-  afirmar(JSON.stringify(enlaces) === JSON.stringify(['libro.html?l=2']), `enlaces: ${enlaces}`);
+  afirmar(JSON.stringify(enlaces) === JSON.stringify(['libro.html?l=2', 'libro.html?l=3']), `enlaces: ${enlaces}`);
   afirmar((await pg.locator('.portada svg').count()) === 5, 'faltan ilustraciones');
   afirmar(!errores.length, errores.join(' | '));
 });

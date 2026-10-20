@@ -246,3 +246,31 @@ Escenas del Libro II:
 - Bézout: el resto r supuesto hereda su etiqueta de combinación y se dibuja punteado; los elementos de S son
   c₁, c₂, c₃, … (decisión del constructor: s₁, s₂ ya son coeficientes en la conferencia).
 - Solución general: los dos bloques rotulados «mcm(a, b)».
+
+## 15. Libro III — Conferencia 3 (primos y TFA), 2026-10-20
+
+El usuario pidió usar todo lo aprendido para que las animaciones sean lo más educativas, correctas y claras posible,
+«desvinculándote si es necesario de mi manera de ver las cosas». Las representaciones salen del informe
+`~/reports/Visualizar teoría de números.md` (reglas cognitivas, criterio de rigor: solo conteos y etiquetas, nunca
+medidas a ojo; ejemplos genéricos sin coincidencias; hipótesis siempre visibles; lo supuesto punteado).
+
+Inventario (13 elementos, en orden): Lema p ∤ a ⇒ (p,a)=1 · Lema de Euclides · Teo. p | a₁⋯aₙ ⇒ p | aⱼ · Cor. p | q₁⋯qₙ
+(primos) ⇒ p = q_k · Cor. p | aᵏ ⇒ p | a y pᵏ | aᵏ · TFA · Def. descomposición canónica · Cor. forma canónica única ·
+Lema primos > 3 son 6q ± 1 · Teo. Wilson · Pequeño Teorema de Fermat · Cor. p | aᵖ − a · Lema n compuestos consecutivos.
+
+Representaciones elegidas (decisiones del constructor):
+- Divisibilidad de productos: **fila de cajas de factores** (a₁)(a₂)…(aₙ) con la etiqueta «p | ·» o «p ∤ ·» en cada una;
+  la inducción se dibuja como **plantilla** (bloque A = a₁⋯a_k y caja a_{k+1}), no como dominós.
+- Lema de Euclides: lenguaje de la Conf 2 (carriles de saltos para ax + py = 1, escalados por b) + rectángulo a×b
+  agrupado en bloques de p para «p | ab».
+- TFA: **dos árboles de factores distintos** del mismo n (división por el menor primo / por el divisor más cercano a √n);
+  existencia = el árbol crece por inducción fuerte; unicidad = dos filas ordenadas de hojas que se cancelan par a par.
+- Forma canónica: hojas agrupadas → **vector de exponentes** (una barra por primo).
+- 6q ± 1: la recta **enrollada en 6 columnas**; las columnas 0, 2, 4 (pares) y 3 (múltiplos de 3) se tachan; los primos
+  > 3 solo quedan en las columnas 1 y 5; la columna 5 se reetiqueta 6k − 1. Aviso: el recíproco es falso (25, 35).
+- Wilson: **reloj de p posiciones con cuerdas x — x⁻¹** (x·y deja resto 1); 1 y p − 1 son su propio inverso (rotulado
+  también −1); cada cuerda aporta un «1». Recíproco: si n = a·b compuesto, a | (n−1)! y no puede dividir a (n−1)! + 1.
+- Fermat: **permutación de restos**: a, 2a, …, (p−1)a dejan restos distintos (flechas dirigidas a 1…p−1), producto y
+  cancelación de (p−1)! por el lema de Euclides. Es la misma prueba que la Conf 4 (sin el lenguaje de congruencias).
+- n compuestos consecutivos: (n+1)! como producto 1·2·…·(n+1) con el factor k reiluminado en «k | (n+1)! + k».
+- Ninguna escena exige recordar números de pasos anteriores; los «p | ·» quedan escritos en cada caja.
