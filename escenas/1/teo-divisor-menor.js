@@ -18,19 +18,22 @@ export default escenaPorCapas({
   alto: 300,
   base: ({ plan, A }) => [...recta('R', plan, YR), ...punto('PA', plan, A, YR, { etiqueta: `|a| = ${A}` })],
   capas: [
-    ({ a, b, q, B, Q, plan, A }) => [
+    ({ a, b, q }) => [nota('n0', 0, `b | a: a = b·q con q entero;  ${num(a)} = ${por(b, q)}`, 'texto')],
+    ({ B, Q, A, plan }) => [
       ...saltos('S', plan, { desde: 0, salto: B, n: Q, y: YR }),
       ...llave('LA', plan, 0, A, YR + 30, `|a| = |b|·|q| = ${B}·${Q}`, 'cian'),
-      nota('n0', 0, `a = b·q:  ${num(a)} = ${por(b, q)}`, 'texto'),
+      nota('n1', 1, `|a| = |b·q| = |b|·|q|:  ${A} = ${B}·${Q}`, 'cian'),
     ],
+    () => [nota('n2', 2, 'si q = 0 sería a = b·0 = 0; pero a ≠ 0, luego q ≠ 0', 'ambar')],
     ({ B, Q, plan }) => [
       { ...saltos('S', plan, { desde: 0, salto: B, n: Q, y: YR })[0], ref: true },
-      nota('n1', 1, `a ≠ 0 ⇒ q ≠ 0: hay al menos un salto, |q| = ${Q} ≥ 1`, 'ambar'),
+      nota('n3', 3, `entero no nulo ⇒ |q| ≥ 1 (no hay enteros entre 0 y 1): |q| = ${Q}, al menos un salto`, 'ambar'),
     ],
-    ({ B, Q, A, plan }) => [
+    ({ B, Q, plan }) => [
       { ...saltos('S', plan, { desde: 0, salto: B, n: Q, y: YR })[0], c: 'ambar' },
       ...llave('LB', plan, 0, B, YR + 62, `|b| = ${B}`, 'ambar'),
-      nota('n2', 2, `|a| = ${A} ≥ ${B} = |b|: el primer salto ya mide |b|`, 'verde'),
+      nota('n4', 4, `|q| ≥ 1 y |b| ≥ 0  ⇒  |b|·|q| ≥ |b|·1 = |b|`, 'texto'),
     ],
+    ({ A, B }) => [nota('n5', 5, `|a| = ${A} ≥ ${B} = |b|: el primer salto ya mide |b|`, 'verde')],
   ],
 });

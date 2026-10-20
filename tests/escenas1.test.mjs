@@ -22,12 +22,12 @@ test('pim: al final todas las casillas están encendidas y la plantilla se retir
 test('teo-pbo-pim: C es supuesto y desaparece al cerrar la contradicción', async () => {
   const esc = await cargar('teo-pbo-pim');
   assert.ok(esc.estado({}, 1).filter((n) => n.k.startsWith('C:')).every((n) => n.supuesto));
-  assert.ok(!esc.estado({}, 5).some((n) => n.k.startsWith('C:') || /^x\d/.test(n.k)));
-  assert.ok(hay(esc.estado({}, 10), 'A = ∅', 'verde'));
+  assert.ok(!esc.estado({}, 7).some((n) => n.k.startsWith('C:') || /^x\d/.test(n.k)));
+  assert.ok(hay(esc.estado({}, 13), 'A = ∅', 'verde'));
 });
 
 test('ej-suma-impares: el cuadrado final tiene m² cuadraditos y la escuadra 2m − 1', async () => {
-  const ns = (await cargar('ej-suma-impares')).estado({ m: 5 }, 8);
+  const ns = (await cargar('ej-suma-impares')).estado({ m: 5 }, 11);
   assert.equal(ns.filter((n) => /^g\d+-\d+$/.test(n.k)).length, 25);
   assert.equal(ns.filter((n) => /^g5-/.test(n.k)).length, 9);
   assert.ok(hay(ns, '= m² = 25', 'verde'));
@@ -51,8 +51,8 @@ test('teo-transitiva: q₁·q₂ saltos de a llegan a c y nacen de los saltos de
 test('teo-division: resto correcto también con a negativo, y r₁ acaba sobre r', async () => {
   const esc = await cargar('teo-division');
   assert.ok(esc.validar({ a: 20, b: 5 }), 'b | a se rechaza');
-  assert.ok(hay(esc.estado({ a: -23, b: 5 }, 5), '−23 = 5·(−5) + 2', 'ambar'));
-  const fin = esc.estado({ a: 23, b: 5 }, 13);
+  assert.ok(hay(esc.estado({ a: -23, b: 5 }, 7), '−23 = 5·(−5) + 2', 'ambar'));
+  const fin = esc.estado({ a: 23, b: 5 }, 17);
   assert.equal(fin.find((n) => n.k === 'pr1').a.cx, fin.find((n) => n.k === 'pr').a.cx);
   assert.ok(!fin.some((n) => n.k === 'fantasma'));
 });
@@ -62,18 +62,18 @@ test('def-primo y cor-compuesto: fichas de intento y el rectángulo que gira', a
   assert.equal(p.find((n) => n.k === 'f3:t').txt, 'de 3: ✓');
   assert.equal(p.find((n) => n.k === 'f5:t').txt, 'de 5: sobran 2');
   const esc = await cargar('cor-compuesto');
-  const antes = esc.estado({ n: 18 }, 0).find((n) => n.k === 'c1'), despues = esc.estado({ n: 18 }, 2).find((n) => n.k === 'c1');
+  const antes = esc.estado({ n: 18 }, 1).find((n) => n.k === 'c1'), despues = esc.estado({ n: 18 }, 4).find((n) => n.k === 'c1');
   assert.notDeepEqual(antes.a, despues.a, 'la celda 1 viaja al girar');
 });
 
 test('lema-divisor-primo: la escalera de 100 baja a 10 y termina en 2', async () => {
-  const ns = (await cargar('lema-divisor-primo')).estado({ n: 100 }, 3);
+  const ns = (await cargar('lema-divisor-primo')).estado({ n: 100 }, 4);
   assert.deepEqual(['v0', 'v1', 'v2'].map((k) => ns.find((n) => n.k === k).txt), ['100', '10', '2']);
   assert.ok(hay(ns, '2 | 10 | 100', 'verde'));
 });
 
 test('teo-infinitos-primos: con 6 primos, m = 30031 y q = 59', async () => {
-  const ns = (await cargar('teo-infinitos-primos')).estado({ k: 6 }, 3);
+  const ns = (await cargar('teo-infinitos-primos')).estado({ k: 6 }, 5);
   assert.ok(hay(ns, 'q = 59', 'verde'));
   assert.ok(hay(ns, '59·509', 'ambar'));
 });

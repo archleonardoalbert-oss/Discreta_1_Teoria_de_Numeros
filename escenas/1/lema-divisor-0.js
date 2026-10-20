@@ -19,21 +19,25 @@ export default escenaPorCapas({
   capas: [
     ({ a, plan }) => [
       marca('cur', plan.x(0), YR - 13),
+      nota('n0', 0, `a | 0 pide: a ≠ 0 y un entero q con 0 = ${num(a)}·q`, 'texto'),
+    ],
+    ({ a, plan }) => [
       ...saltos('S', plan, { desde: 0, salto: a, n: 3, y: YR, numerar: false }).map((n) => ({ ...n, c: 'muy-tenue' })),
       ...saltos('T', plan, { desde: 0, salto: -a, n: 3, y: YR, numerar: false }).map((n) => ({ ...n, c: 'muy-tenue' })),
-      nota('n0', 0, `¿q con 0 = ${num(a)}·q ?  (el saltador está en 0)`, 'texto'),
+      nota('n1', 1, `a = ${num(a)} ≠ 0 (hipótesis): los saltos de a sí avanzan`, 'texto'),
     ],
+    () => [nota('n2', 2, 'se prueba q = 0, que es un entero', 'ambar')],
     ({ a, plan }) => [
       { k: 'aro0', t: 'circle', a: { cx: plan.x(0), cy: YR, r: 11 }, c: 'verde', hueco: true },
       rotulo('q0', plan.x(0), YR + 42, 'q = 0: cero saltos', 'verde', 'middle'),
-      nota('n1', 1, `0 = ${num(a)}·0, luego ${num(a)} | 0`, 'verde'),
+      nota('n3', 3, `${num(a)}·0 = 0: cero saltos desde 0 se quedan en 0, luego ${num(a)} | 0`, 'verde'),
     ],
     ({ series, planS, A }) => [
       ...series.flatMap((s, i) => [
         ...carril(`D${s}`, planS, 230 + i * 46, { salto: s, n: 6, desde: -3 * s, c: s === A ? 'ciruela' : 'cian', etiqueta: `de ${s} en ${s}` }),
       ]),
       { ...linea('cero', planS.x(0), 200, planS.x(0), 240 + (series.length - 1) * 46, 'verde'), ancho: 2.5 },
-      rotulo('ct', planS.x(0) + 8, 240 + (series.length - 1) * 46 + 18, 'todas pasan por 0', 'verde'),
+      rotulo('ct', planS.x(0) + 8, 240 + (series.length - 1) * 46 + 18, 'todas pasan por 0: 0 es múltiplo de todos', 'verde'),
     ],
   ],
 });

@@ -1,7 +1,7 @@
 // Infinitud de los primos. A = {p₁, …, p_k} supuesta (punteada) con P = p₁⋯p_k y m = P + 1. Una ventana de la recta
 // alrededor de P: cada pᵢ tiene su serie de saltos que cae exactamente en P, y a m le sobra 1 en todas (resto 1).
 // Un divisor primo q de m no está en A. Contraste: m no tiene por qué ser primo (30031 = 59·509).
-import { escenaPorCapas, rotulo, carril, linea, elegir, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, carril, linea, elegir, ANCHO } from '../comun.js';
 import { recta, conjunto } from '../primitivas.js';
 import { factorizar, esPrimo } from '../../motor/primos.js';
 import { planRecta } from '../../motor/escala.js';
@@ -17,8 +17,8 @@ export default escenaPorCapas({
     const YR = Y0 + A.length * DY + 10, q = factorizar(m)[0];
     return { A, P, m, plan, YR, q, fm: factorizar(m) };
   },
-  alto: ({ YR }) => YR + 110,
-  capas: [
+  alto: ({ YR }) => YR + 126,
+  capas: conPuentes([
     ({ A, P, m, plan, YR }) => [
       ...conjunto('A', { x: 24, y: 34, nombre: 'A', elementos: A.map(String), c: 'cian', definicion: 'todos los primos (supuesto)' }).map((n) => ({ ...n, supuesto: true })),
       rotulo('Pm', 24, 92, elegir([`P = ${A.join('·')} = ${P},  m = P + 1 = ${m}`, `P = ${P},  m = P + 1 = ${m}`], ANCHO - 48), 'texto'),
@@ -48,5 +48,8 @@ export default escenaPorCapas({
       rotulo('Afalso', 24, 34, 'A no tenía todos los primos', 'verde'),
       rotulo('ojo', 24, 58, esPrimo(m) ? 'ojo: m no siempre es primo (2·3·5·7·11·13 + 1 = 30031 = 59·509)' : `ojo: m = ${m} = ${fm.join('·')} no es primo; lo nuevo es q`, 'ambar'),
     ],
-  ],
+  ], {
+    0: ({ m }) => [`m = ${m} > 1: el lema del divisor primo se le aplica`, 'texto'],
+    1: () => ['pᵢ | m y pᵢ | P ⇒ pᵢ | m − P = 1; pero pᵢ ≥ 2', 'ambar'],
+  }, ({ YR }) => YR + 112),
 });

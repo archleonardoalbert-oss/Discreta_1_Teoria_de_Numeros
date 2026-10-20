@@ -2,7 +2,7 @@
 // escriben c₁, c₂, … en el conjunto); desde a se salta de b en b hacia el 0 y el último punto positivo es r = mín S.
 // Si fuera r > b, un salto más a la izquierda seguiría en S (punteado): contradicción. Unicidad: r₁ − r = b(q − q₁)
 // cae en la franja (−b, b), donde el único múltiplo de b es el 0.
-import { escenaPorCapas, planPara, rotulo, flecha, num, por, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, rotulo, flecha, num, por, ANCHO } from '../comun.js';
 import { recta, saltos, punto, conjunto, simbolos } from '../primitivas.js';
 import { planRecta, r1 as red } from '../../motor/escala.js';
 
@@ -26,9 +26,9 @@ export default escenaPorCapas({
     const planU = planRecta({ min: -2.6 * b, max: 2.6 * b, ancho: ANCHO });
     return { q, r, w, plan, pts, k, m0, planU, r1: (r + 1) % b };
   },
-  alto: YN2 + 24,
+  alto: YN2 + 40,
   base: ({ plan, a }) => [...recta('R', plan, YR), ...punto('A', plan, a, YR, { etiqueta: `a = ${num(a)}` })],
-  capas: [
+  capas: conPuentes([
     ({ plan, b, k, m0 }) => [
       ...saltos('E', plan, { desde: 0, salto: b * Math.sign(k), n: Math.abs(k), y: YE, alturaMax: 12, numerar: false }),
       { k: 'E:p', t: 'circle', a: { cx: plan.x(m0), cy: YE, r: 4 }, c: 'cian' },
@@ -110,5 +110,10 @@ export default escenaPorCapas({
       rotulo('prt', planU.x(r), YU - 14, 'r = r₁', 'verde', 'middle'),
       msg2('q − q₁ = 0: q = q₁ y r = r₁. Son únicos.', 'verde'),
     ],
-  ],
+  ], {
+    1: () => ['cada c = a − sb de S da a = bs + c: buscamos el candidato más pequeño', 'violeta'],
+    4: () => ['S ⊆ ℤ₊ y S ≠ ∅: el PBO le da un mínimo', 'violeta'],
+    8: ({ r, b }) => [`ni r > b ni r = b: 0 < r = ${r} < ${b} = b`, 'verde'],
+    12: () => ['(se dividió entre b > 0: las desigualdades no cambian)', 'texto'],
+  }, YN2 + 24),
 });

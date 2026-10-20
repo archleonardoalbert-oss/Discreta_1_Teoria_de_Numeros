@@ -129,3 +129,16 @@ export function rodante(notas, i, { filas = 5, x = 24, y = 28, dy = 22, id = 'nr
     ...vivas.map(([[txt, c], j], f) => rotulo(`${id}${j}`, x, y + f * dy, elegir(txt, ancho), j === i ? c : (c === 'verde' ? 'verde' : 'tenue'))),
   ];
 }
+
+/**
+ * Inserta pasos «puente» (justificaciones añadidas) en una lista de capas. `puentes[i](ctx)` → [texto, color] crea una
+ * capa nueva justo DESPUÉS de la capa original i, que escribe la justificación en la línea reservada `y`; la capa
+ * siguiente la borra. El índice i es el de la lista ORIGINAL.
+ */
+export function conPuentes(capas, puentes, y) {
+  const fila = (c) => (typeof y === 'function' ? y(c) : y);
+  return capas.flatMap((capa, i) => [
+    (c) => [{ k: 'puente', quitar: true }, ...capa(c)],
+    ...(puentes[i] ? [(c) => { const [t, col = 'texto'] = puentes[i](c); return [rotulo('puente', 24, fila(c), elegir(t, ANCHO - 48), col)]; }] : []),
+  ]);
+}

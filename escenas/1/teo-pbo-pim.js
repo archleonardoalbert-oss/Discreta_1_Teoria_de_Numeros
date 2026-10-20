@@ -1,7 +1,7 @@
 // PBO ⇔ PIM. Arriba (PBO ⇒ PIM): el patrón del contraejemplo mínimo sobre una cinta simbólica n₀, n₀+1, …, m−1, m.
 // C = {c₁, c₂, …} es supuesto (punteado); el PBO señala c₁ = m; P(m−1) se cumple y la plantilla enciende m, que
 // choca con la marca de C: C se desvanece. Abajo (PIM ⇒ PBO, añadida): un muro «ninguno de 1…n está en A» avanza.
-import { escenaPorCapas, rotulo, flecha, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, flecha, ANCHO } from '../comun.js';
 import { conjunto, simbolos } from '../primitivas.js';
 import { r1 } from '../../motor/escala.js';
 
@@ -22,7 +22,7 @@ export default escenaPorCapas({
     ...ETIQ.map((_, i) => celda(`a${i}`, i, YA, 'muy-tenue', { hueco: true })),
     ...ETIQ.map((t, i) => texto(`at${i}`, i, YA, t, 'tenue')),
   ],
-  capas: [
+  capas: conPuentes([
     () => [
       ...conjunto('C', { x: 24, y: 56, nombre: 'C', elementos: simbolos('c', 3), c: 'ambar', definicion: 'C: los n ≥ n₀ que no cumplen P' })
         .map((n) => ({ ...n, supuesto: true })),
@@ -81,5 +81,9 @@ export default escenaPorCapas({
       ...['A:n', 'A:e0', 'A:e1', 'A:e2', 'A:e3', 'A:c0', 'A:c1', 'A:c2', 'A:cierra', 'A:def'].map((k) => ({ k, quitar: true })),
       rotulo('Avacio', 24, YB - 110, 'A = ∅: todo A no vacío tiene mínimo', 'verde'),
     ],
-  ],
+  ], {
+    3: () => ['m ∈ C ⇒ m ≥ n₀;  m ≠ n₀ porque P(n₀) ✓;  entre enteros, m ≥ n₀ + 1', 'texto'],
+    4: () => ['m − 1 ≥ n₀ y m − 1 < m = mín C: m − 1 no puede estar en C', 'texto'],
+    9: () => ['no hay enteros entre n y n + 1: todo elemento de A sería ≥ n + 1', 'texto'],
+  }, YB + 84),
 });

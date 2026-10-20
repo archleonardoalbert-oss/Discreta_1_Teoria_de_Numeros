@@ -7,7 +7,7 @@ import { esPrimo } from '../../motor/primos.js';
 import { divisores } from '../../motor/aritmetica.js';
 import { r1 } from '../../motor/escala.js';
 
-const X = 120, Y = 176;
+const X = 120, Y = 250;
 
 export default escenaPorCapas({
   entradas: [{ id: 'n', etiqueta: 'n', valor: 18, min: 4, max: 60 }],
@@ -27,26 +27,26 @@ export default escenaPorCapas({
   alto: ({ grande, lado }) => Y + grande * lado + 50,
   base: ({ n, D }) => conjunto('D', { x: 24, y: 34, nombre: `D(${n})`, elementos: D.map(String), c: 'cian' }),
   capas: [
+    ({ n, grande, D }) => [
+      nota('n0', 2, `${n} compuesto: tiene un divisor positivo distinto de 1 y de ${n}, por ejemplo a = ${grande}`, 'ambar'),
+    ],
     ({ n, grande, chico, lado, celdas }) => [
       ...celdas(grande, chico, 'cian', false),
       rotulo('lf', X - 10, Y + (grande * lado) / 2 + 4, `${grande} filas`, 'ambar', 'end'),
-      nota('n0', 2, `${n} compuesto: tiene un divisor ${grande} con 1 < ${grande} < ${n}`, 'ambar'),
+      nota('n1', 3, `a | n ⇒ a ≤ n (teorema anterior); a ≠ 1, a ≠ n ⇒ 1 < ${grande} < ${n}`, 'texto'),
     ],
     ({ n, grande, chico, lado }) => [
       rotulo('lc', X + (chico * lado) / 2, Y - 10, `${chico}`, 'cian', 'middle'),
-      nota('n1', 3, `${n} = ${grande}·${chico}: el otro lado, ${chico}, tampoco es 1 ni ${n}`, 'texto'),
+      nota('n2', 4, `n = a·b: b = ${chico} columnas, b > 0 y b | n ⇒ b ≤ n`, 'texto'),
     ],
+    ({ n, chico }) => [nota('n3', 5, `b ≠ 1 (si no, a = n) y b ≠ n (si no, a = 1): 1 < ${chico} < ${n}`, 'texto')],
     ({ n, grande, chico, lado, celdas }) => [
-      // el rectángulo gira: el lado corto pasa a ser el de las filas
       ...celdas(chico, grande, 'cian', true),
       rotulo('lf', X - 10, Y + (chico * lado) / 2 + 4, `a = ${chico}`, 'verde', 'end'),
       rotulo('lc', X + (grande * lado) / 2, Y - 10, `b = ${grande}`, 'verde', 'middle'),
-      nota('n2', 4, `girando: ${n} = a·b con 1 < a = ${chico} ≤ b = ${grande} < ${n}`, 'verde'),
+      nota('n4', 6, `se giran (intercambian) los lados: ${n} = a·b con 1 < a = ${chico} ≤ b = ${grande} < ${n}`, 'verde'),
     ],
-    ({ n, pares }) => [
-      nota('n3', 2, `todos los rectángulos que no son fila: ${n} = ${pares.join(' = ')}`, 'texto'),
-      nota('n4', 3, 'recíproco: un lado a con 1 < a < n es un divisor ≠ 1, n', 'texto'),
-      nota('n5', 4, 'luego n no es primo: es compuesto', 'verde'),
-    ].concat([{ k: 'n0', quitar: true }, { k: 'n1', quitar: true }, { k: 'n2', quitar: true }]),
+    ({ n, pares }) => [nota('n5', 7, `recíproco: ${n} = ${pares.join(' = ')} da un divisor a con 1 < a < n`, 'texto')],
+    () => [nota('n6', 8, 'divisor distinto de 1 y de n ⇒ no es primo; como n > 1, es compuesto', 'verde')],
   ],
 });

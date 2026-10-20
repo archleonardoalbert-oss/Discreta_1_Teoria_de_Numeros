@@ -2,7 +2,7 @@
 // del suelo 1, así que termina en un primo. Franja 2 (inducción fuerte): todos los m de [2, n−1] tienen divisor primo
 // (hipótesis, punteada); n = ab con a dentro. Franja 3 (PBO): D con números reales, su mínimo m, y un p punteado que
 // tendría que estar a la izquierda de m.
-import { escenaPorCapas, planPara, rotulo, flecha, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, rotulo, flecha, ANCHO } from '../comun.js';
 import { recta, punto, conjunto } from '../primitivas.js';
 import { anchoCaja } from '../piezas/cajas.js';
 import { esPrimo, factorizar } from '../../motor/primos.js';
@@ -32,8 +32,8 @@ export default escenaPorCapas({
     const D = divisores(n).filter((d) => d > 1 && d < n);
     return { esc: cajas, primo: esPrimo(n), plan: planPara([n]), a, b: n / a, p, D, finX: x };
   },
-  alto: Y3 + 90,
-  capas: [
+  alto: Y3 + 104,
+  capas: conPuentes([
     ({ esc, n, primo }) => [
       rotulo('h1', 24, 26, 'demostración 1: descenso', 'tenue'),
       { k: 'k0', t: 'rect', a: { x: esc[0].x, y: Y1 - 22, width: esc[0].w, height: 30, rx: 6 }, c: primo ? 'verde' : 'ciruela', hueco: true },
@@ -92,5 +92,11 @@ export default escenaPorCapas({
       { k: 'pf', quitar: true },
       rotulo('pc', 24, Y3 + 60, `p | m | n ⇒ p ∈ D y p < m: ¡a la izquierda del mínimo! Luego m = ${D[0]} es primo`, 'verde'),
     ]),
-  ],
+  ], {
+    2: () => ['cada vuelta baja: n > a > a₁ > … > 1, y por debajo de 2 no hay más compuestos', 'texto'],
+    3: ({ esc }) => [`transitividad encadenada: ${esc.slice().reverse().map((e) => e.v).join(' | ')}`, 'verde'],
+    4: () => ['inducción fuerte: la hipótesis cubre TODOS los m < n, porque a puede ser cualquiera', 'violeta'],
+    7: ({ primo }) => [primo ? 'n primo: D no hace falta' : 'D ≠ ∅ (contiene a a): el PBO le da un mínimo', 'texto'],
+    9: () => ['p | m | n y 1 < p < m < n: p ∈ D, a la izquierda del mínimo', 'texto'],
+  }, Y3 + 86),
 });

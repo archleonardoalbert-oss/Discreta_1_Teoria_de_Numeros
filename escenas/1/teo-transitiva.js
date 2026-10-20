@@ -1,6 +1,6 @@
 // Transitividad: q₁ saltos de a llegan a b; q₂ saltos de b llegan a c; cada salto de b se despliega en q₁ saltos
 // de a (nacen de él), así que q₁·q₂ saltos de a llegan a c.
-import { escenaPorCapas, planPara, rotulo, nota, carril, sub } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, rotulo, nota, carril, sub } from '../comun.js';
 import { recta, punto } from '../primitivas.js';
 import { agrupar } from '../../motor/escala.js';
 
@@ -17,12 +17,12 @@ export default escenaPorCapas({
     const plan = planPara([c]);
     return { plan, q1: b / a, q2: c / b };
   },
-  alto: YR + 50,
+  alto: YR + 60,
   base: ({ plan, a, b, c }) => [
     ...recta('R', plan, YR),
     ...punto('PB', plan, b, YR, { etiqueta: 'b' }), ...punto('PC', plan, c, YR, { etiqueta: 'c' }),
   ],
-  capas: [
+  capas: conPuentes([
     ({ a, b, c }) => [
       nota('n0', 0, `hipótesis: ${a} | ${b} y ${b} | ${c}`, 'texto'),
       rotulo('meta', 680 - 24, 28, `¿${a} | ${c}?`, 'ambar', 'end'),
@@ -54,5 +54,7 @@ export default escenaPorCapas({
       nota('n4', 4, `c = a·q con q = ${q1 * q2}:  ${a} | ${c}`, 'verde'),
       rotulo('meta', 680 - 24, 28, `${a} | ${c} ✓`, 'verde', 'end'),
     ],
-  ],
+  ], {
+    3: ({ a, q1, q2 }) => [`b = a·q₁ dentro de c = b·q₂:  (a·q₁)·q₂ = a·(q₁q₂) = ${a}·${q1 * q2}`, 'texto'],
+  }, YR + 46),
 });

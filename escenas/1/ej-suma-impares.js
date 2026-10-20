@@ -1,7 +1,7 @@
 // Σ (2k−1) = n² por el PBO. Los impares son escuadras (gnomones) de cuadraditos: el cuadrado (m−1)² está hecho de
 // las escuadras 1, 3, 5, …; la escuadra 2m − 1 aparece primero estirada en una fila y luego se dobla alrededor del
 // cuadrado, que pasa a ser m × m. C (los contraejemplos, supuesto) se desvanece al final.
-import { escenaPorCapas, rotulo, elegir } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, elegir } from '../comun.js';
 import { conjunto, simbolos } from '../primitivas.js';
 import { r1 } from '../../motor/escala.js';
 
@@ -19,8 +19,8 @@ export default escenaPorCapas({
     const suma = elegir([`${impares.join(' + ')} = ${(m - 1) ** 2} = ${m - 1}²`, `1 + 3 + … + ${2 * m - 3} = ${m - 1}²`], ANCHO_T);
     return { lado, YF, celda, suma };
   },
-  alto: ({ YF }) => YF + 40,
-  capas: [
+  alto: ({ YF }) => YF + 56,
+  capas: conPuentes([
     () => [...conjunto('C', { x: XT, y: 40, nombre: 'C', elementos: simbolos('c', 3), c: 'ambar', definicion: 'los n con 1 + 3 + … + (2n−1) ≠ n²' }).map((n) => ({ ...n, supuesto: true }))],
     () => [rotulo('n1', XT, 116, 'C ≠ ∅ (supuesto)', 'ambar')],
     ({ m }) => [
@@ -66,5 +66,9 @@ export default escenaPorCapas({
       ...['C:n', 'C:e0', 'C:e1', 'C:e2', 'C:e3', 'C:c0', 'C:c1', 'C:c2', 'C:cierra', 'C:def', 'C:aro', 'C:min', 'n1'].map((k) => ({ k, quitar: true })),
       rotulo('vacio', XT, 40, 'P(m) ✓ ¡pero m ∈ C! Luego C = ∅', 'verde'),
     ],
-  ],
+  ], {
+    5: () => ['se separa el último sumando (k = m): aparece la suma hasta m − 1', 'texto'],
+    6: () => ['la suma hasta m − 1 vale (m − 1)²: es P(m − 1)', 'texto'],
+    7: () => ['−2m con +2m y +1 con −1 se anulan', 'texto'],
+  }, ({ YF }) => YF + 40),
 });
