@@ -79,3 +79,44 @@ solo('cor-canonica', 'dos árboles distintos dan las mismas columnas', async () 
   assert.equal(cuenta('XA:b'), 5); assert.equal(cuenta('XB:b'), 5);
   assert.ok(textoVerde(ns, '180 = 2² · 3² · 5'));
 });
+
+solo('lema-6q', 'tabla de 6 columnas: se tachan 0, 2, 4 y 3; los primos > 3 solo en 1 y 5; el recíproco falla con 25 y 35', async () => {
+  const esc = await cargar('lema-6q'), e = { N: 60 };
+  const p3 = esc.estado(e, 2);
+  for (const r of [0, 2, 3, 4]) assert.ok(p3.some((n) => n.k === `tacha${r}` ), `columna ${r} sin tachar`);
+  const primos = esc.estado(e, 4).filter((n) => /^aro\d+$/.test(n.k)).map((n) => Number(n.k.slice(3)) % 6);
+  assert.ok(primos.length && primos.every((r) => r === 1 || r === 5));
+  const fin = ultimo(esc, e, 6);
+  assert.ok(fin.some((n) => n.k === 'falso25') && fin.some((n) => n.k === 'falso35'));
+});
+
+solo('lema-compuestos', 'con n = 5: 722…726, cada uno con su divisor k que sale del factorial', async () => {
+  const ns = ultimo(await cargar('lema-compuestos'), { n: 5 }, 3);
+  assert.ok(textos(ns).includes('720 + 2 = 722'));
+  const k3 = ns.find((n) => n.k === 'div3');
+  assert.ok(k3 && k3.desde === 'F:v2' && k3.txt.includes('3 |'), 'el 3 sale de su caja en 1·2·3·4·5·6');
+});
+
+solo('teo-wilson', 'p = 13: cuerdas entre inversos, 1 y 12 solos, y 13 | 12! + 1', async () => {
+  const esc = await cargar('teo-wilson'), e = { p: 13 };
+  assert.ok(esc.validar({ p: 12 }), 'p debe ser primo');
+  const cuerdas = esc.estado(e, 1).filter((n) => /^cuerda/.test(n.k));
+  assert.equal(cuerdas.length, 5, '(13 − 3)/2 = 5 parejas');
+  assert.ok(textoVerde(esc.estado(e, 4), '13 | 479001601'));
+  assert.ok(textos(ultimo(esc, e, 6)).includes('14 ∤'), 'recíproco con n = 14');
+});
+
+solo('teo-fermat', 'p = 7, a = 3: los restos 3, 6, 2, 5, 1, 4 vuelan a 1…6 y 3⁶ deja resto 1', async () => {
+  const esc = await cargar('teo-fermat'), e = { p: 7, a: 3 };
+  assert.deepEqual(esc.estado(e, 1).filter((n) => /^R:v\d$/.test(n.k)).map((n) => n.txt), ['3', '6', '2', '5', '1', '4']);
+  const p3 = esc.estado(e, 2);
+  assert.equal(p3.find((n) => n.k === 'S:v0').desde, 'R:v4', 'la casilla 1 recibe el resto de 5·3 = 15');
+  assert.ok(textoVerde(ultimo(esc, e, 5), '3⁶ = 729 = 7·104 + 1'));
+  assert.ok(esc.validar({ p: 7, a: 14 }), 'p | a debe avisar');
+});
+
+solo('cor-fermat', 'a(a^{p−1} − 1) con los dos casos', async () => {
+  const esc = await cargar('cor-fermat');
+  assert.ok(textoVerde(ultimo(esc, { p: 5, a: 10 }, 3), '5 | 10'));
+  assert.ok(textoVerde(ultimo(esc, { p: 5, a: 3 }, 3), '5 | 80'));
+});
