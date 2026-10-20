@@ -1,10 +1,12 @@
 // Propiedad fuerte 4: término a término. Una columna por k: aᵏ y bᵏ (mismo resto), luego c_k·aᵏ y c_k·bᵏ (mismo
 // resto), y al final las sumas f(a) y f(b), que también comparten resto.
-import { escenaPorCapas, rotulo, nota, num, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, nota, num, ANCHO } from '../comun.js';
 import { mod } from '../piezas/modular.js';
 import { poli } from './def-solucion.js';
 
 const Y = { pa: 130, pb: 200, ca: 280, cb: 350, f: 430 }, X0 = 120;
+
+const ALTO0 = () => Y.f + 46;
 
 export default escenaPorCapas({
   entradas: [
@@ -18,8 +20,8 @@ export default escenaPorCapas({
     const pot = (x, k) => x ** k;
     return { dx, xk, pa: cs.map((_, k) => pot(a, k)), pb: cs.map((_, k) => pot(b, k)), fa: cs.reduce((s, c, k) => s + c * pot(a, k), 0), fb: cs.reduce((s, c, k) => s + c * pot(b, k), 0) };
   },
-  alto: Y.f + 46,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ cs, xk }) => [
       nota('n0', 0, `f(x) = ${poli(cs)}`, 'texto'),
       ...cs.map((c, k) => rotulo(`h${k}`, xk(k), 84, `k = ${k}, c${'₀₁₂₃'[k]} = ${num(c)}`, 'tenue', 'middle')),
@@ -43,5 +45,9 @@ export default escenaPorCapas({
       rotulo('sb', 24, Y.f + 22, `f(${num(b)}) = suma de la fila = ${num(fb)}  →  resto ${mod(fb, n)}`, 'cian'),
     ],
     ({ fa, fb, n, a, b }) => [nota('n1', 1, `f(${num(a)}) = ${num(fa)} ≡ ${num(fb)} = f(${num(b)}) (mod ${n})`, 'verde')],
-  ],
+  ], {
+    1: () => ['propiedad 7 (potencias)', 'texto'],
+    2: () => ['propiedad 6 con cₖ ≡ cₖ', 'texto'],
+    3: () => ['propiedad 4, una vez por sumando', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

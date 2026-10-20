@@ -1,7 +1,9 @@
 // Si a es solución, toda su columna lo es: en la tabla enrollada, cada b ≡ a cumple f(b) ≡ f(a) ≡ 0.
-import { escenaPorCapas, rotulo, nota, num, elegir, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, nota, num, elegir, ANCHO } from '../comun.js';
 import { geoTabla, tabla, columna, aro, mod } from '../piezas/modular.js';
 import { poli, evaluar } from './def-solucion.js';
+
+const ALTO0 = ({ g }) => g.abajo + 90;
 
 export default escenaPorCapas({
   entradas: [
@@ -15,9 +17,9 @@ export default escenaPorCapas({
     const col = Array.from({ length: g.filas }, (_, i) => g.desde + i * n + mod(a, n));
     return { g, col };
   },
-  alto: ({ g }) => g.abajo + 90,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ g, a, n, cs }) => [...tabla('T', g, { colores: { [a]: 'ciruela' } }), aro('aa', g, a, 'ciruela'), nota('n0', 0, `f(x) = ${poli(cs)},  f(${num(a)}) = ${evaluar(cs, a)} ≡ 0 (mod ${n})`, 'texto')],
-  capas: [
+  capas: conPuentes([
     ({ g, col, a, cs, n }) => [
       ...col.filter((v) => v !== a).map((v, i) => ({ ...aro(`b${v}`, g, v, 'cian'), orden: i })),
       rotulo('t1', 24, g.abajo + 36, elegir([`f(b) ≡ f(a): ${col.map((v) => `f(${num(v)}) = ${evaluar(cs, v)}`).join(',  ')}`, 'para cada b de la columna, f(b) ≡ f(a)'], ANCHO - 48), 'texto'),
@@ -27,5 +29,7 @@ export default escenaPorCapas({
       ...col.map((v) => aro(`b${v}`, g, v, 'verde')),
       rotulo('t2', 24, g.abajo + 58, `f(b) ≡ f(a) ≡ 0: toda la columna ${mod(a, n)} son soluciones`, 'verde'),
     ],
-  ],
+  ], {
+    0: () => ['es la propiedad fuerte 4, porque a ≡ b (mod n)', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

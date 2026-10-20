@@ -1,9 +1,11 @@
 // Propiedad 9: un cambio de unidad. Una regla violeta marca la recta cada c (la nueva unidad): a, b y n son
 // múltiplos de c, así que en la regla nueva valen a₁, b₁ y n₁. Los mismos k saltos que llevan de b a a miden kn₁.
-import { escenaPorCapas, planPara, rotulo, nota, carril, num } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, rotulo, nota, carril, num } from '../comun.js';
 import { recta, punto, reglasDobles } from '../primitivas.js';
 
 const YR = 250;
+
+const ALTO0 = () => YR + 50;
 
 export default escenaPorCapas({
   entradas: [
@@ -12,9 +14,9 @@ export default escenaPorCapas({
   ],
   validar: ({ n, c, a, b }) => (n % c || a % c || b % c ? `c = ${c} debe dividir a a, b y n` : (a - b) % n ? `${a} ≢ ${b} (mod ${n})` : null),
   preparar: ({ n, c, a, b }) => ({ plan: planPara([a, b, n]), k: (a - b) / n }),
-  alto: YR + 50,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ plan, a, b }) => [...recta('R', plan, YR), ...punto('PA', plan, a, YR, { etiqueta: `a = ${a}` }), ...punto('PB', plan, b, YR, { c: 'cian', etiqueta: `b = ${b}` })],
-  capas: [
+  capas: conPuentes([
     ({ plan, c, a, b, n }) => [
       ...reglasDobles('U', plan, { b: c, k: Math.floor(plan.max / c), y: YR, abajo: false }),
       rotulo('ut', 24, YR - 72, `regla nueva: la unidad es c = ${c}`, 'violeta'),
@@ -28,5 +30,7 @@ export default escenaPorCapas({
       ...(k === 0 ? [] : carril('K', plan, YR - 120, { salto: Math.sign(k) * n, n: Math.abs(k), desde: b, c: 'verde', etiqueta: `${Math.abs(k)} saltos de n₁ = ${n / c} (en la regla nueva)` })),
       nota('n2', 2, `en la regla nueva: ${a / c} − ${b / c} = ${num(k)}·${n / c},  ${a / c} ≡ ${b / c} (mod ${n / c})`, 'verde'),
     ],
-  ],
+  ], {
+    1: () => ['se divide la igualdad entre c ≠ 0 en los dos lados', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

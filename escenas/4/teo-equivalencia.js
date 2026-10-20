@@ -16,30 +16,39 @@ export default escenaPorCapas({
     const g = geoTabla(n, -n, 4 * n - 1, { x: 40, y: 60, altoMax: 220, ancho: 360 });
     return { g, a: r + 3 * n, b: r - n, c: r + n, XL: 40 + n * g.dx + 30 };
   },
-  alto: ({ g }) => g.abajo + 120,
+  alto: ({ g }) => g.abajo + 186,
   base: ({ g }) => tabla('T', g),
   capas: [
-    ({ g, a, n, XL }) => [
+    ({ g }) => [rotulo('t0', 24, g.abajo + 36, 'equivalencia = reflexiva + simétrica + transitiva', 'texto')],
+    ({ g, a }) => [
       aro('aa', g, a, 'ciruela'), lazo('lz', g.pos(a), 'ciruela'),
-      rotulo('t1', 24, g.abajo + 36, `reflexiva: ${a} ≡ ${a}`, 'ciruela'),
+      rotulo('t1', 24, g.abajo + 58, `reflexiva: ${a} − ${a} = 0 = n·0`, 'ciruela'),
     ],
-    ({ g, a, b, XL }) => [
+    ({ g, a, b, n }) => [
       aro('ab', g, b, 'cian'),
       saltoVertical('ba', g, b, a, 'cian', -12), saltoVertical('ab2', g, a, b, 'cian', 12),
-      rotulo('t2', 24, g.abajo + 58, `simétrica: ${num(a)} ≡ ${num(b)} ⇔ ${num(b)} ≡ ${num(a)}`, 'cian'),
+      rotulo('t2', 24, g.abajo + 80, `simétrica: ${num(a)} − ${num(b)} = ${(a - b) / n}·${n}  ⇔  ${num(b)} − ${num(a)} = ${(b - a) / n}·${n}`, 'cian'),
     ],
-    ({ g, a, b, c, XL }) => [
+    ({ g, a, b, c }) => [
       ...['ba', 'ab2', 'lz'].map((k) => ({ k, quitar: true })),
       aro('ac', g, c, 'violeta'),
       saltoVertical('cb', g, a, c, 'violeta', -12), saltoVertical('bc', g, c, b, 'violeta', -12),
       saltoVertical('ca', g, a, b, 'verde', 14),
-      rotulo('t3', 24, g.abajo + 80, `transitiva: ${a} ≡ ${c} y ${c} ≡ ${num(b)} ⇒ ${a} ≡ ${num(b)}`, 'verde'),
+      rotulo('t3', 24, g.abajo + 102, `transitiva: ${a} ≡ ${c} y ${c} ≡ ${num(b)} ⇒ ${a} ≡ ${num(b)} (se suman los saltos)`, 'verde'),
     ],
-    ({ g, n, XL }) => [
-      ...['cb', 'bc', 'ca', 'aa', 'ab', 'ac'].map((k) => ({ k, quitar: true })),
+    ({ g, n, r, a, b, c }) => [
+      ...['cb', 'bc', 'ca'].map((k) => ({ k, quitar: true })),
+      columna(`col${r}`, g, r, 'violeta'),
+      rotulo('t4', 24, g.abajo + 124, `[${r}] = {x : x ≡ ${r}}: toda la columna; cada entero va a la de su resto`, 'violeta'),
+    ],
+    ({ g, a, b, r }) => [
+      rotulo('t5', 24, g.abajo + 146, `clases que se tocan son iguales: ${num(b)} ≡ ${r} y ${a} ≡ ${r} ⇒ ${a} ≡ ${num(b)}`, 'texto'),
+    ],
+    ({ g, n }) => [
+      ...['aa', 'ab', 'ac'].map((k) => ({ k, quitar: true })),
       ...Array.from({ length: n }, (_, i) => ({ ...columna(`col${i}`, g, i, 'violeta'), orden: i })),
       ...Array.from({ length: n }, (_, i) => ({ ...rotulo(`T:h${i}`, g.x + (i + 0.5) * g.dx, g.y - g.dy - 6, `[${i}]`, 'verde', 'middle'), orden: i })),
-      rotulo('t4', 24, g.abajo + 102, `${n} clases disjuntas, una por columna`, 'verde'),
+      rotulo('t6', 24, g.abajo + 168, `exactamente ${n} clases disjuntas, una por columna`, 'verde'),
     ],
   ],
 });

@@ -1,6 +1,6 @@
 // Cancelación: la aplicación x ↦ cx (mod n) entre dos filas 0…n−1. Con d = mcd(c, n) > 1 pliega: a cada imagen
 // llegan d flechas, desde números separados s = n/d. Por eso de ca ≡ cb solo se recupera a ≡ b (mod n/d).
-import { escenaPorCapas, rotulo, nota } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, nota } from '../comun.js';
 import { geoFilas, filasFlechas, mod } from '../piezas/modular.js';
 import { mcd } from '../../motor/aritmetica.js';
 import { r1 } from '../../motor/escala.js';
@@ -13,6 +13,8 @@ export const aplicacion = (id, n, c, { a, b, fibra = [], xs } = {}) => {
   return { g, ...filasFlechas(id, g, (x) => c * x, { xs, colorFlecha: color, colorArriba: (x) => (color(x) === 'muy-tenue' ? 'texto' : color(x)) }) };
 };
 
+const ALTO0 = () => Y2 + 90;
+
 export default escenaPorCapas({
   entradas: [
     { id: 'c', etiqueta: 'c', valor: 4, min: 1, max: 20 }, { id: 'n', etiqueta: 'n', valor: 10, min: 2, max: 12 },
@@ -24,8 +26,8 @@ export default escenaPorCapas({
     const fibra = Array.from({ length: n }, (_, x) => x).filter((x) => mod(c * x, n) === img);
     return { d, s, r: c / d, img, fibra };
   },
-  alto: Y2 + 90,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ c, n, a, b, img }) => {
       const { g, nodos } = aplicacion('F', n, c, { a, b });
       return [
@@ -58,5 +60,8 @@ export default escenaPorCapas({
         nota('n4', 4, [`a ≡ b (mod n/d = ${s}): ${fibra.join(', ')} van todos a ${img}, separados ${s}`, `a ≡ b (mod n/d = ${s}): las ${d} flechas que llegan a ${img} salen cada ${s}`], 'verde'),
       ];
     },
-  ],
+  ], {
+    1: () => ['(r, s) = 1: si e > 1 dividiera a ambos, d·e dividiría a c y a n', 'texto'],
+    3: () => ['Conferencia 2: s | r·x y (s, r) = 1 ⇒ s | x', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

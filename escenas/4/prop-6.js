@@ -1,10 +1,12 @@
 // Propiedad 6: ac − bd como escuadra. El rectángulo a × c (a columnas, c filas) contiene al b × d (abajo a la
 // izquierda); lo que sobra se parte en una tira (a − b) × c y otra b × (c − d). Sus anchuras a − b y c − d son
 // múltiplos de n: las tiras se cortan en bloques de n.
-import { escenaPorCapas, rotulo, linea, num } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, linea, num } from '../comun.js';
 import { r1 } from '../../motor/escala.js';
 
 const X = 120, Y = 70;
+
+const ALTO0 = ({ c, lado }) => Math.max(Y + c * lado + 120, 300);
 
 export default escenaPorCapas({
   entradas: [
@@ -19,8 +21,8 @@ export default escenaPorCapas({
     const celda = (i, j, col) => ({ k: `c${i}-${j}`, t: 'rect', a: { x: r1(X + i * lado), y: r1(Y + j * lado), width: r1(lado - 2), height: r1(lado - 2), rx: 2 }, c: col });
     return { lado, celda };
   },
-  alto: ({ c, lado }) => Math.max(Y + c * lado + 120, 300),
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ a, b, c, d, lado, celda }) => {
       // celda (i, j): columna i de 0…a−1, fila j de 0…c−1 (la fila 0 arriba); b × d ocupa abajo a la izquierda
       const enBD = (i, j) => i < b && j >= c - d;
@@ -46,5 +48,8 @@ export default escenaPorCapas({
       { ...linea('hb', X - 3, Y + (c - d) * lado - 1, X + b * lado - 1, Y + (c - d) * lado - 1, 'verde'), ancho: 3 },
       rotulo('n2', 24, Y + c * lado + 94, `bloques de anchura n = ${n}:  ac − bd = ${num(a * c - b * d)} = ${n}·${(a * c - b * d) / n}`, 'verde'),
     ],
-  ],
+  ], {
+    1: () => ['se suma y resta bc (sumar 0) para que aparezcan a − b y c − d', 'texto'],
+    2: ({ a, b, c, d, n }) => [`c·(a − b) + b·(c − d) = ${c}·${a - b} + ${b}·${c - d}: los dos son múltiplos de ${n}`, 'verde'],
+  }, (c) => ALTO0(c) + 8),
 });

@@ -1,11 +1,13 @@
 // Propiedad fuerte 3 en rectángulos. a × c con c = qn + d: el trozo a × qn (columnas en bloques de n) se separa
 // y se apaga por ser múltiplo de n; lo que queda, a × d, se compara con b × d: la diferencia es la tira
 // (a − b) × d, múltiplo de n; como mcd(d, n) = 1, n | a − b.
-import { escenaPorCapas, rotulo, nota, linea, num } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, nota, linea, num } from '../comun.js';
 import { mcd } from '../../motor/aritmetica.js';
 import { r1 } from '../../motor/escala.js';
 
 const X = 90, Y = 190;
+
+const ALTO0 = ({ YB, b, lado }) => YB + b * lado + 50;
 
 export default escenaPorCapas({
   entradas: [
@@ -22,8 +24,8 @@ export default escenaPorCapas({
     const xd = X + q * n * lado;                                        // donde empieza el trozo a × d
     return { q, lado, gap, celda, xd, YB: Y + a * lado + 30 };
   },
-  alto: ({ YB, b, lado }) => YB + b * lado + 50,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ a, b, c, d, n, lado, celda, xd, YB }) => [
       ...Array.from({ length: a * c }, (_, t) => celda(t % c, Math.floor(t / c), 'cian')),
       rotulo('la', X - 10, Y + (a * lado) / 2 + 4, `a = ${a}`, 'cian', 'end'),
@@ -62,5 +64,7 @@ export default escenaPorCapas({
       nota('n5', 5, `ad − bd = d(a − b) = ${d}·${a - b} = (k − aq)n`, 'verde'),
     ],
     ({ a, b, n, d }) => [nota('n6', 6, `da ≡ db (mod ${n}) y mcd(${d}, ${n}) = 1  ⇒  ${a} ≡ ${b} (mod ${n})`, 'verde')],
-  ],
+  ], {
+    0: () => ['es la propiedad fuerte 2 aplicada a c ≡ d', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

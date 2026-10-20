@@ -1,6 +1,6 @@
 // Propiedad fuerte 1: una fila por primo p con sus exponentes como barras de bloques: m_p, n_p, max(m_p, n_p)
 // (el mcm) y c_p (los de a − b). Abajo, sobre la recta, los saltos de m, de n y de mcm(m, n) que van de b a a.
-import { escenaPorCapas, planPara, rotulo, carril, num, sup } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, rotulo, carril, num, sup } from '../comun.js';
 import { recta, punto } from '../primitivas.js';
 import { canonica } from '../../motor/primos.js';
 import { mcm } from '../../motor/aritmetica.js';
@@ -10,6 +10,8 @@ const Y0 = 72, DY = 28, COLS = { m: 96, n: 236, M: 376, c: 516 }, L = 14;
 const exps = (v) => Object.fromEntries(canonica(Math.abs(v)));
 const barra = (k, x, y, e, c, orden) => Array.from({ length: e }, (_, i) => ({ k: `${k}-${i}`, t: 'rect', a: { x: x + i * (L + 2), y: r1(y - L + 3), width: L, height: L, rx: 2 }, c, orden }));
 const formula = (v) => canonica(Math.abs(v)).map(([p, e]) => `${p}${e > 1 ? sup(e) : ''}`).join('·') || '1';
+
+const ALTO0 = ({ YB }) => YB + 214;
 
 export default escenaPorCapas({
   entradas: [
@@ -23,8 +25,8 @@ export default escenaPorCapas({
     const YB = Y0 + primos.length * DY + 96;
     return { M, em, en, ec, primos, YB, plan: planPara([a, b]) };
   },
-  alto: ({ YB }) => YB + 214,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ m, n, M, em, en, primos }) => [
       ...Object.entries(COLS).map(([k, x]) => rotulo(`h${k}`, x, Y0 - 34, { m: `m = ${formula(m)}`, n: `n = ${formula(n)}`, M: `mcm = ${formula(M)}`, c: '' }[k], { m: 'violeta', n: 'cian', M: 'ambar', c: 'verde' }[k])).filter((r) => r.txt),
       ...primos.flatMap((p, i) => [
@@ -48,5 +50,8 @@ export default escenaPorCapas({
       ...carril('LM', plan, YB + 92, { salto: Math.sign(a - b) * M, n: Math.abs((a - b) / M), desde: b, c: 'verde', etiqueta: `saltos de mcm = ${M}` }),
     ],
     ({ a, b, M, YB }) => [rotulo('t4', 24, YB + 196, `a ≡ b (mod mcm(m, n)):  ${num(a)} ≡ ${num(b)} (mod ${M})`, 'verde')],
-  ],
+  ], {
+    1: () => ['pᵐᵖ | m y m | a − b: transitividad (igual con n)', 'texto'],
+    2: () => ['p^max(mₚ, nₚ) es uno de los dos (el mayor): ya divide a a − b', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

@@ -1,9 +1,11 @@
 // a ≡ b (n) ⇔ n | a − b sobre la recta enrollada. ⇒: a = kn + r, b = qn + r; los dos «caen» a r; de b a a hay
 // k − q filas, o sea k − q saltos de n. ⇐: los restos r₁, r₂ viven en la fila 0…n−1, a menos de n uno del otro;
 // su diferencia es múltiplo de n solo si es 0.
-import { escenaPorCapas, rotulo, num, por, flecha, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, num, por, flecha, ANCHO } from '../comun.js';
 import { geoTabla, tabla, columna, aro, saltoVertical, mod } from '../piezas/modular.js';
 import { r1 } from '../../motor/escala.js';
+
+const ALTO0 = ({ g }) => g.abajo + 120;
 
 export default escenaPorCapas({
   entradas: [
@@ -17,9 +19,9 @@ export default escenaPorCapas({
     const r = mod(a, n), k = (a - r) / n, q = (b - r) / n;
     return { g, r, k, q, XL: 40 + n * g.dx + 24 };
   },
-  alto: ({ g }) => g.abajo + 120,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ g, a, b }) => tabla('T', g, { colores: { [a]: 'ciruela', [b]: 'cian' } }),
-  capas: [
+  capas: conPuentes([
     ({ g, a, b, n }) => [
       aro('aa', g, a, 'ciruela'), aro('ab', g, b, 'cian'),
       rotulo('h', 24, 26, `⇒  supongamos ${num(a)} ≡ ${num(b)} (mod ${n})`, 'texto'),
@@ -61,5 +63,9 @@ export default escenaPorCapas({
       aro('ar', g, r, 'verde'),
       rotulo('n5', 24, g.abajo + 84, `|r₁ − r₂| < n: el único múltiplo de n posible es 0, r₁ = r₂ = ${r}`, 'verde'),
     ],
-  ],
+  ], {
+    1: ({ k, q }) => [`mismo resto r (definición); k = ${k} y q = ${q} son los cocientes`, 'texto'],
+    7: () => ['n divide a dos números ⇒ divide a su diferencia: r₁ − r₂ = (a − b) − n(q₁ − q₂)', 'texto'],
+    8: () => ['dos restos de 0 … n − 1 distan a lo sumo n − 1; un múltiplo de n tan pequeño es 0', 'verde'],
+  }, (c) => ALTO0(c) + 8),
 });
