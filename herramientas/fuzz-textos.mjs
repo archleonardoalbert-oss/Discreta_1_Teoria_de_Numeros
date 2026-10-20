@@ -1,6 +1,7 @@
 // Busca textos de escena que se salen de la vista probando muchas entradas aleatorias válidas.
 // Uso: node herramientas/fuzz-textos.mjs [libro=2] [casos por escena=1500]
 import path from 'node:path';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const [libroN = '2', casos = '1500'] = process.argv.slice(2);
@@ -8,6 +9,7 @@ const { default: libro } = await import(`${RAIZ}/libros/${libroN}/contenido.js`)
 let s = 12345; const r = () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648);
 const malos = new Map();
 for (const el of libro.elementos) {
+  if (!existsSync(`${RAIZ}/escenas/${el.escena}.js`)) continue;   // escenas aún no escritas
   const { default: esc } = await import(`${RAIZ}/escenas/${el.escena}.js`);
   for (let c = 0, v = 0; c < 4 * casos && v < casos; c++) {
     const e = {};

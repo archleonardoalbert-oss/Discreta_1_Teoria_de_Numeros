@@ -91,3 +91,8 @@ export const por = (a, x) => `${num(a)}·${x < 0 ? `(${num(x)})` : x}`;
 
 /** «n saltos de s», aclarando el sentido cuando n es negativo. */
 export const nSaltos = (n, s) => (n < 0 ? `${-n} saltos de ${num(s)} hacia la izquierda` : `${n} saltos de ${num(s)}`);
+
+const DIG_SUB = '₀₁₂₃₄₅₆₇₈₉', DIG_SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+/** Índices tipográficos: sub(12) → '₁₂', sup(3) → '³'. */
+export const sub = (n) => String(n).split('').map((c) => DIG_SUB[c] ?? c).join('');
+export const sup = (n) => String(n).split('').map((c) => DIG_SUP[c] ?? c).join('');
