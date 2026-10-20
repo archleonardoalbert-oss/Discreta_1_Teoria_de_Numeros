@@ -63,3 +63,19 @@ solo('teo-fundamental', 'dos árboles distintos de 180, sus hojas bajan a dos fi
   const fin = esc.estado(e, 10);
   assert.equal(fin.filter((n) => /^par\d$/.test(n.k) && n.c === 'verde').length, 5);
 });
+
+solo('def-canonica', 'las hojas de 360 se apilan en columnas 2³, 3², 5¹ y se escribe la forma canónica', async () => {
+  const esc = await cargar('def-canonica');
+  const p2 = esc.estado({ a: 360 }, 1);
+  const bloques = p2.filter((n) => /^X:b/.test(n.k) && n.t === 'rect');
+  assert.equal(bloques.length, 6);
+  assert.ok(bloques.every((n) => n.desde), 'cada bloque nace de una hoja');
+  assert.ok(textoVerde(esc.estado({ a: 360 }, 2), '360 = 2³ · 3² · 5'));
+});
+
+solo('cor-canonica', 'dos árboles distintos dan las mismas columnas', async () => {
+  const ns = ultimo(await cargar('cor-canonica'), { n: 180 }, 3);
+  const cuenta = (pre) => ns.filter((n) => n.k.startsWith(pre) && n.t === 'rect').length;
+  assert.equal(cuenta('XA:b'), 5); assert.equal(cuenta('XB:b'), 5);
+  assert.ok(textoVerde(ns, '180 = 2² · 3² · 5'));
+});
