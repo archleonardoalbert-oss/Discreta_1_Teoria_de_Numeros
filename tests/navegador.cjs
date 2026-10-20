@@ -103,15 +103,27 @@ t('cinemática: lo que nace «desde» otra pieza parte de su posición y llega a
   afirmar(final === 'none', `no llegó a su sitio: ${final}`);
 });
 
-t('cinemática: las piezas nuevas aparecen escalonadas', async (b, pg) => {
+t('cinemática: las piezas nuevas aparecen escalonadas (a mitad, las primeras ya se ven más que las últimas)', async (b, pg) => {
   await abrir(pg, 'tests/paginas/svg.html');
   await pg.waitForFunction(() => window.listo);
-  const retrasos = await pg.evaluate(() => {
-    window.prueba([0, 1, 2].map((i) => ({ k: `n${i}`, t: 'circle', a: { cx: 20 + 30 * i, cy: 20, r: 5 }, c: 'cian' })));
-    window.prueba([0, 1, 2, 3, 4].map((i) => ({ k: `n${i}`, t: 'circle', a: { cx: 20 + 30 * i, cy: 20, r: 5 }, c: 'cian' })));
-    return ['n3', 'n4'].map((k) => parseFloat(document.querySelector(`#s [data-k=${k}]`).style.transitionDelay || '0'));
-  });
-  afirmar(retrasos[1] > retrasos[0], `retrasos ${retrasos}`);
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' }]));
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' },
+    ...Array.from({ length: 20 }, (_, i) => ({ k: `n${i}`, t: 'circle', a: { cx: 20 + 15 * i, cy: 20, r: 5 }, c: 'cian' }))]));
+  await pg.waitForTimeout(300);
+  const [primera, ultima] = await pg.evaluate(() => ['n0', 'n19'].map((k) => Number(getComputedStyle(document.querySelector(`#s [data-k=${k}]`)).opacity)));
+  afirmar(primera > ultima + 0.1, `opacidades a los 300 ms: n0 ${primera}, n19 ${ultima}`);
+});
+
+t('cinemática: «orden» agrupa la entrada por significado (los del mismo orden a la vez)', async (b, pg) => {
+  await abrir(pg, 'tests/paginas/svg.html');
+  await pg.waitForFunction(() => window.listo);
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' }]));
+  await pg.evaluate(() => window.prueba([{ k: 'base', t: 'circle', a: { cx: 5, cy: 5, r: 2 }, c: 'tenue' },
+    { k: 'a1', t: 'circle', a: { cx: 20, cy: 20, r: 5 }, c: 'cian', orden: 0 }, { k: 'a2', t: 'circle', a: { cx: 40, cy: 20, r: 5 }, c: 'cian', orden: 0 },
+    { k: 'b1', t: 'circle', a: { cx: 60, cy: 20, r: 5 }, c: 'cian', orden: 3 }]));
+  await pg.waitForTimeout(250);
+  const [a1, a2, b1] = await pg.evaluate(() => ['a1', 'a2', 'b1'].map((k) => Number(getComputedStyle(document.querySelector(`#s [data-k=${k}]`)).opacity)));
+  afirmar(Math.abs(a1 - a2) < 0.05 && a1 > b1 + 0.1, `a1 ${a1}, a2 ${a2}, b1 ${b1}`);
 });
 
 t('cinemática: lo reiluminado late una vez', async (b, pg) => {

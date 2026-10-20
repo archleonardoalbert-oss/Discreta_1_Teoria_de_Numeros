@@ -11,16 +11,16 @@ export default escenaPorCapas({
   entradas: [{ id: 'a', etiqueta: 'a', valor: 360, min: 2, max: 9999 }],
   preparar({ a }) {
     const arbol = arbolFactores('A', construirArbol(a, 'menor'), { x: 24, y: YA, ancho: 330, alto: 230 });
-    const cols = columnasExponentes('X', arbol.posHojas, { x: COL.x, y: BASE, ancho: COL.ancho });
+    const cols = columnasExponentes('X', arbol.posHojas, { x: COL.x, y: Math.max(BASE, YA + arbol.altoUsado), ancho: COL.ancho });
     return { arbol, cols, pares: canonica(a) };
   },
-  alto: BASE + 80,
+  alto: ({ arbol }) => Math.max(BASE, YA + arbol.altoUsado) + 80,
   capas: [
     ({ arbol }) => arbol,
     ({ cols }) => [...cols, rotulo('tc', ANCHO - 24, YA - 34, 'primos iguales apilados: la altura es el exponente', 'texto', 'end')],
-    ({ a, cols, pares }) => [
-      ...pares.map(([p], j) => rotulo(`ord${j}`, COL.x + (COL.ancho / pares.length) * (j + 0.5), BASE + 40, `p${sub(j + 1)}`, 'tenue', 'middle')),
-      rotulo('res', ANCHO / 2, BASE + 68, `${a} = ${cols.formula}`, 'verde', 'middle'),
+    ({ a, cols, pares, arbol }) => [
+      ...pares.map(([p], j) => rotulo(`ord${j}`, COL.x + (COL.ancho / pares.length) * (j + 0.5), Math.max(BASE, YA + arbol.altoUsado) + 40, `p${sub(j + 1)}`, 'tenue', 'middle')),
+      rotulo('res', ANCHO / 2, Math.max(BASE, YA + arbol.altoUsado) + 68, `${a} = ${cols.formula}`, 'verde', 'middle'),
     ],
   ],
 });

@@ -15,7 +15,8 @@ export const linea = (k, x1, y1, x2, y2, c = 'muy-tenue') =>
 /**
  * Escena hecha de capas: el paso i muestra base + capas 0…i (lo anterior se queda dibujado).
  * Si una capa posterior emite una clave ya existente, la sustituye en su sitio (sirve para recolorear).
- * `ref: true` reilumina una pieza anterior solo en el paso de esa capa; `{ k, quitar: true }` la elimina.
+ * `ref: true` reilumina una pieza anterior solo en el paso de esa capa; `{ k, quitar: true }` la elimina;
+ * `{ reemplaza: 'prefijo' }` borra todas las piezas con ese prefijo (un carril vuelto a emitir sustituye al viejo).
  * `preparar(e)` calcula una vez lo que necesitan las capas; reciben {...e, ...preparar(e)}.
  */
 export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas, leyenda, camara }) {
@@ -31,6 +32,7 @@ export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = A
       const ultima = Math.min(paso, capas.length - 1);
       capas.slice(0, ultima + 1).forEach((capa, i) => {
         for (const n of capa(ctx)) {
+          if (n.reemplaza) { for (const k of [...nodos.keys()]) if (k.startsWith(n.reemplaza)) nodos.delete(k); continue; }
           if (n.quitar) nodos.delete(n.k);              // { k, quitar: true }: esa pieza deja de dibujarse
           else nodos.set(n.k, n.ref && i !== ultima ? { ...n, ref: undefined } : n);   // ref: solo se reilumina en su propio paso
         }
@@ -49,7 +51,8 @@ export function planPara(valores, ancho = ANCHO) {
 
 /** Carril: una línea base propia con n saltos de `salto` desde `desde` y su etiqueta a la izquierda. */
 export function carril(id, plan, y, { salto, n, c = 'cian', etiqueta, desde = 0 }) {
-  const ns = [linea(`${id}:base`, plan.x(plan.min), y, plan.x(plan.max), y, 'muy-tenue')];
+  const ns = [{ k: `${id}:*`, reemplaza: `${id}:` },          // si el carril se vuelve a emitir, sustituye al anterior entero
+    linea(`${id}:base`, plan.x(plan.min), y, plan.x(plan.max), y, 'muy-tenue')];
   ns.push(...saltos(id, plan, { desde, salto, n, y, c, alturaMax: 12, numerar: false, rotularGrupos: false }));
   const g = agrupar(Math.abs(salto) * plan.escala, n);
   if (etiqueta) ns.push(rotulo(`${id}:et`, plan.x(plan.min), y - 17, g > 1 ? `${etiqueta}  (cada arco = ${g} saltos)` : etiqueta, c));

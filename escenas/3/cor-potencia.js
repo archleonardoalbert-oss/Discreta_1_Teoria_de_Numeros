@@ -17,15 +17,16 @@ export default escenaPorCapas({
   capas: [
     ({ a, k, p, copias, ak }) => [
       rotulo('n0', X, 28, `${a}${sup(k)} = ${copias.join('·')} = ${ak}  y  ${p} | ${ak}`, 'texto'),
-      ...cajas('A', { x: X, y: Y, valores: copias }),
+      ...cajas('A', { x: X, y: Y, valores: copias, p, reservar: true }),
     ],
-    ({ p, copias }) => cajas('A', { x: X, y: Y, valores: copias, p, marcas: copias.map((_, i) => (i === 0 ? '|' : null)) }),
+    ({ p, copias }) => cajas('A', { x: X, y: Y, valores: copias, p, reservar: true, marcas: copias.map((_, i) => (i === 0 ? '|' : null)) }),
     ({ p, k, copias, a }) => [
-      ...cajas('A', { x: X, y: Y, valores: copias, p, marcas: copias.map(() => '|') }),
+      ...cajas('A', { x: X, y: Y, valores: copias, p, reservar: true, marcas: copias.map(() => '|') }),
       rotulo('n1', X, Y + 62, `todas las copias son iguales: ${p} está en cada una  ⇒  ${p}${sup(k)} | ${a}${sup(k)}`, 'texto'),
     ],
     ({ a, k, p, m, ak, copias }) => [
-      ...cajas('A', { x: X, y: Y, valores: copias.map(() => `${p}·${m}`), p: '', marcas: [], colores: copias.map(() => 'verde') }),
+      ...cajas('A', { x: X, y: Y, valores: copias, p, reservar: true, marcas: copias.map(() => '|'), colores: copias.map(() => 'verde') })
+        .map((n) => (/^A:v\d+$/.test(n.k) ? { ...n, txt: `${p}·${m}` } : n)),
       rotulo('res', ANCHO / 2, Y + 104, `${ak} = ${p}${sup(k)} · ${m}${sup(k)} = ${p ** k} · ${m ** k}`, 'verde', 'middle'),
     ],
   ],

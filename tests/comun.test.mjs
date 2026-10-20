@@ -75,3 +75,10 @@ test('fuera de su paso, una pieza reiluminada conserva su último aspecto (no vu
   assert.equal(x.c, 'texto');
   assert.ok(!x.ref);
 });
+
+test('volver a emitir un carril con menos saltos borra los arcos sobrantes', async () => {
+  const p = planPara([0, 40]);
+  const esc = escenaPorCapas({ entradas: [], alto: 10, capas: [() => carril('c', p, 50, { salto: 4, n: 10 }), () => carril('c', p, 50, { salto: 10, n: 4 })] });
+  const arcos = esc.estado({}, 1).filter((n) => /^c:a\d+$/.test(n.k));
+  assert.equal(arcos.length, 4);
+});

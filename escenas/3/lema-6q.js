@@ -15,14 +15,15 @@ export default escenaPorCapas({
     const pos = (n) => ({ x: xCol(n % 6), y: Y0 + Math.floor(n / 6) * dy });
     const numeros = Array.from({ length: N }, (_, i) => i + 1);
     const columna = (r) => ({ k: `tacha${r}`, t: 'rect', a: { x: r1(xCol(r) - 30), y: r1(Y0 - dy + 4), width: 60, height: r1(filas * dy + 4), rx: 8 }, c: 'muy-tenue' });
-    const aro = (k, n, c, extra = {}) => ({ k, t: 'circle', a: { cx: r1(pos(n).x), cy: r1(pos(n).y - 4), r: 13 }, c, hueco: true, ...extra });
+    const aro = (k, n, c, extra = {}) => ({ k, t: 'circle', a: { cx: r1(pos(n).x), cy: r1(pos(n).y - 4), r: r1(Math.min(13, dy / 2 - 0.5)) }, c, hueco: true, ...extra });
     return { filas, dy, pos, numeros, columna, aro, alto: Y0 + filas * dy + 70 };
   },
   alto: ({ alto }) => alto,
   capas: [
     ({ numeros, pos }) => [
       ...[0, 1, 2, 3, 4, 5].map((r) => encabezado(r, `6q + ${r}`)),
-      ...numeros.map((n) => rotulo(`num${n}`, pos(n).x, pos(n).y, String(n), 'texto', 'middle')),
+      // la recta se enrolla: cada número nace del anterior y llegan uno tras otro
+      ...numeros.map((n) => ({ ...rotulo(`num${n}`, pos(n).x, pos(n).y, String(n), 'texto', 'middle'), ...(n > 1 ? { desde: `num${n - 1}` } : {}), orden: Math.min(n * 0.25, 15) })),
     ],
     ({ numeros, pos, columna, aro }) => [
       ...[0, 2, 4].map(columna),

@@ -19,10 +19,10 @@ export default escenaPorCapas({
   capas: [
     ({ p, a, v, total }) => [
       rotulo('t', X, 36, `${a}${sup(p)} − ${a} = ${total} = a · (a${sup(p - 1)} − 1):`, 'texto'),
-      ...cajas('C', { x: X, y: Y, valores: [String(a), `${a}${sup(p - 1)} − 1 = ${v}`] }),
+      ...cajas('C', { x: X, y: Y, p, reservar: true, valores: [String(a), `${a}${sup(p - 1)} − 1 = ${v}`] }),
     ],
-    ({ p, a, divideA }) => (divideA
-      ? [...cajas('C', { x: X, y: Y, valores: [String(a), ''], p, marcas: ['|', null] }).filter((n) => /:(b|v|m)0$/.test(n.k)), rotulo('c1', X, 160, `caso p | a:  ${p} | ${a}, así que divide al producto`, 'verde')]
+    ({ p, a, v, divideA }) => (divideA
+      ? [...cajas('C', { x: X, y: Y, valores: [String(a), `${a}${sup(p - 1)} − 1 = ${v}`], p, reservar: true, marcas: ['|', null] }).filter((n) => /:(b|v|m)0$/.test(n.k)), rotulo('c1', X, 160, `caso p | a:  ${p} | ${a}, así que divide al producto`, 'verde')]
       : [rotulo('c1', X, 160, `caso p | a: aquí ${p} ∤ ${a}, no aplica`, 'tenue')]),
     ({ p, a, v, divideA }) => (divideA
       ? [rotulo('c2', X, 186, 'caso p ∤ a: no aplica (ya está el primero)', 'tenue')]

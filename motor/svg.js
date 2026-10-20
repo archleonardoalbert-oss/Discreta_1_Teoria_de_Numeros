@@ -7,7 +7,7 @@ import { marcarNuevos } from './nodos.js';
 const NS = 'http://www.w3.org/2000/svg';
 const COMO_CSS = new Set(['cx', 'cy', 'r', 'x', 'y', 'width', 'height', 'd']);   // geometría animable por CSS
 const salientes = new WeakMap();   // elemento → temporizador de borrado
-const ESCALON = 28, ESCALON_MAX = 650;   // ms entre piezas nuevas consecutivas y retraso máximo
+const ESCALON = 28, ESCALON_MAX = 650, GRUPO = 130;   // ms entre piezas nuevas, retraso máximo y entre grupos de `orden`
 
 const duracion = (svg) => {
   const v = getComputedStyle(svg).getPropertyValue('--t-paso').trim();
@@ -65,7 +65,8 @@ export function pintar(svg, previo, actual, { animar = true, referencia = previo
       const recien = !el.isConnected;
       svg.insertBefore(el, anterior ? anterior.nextSibling : svg.firstChild);
       if (recien && ms) {                  // entrada: parte invisible / sin trazar y transiciona al estado final
-        const retraso = Math.min(entrantes++ * ESCALON, ESCALON_MAX);
+        // `orden` agrupa por significado (p. ej. un nivel del árbol); si no, entran una tras otra
+        const retraso = n.orden !== undefined ? Math.min(n.orden * GRUPO, 2000) : Math.min(entrantes++ * ESCALON, ESCALON_MAX);
         el.style.transitionDelay = `${retraso}ms`;
         setTimeout(() => { el.style.transitionDelay = ''; }, ms + retraso + 50);
         el.classList.add('entra');
@@ -81,14 +82,14 @@ export function pintar(svg, previo, actual, { animar = true, referencia = previo
     if (!origen) continue;
     const a = el.getBBox(), o = origen.getBBox();
     const dx = o.x + o.width / 2 - (a.x + a.width / 2), dy = o.y + o.height / 2 - (a.y + a.height / 2);
-    el.style.transition = 'none';
+    el.style.transitionProperty = 'none';   // (no el atajo `transition`: borraría el retraso escalonado)
     el.style.transform = `translate(${dx}px, ${dy}px) scale(.35)`;
   }
   const recien = svg.querySelectorAll(':scope > .entra');
   if (recien.length) {
     svg.getBoundingClientRect();
     requestAnimationFrame(() => requestAnimationFrame(() => recien.forEach((el) => {
-      el.style.transition = '';
+      el.style.transitionProperty = '';
       el.style.transform = '';
       el.classList.remove('entra');
     })));

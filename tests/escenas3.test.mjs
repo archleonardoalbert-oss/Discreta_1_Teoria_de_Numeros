@@ -110,7 +110,7 @@ solo('teo-fermat', 'p = 7, a = 3: los restos 3, 6, 2, 5, 1, 4 vuelan a 1…6 y 3
   const esc = await cargar('teo-fermat'), e = { p: 7, a: 3 };
   assert.deepEqual(esc.estado(e, 1).filter((n) => /^R:v\d$/.test(n.k)).map((n) => n.txt), ['3', '6', '2', '5', '1', '4']);
   const p3 = esc.estado(e, 2);
-  assert.equal(p3.find((n) => n.k === 'S:v0').desde, 'R:v4', 'la casilla 1 recibe el resto de 5·3 = 15');
+  assert.equal(p3.find((n) => n.k === 'R:v4').txt, '1', 'el resto de 5·3 = 15 es 1');
   assert.ok(textoVerde(ultimo(esc, e, 5), '3⁶ = 729 = 7·104 + 1'));
   assert.ok(esc.validar({ p: 7, a: 14 }), 'p | a debe avisar');
 });
@@ -119,4 +119,39 @@ solo('cor-fermat', 'a(a^{p−1} − 1) con los dos casos', async () => {
   const esc = await cargar('cor-fermat');
   assert.ok(textoVerde(ultimo(esc, { p: 5, a: 10 }, 3), '5 | 10'));
   assert.ok(textoVerde(ultimo(esc, { p: 5, a: 3 }, 3), '5 | 80'));
+});
+
+solo('lema-euclides', 'tras recontar, el carril solo tiene saltos de p (sin arcos viejos de a)', async () => {
+  const ns = (await cargar('lema-euclides')).estado({ p: 5, a: 2, b: 5 }, 4);
+  assert.ok(ns.filter((n) => /^l1:a\d+$/.test(n.k)).every((n) => n.c === 'violeta'));
+});
+
+solo('teo-fundamental', 'los dos árboles nunca son idénticos y los árboles profundos tienen ramas hacia abajo', async () => {
+  const { construirArbol } = await import('../escenas/piezas/arbol.js');
+  const esc = await cargar('teo-fundamental');
+  const forma = (ns, pre) => ns.filter((n) => n.k.startsWith(pre) && n.t === 'text').map((n) => `${n.k.slice(pre.length)}=${n.txt}`).sort().join();
+  const p6 = esc.estado({ n: 8 }, 5);
+  assert.notEqual(forma(p6, 'A:'), forma(p6, 'B:'), 'con n = 8 los dos árboles coinciden');
+  const hondo = esc.estado({ n: 8192 }, 5);
+  for (const l of hondo.filter((n) => /^[AB]:l/.test(n.k))) assert.ok(l.a.y2 > l.a.y1, `rama ${l.k} hacia arriba`);
+  const fila = esc.estado({ n: 8192 }, 8).filter((n) => /^P:b\d+$/.test(n.k));
+  assert.ok(fila.every((n) => n.a.x + n.a.width <= 676), 'la fila se sale');
+});
+
+solo('teo-fermat', 'las cajas de restos se reordenan ellas mismas hasta 1…p−1', async () => {
+  const esc = await cargar('teo-fermat'), e = { p: 7, a: 3 };
+  const antes = esc.estado(e, 1).find((n) => n.k === 'R:b4'), despues = esc.estado(e, 2).find((n) => n.k === 'R:b4');
+  assert.ok(despues.a.x < antes.a.x, 'el resto 1 (de 15) se mueve a la primera casilla');
+  assert.ok(esc.estado(e, 2).some((n) => n.k === 'R0:b4'), 'queda la huella del orden original');
+});
+
+solo('teo-wilson', 'p = 2 y p = 3 tienen textos propios y −1 se rotula en el reloj', async () => {
+  const esc = await cargar('teo-wilson');
+  for (const p of [2, 3]) { const t = textos(ultimo(esc, { p }, 6)); assert.ok(!/·\s*→|·\s*$|solo 1 y 1/.test(t), `p = ${p}: ${t}`); }
+  assert.ok(esc.estado({ p: 13 }, 2).some((n) => n.k === 'menos1rel' && n.txt === '= −1'));
+});
+
+solo('lema-6q', 'los números se enrollan: cada uno nace del anterior', async () => {
+  const ns = (await cargar('lema-6q')).estado({ N: 60 }, 0);
+  assert.equal(ns.find((n) => n.k === 'num7').desde, 'num6');
 });
