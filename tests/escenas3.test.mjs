@@ -51,3 +51,15 @@ solo('cor-potencia', 'cada copia de a aporta un p: 1728 = 2³·6³', async () =>
   const ns = ultimo(await cargar('cor-potencia'), { a: 12, k: 3, p: 2 }, 4);
   assert.ok(textos(ns).includes('1728 = 2³ · 6³'), textos(ns));
 });
+
+solo('teo-fundamental', 'dos árboles distintos de 180, sus hojas bajan a dos filas ordenadas y se emparejan', async () => {
+  const esc = await cargar('teo-fundamental'), e = { n: 180 };
+  const p5 = esc.estado(e, 4);
+  assert.equal(p5.filter((n) => /^A:a/.test(n.k)).length, 5, 'el árbol A tiene 5 hojas');
+  assert.ok(esc.estado(e, 5).some((n) => n.k === 'B:nr0' && n.txt === '12'), 'el árbol B parte 180 = 12·15');
+  const p9 = esc.estado(e, 8);
+  assert.deepEqual(p9.filter((n) => /^P:v\d$/.test(n.k)).map((n) => n.txt), ['2', '2', '3', '3', '5']);
+  assert.ok(p9.find((n) => n.k === 'P:v0').desde, 'las hojas bajan volando desde el árbol');
+  const fin = esc.estado(e, 10);
+  assert.equal(fin.filter((n) => /^par\d$/.test(n.k) && n.c === 'verde').length, 5);
+});

@@ -23,3 +23,16 @@ test('hasta: solo las filas pedidas', () => {
   assert.equal(cuadrados(ns, 2).length, 0);
   assert.equal(cuadrados(ns, 1).length, 1);
 });
+
+test('árbol de factores: por el menor primo y por el divisor más cercano a √n', async () => {
+  const { construirArbol, arbolFactores, hojas } = await import('../escenas/piezas/arbol.js');
+  const a = construirArbol(180, 'menor'), b = construirArbol(180, 'raiz');
+  assert.deepEqual(hojas(a).sort((x, y) => x - y), [2, 2, 3, 3, 5]);
+  assert.deepEqual(b.hijos.map((h) => h.v), [12, 15]);
+  assert.deepEqual(hojas(b).sort((x, y) => x - y), [2, 2, 3, 3, 5]);
+  const ns = arbolFactores('A', a, { x: 0, y: 40, ancho: 300, alto: 220 });
+  assert.equal(new Set(ns.map((n) => n.k)).size, ns.length);
+  const hijo = ns.find((n) => n.t === 'text' && n.txt === '90');
+  assert.ok(hijo.desde, 'los hijos nacen de su padre');
+  assert.equal(construirArbol(97, 'menor').hijos, undefined);
+});
