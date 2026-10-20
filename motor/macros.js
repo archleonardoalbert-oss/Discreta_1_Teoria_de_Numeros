@@ -4,6 +4,7 @@ export const MACROS = {
   '\\mcd': '\\operatorname{mcd}',
   '\\mcm': '\\operatorname{mcm}',
   '\\Z': '\\mathbb{Z}',
+  '\\N': '\\mathbb{N}',
   '\\cResto': '\\htmlClass{k-ambar}{#1}',
   '\\cSalto': '\\htmlClass{k-cian}{#1}',
   '\\cDado': '\\htmlClass{k-ciruela}{#1}',

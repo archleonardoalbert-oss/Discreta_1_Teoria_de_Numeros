@@ -2,7 +2,7 @@
 // `ilustracion`: SVG pequeño con la idea central del libro (viewBox 0 0 120 50).
 export const catalogo = [
   {
-    numero: 1, romano: 'I', titulo: 'Principios · Divisibilidad', color: 'cian', disponible: false,
+    numero: 1, romano: 'I', titulo: 'Principios · Divisibilidad', color: 'cian', disponible: true,
     ilustracion: '<line x1="2" y1="40" x2="118" y2="40" class="i-eje"/><path d="M5 40Q20 12 35 40M35 40Q50 12 65 40M65 40Q80 12 95 40" class="i-cian"/><circle cx="95" cy="40" r="4" class="i-ciruela-r"/>',
   },
   {

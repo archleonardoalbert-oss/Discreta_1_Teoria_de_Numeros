@@ -101,3 +101,18 @@ const DIG_SUB = '₀₁₂₃₄₅₆₇₈₉', DIG_SUP = '⁰¹²³⁴⁵⁶�
 /** Índices tipográficos: sub(12) → '₁₂', sup(3) → '³'. */
 export const sub = (n) => String(n).split('').map((c) => DIG_SUB[c] ?? c).join('');
 export const sup = (n) => String(n).split('').map((c) => DIG_SUP[c] ?? c).join('');
+
+/** Flecha recta de (x1, y1) a (x2, y2) con punta; `curva` > 0 la arquea hacia la izquierda del sentido de avance. */
+export function flecha(k, x1, y1, x2, y2, c = 'texto', curva = 0) {
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+  const cx = (x1 + x2) / 2 - uy * curva, cy = (y1 + y2) / 2 + ux * curva;
+  // la punta sigue la tangente final (de control a destino)
+  const tx = x2 - cx, ty = y2 - cy, T = Math.hypot(tx, ty) || 1, vx = tx / T, vy = ty / T, P = 7;
+  const p1 = [x2 - P * vx + P * 0.5 * vy, y2 - P * vy - P * 0.5 * vx], p2 = [x2 - P * vx - P * 0.5 * vy, y2 - P * vy + P * 0.5 * vx];
+  const cuerpo = curva ? `M ${r1(x1)} ${r1(y1)} Q ${r1(cx)} ${r1(cy)} ${r1(x2)} ${r1(y2)}` : `M ${r1(x1)} ${r1(y1)} L ${r1(x2)} ${r1(y2)}`;
+  return { k, t: 'path', a: { d: `${cuerpo} M ${r1(p1[0])} ${r1(p1[1])} L ${r1(x2)} ${r1(y2)} L ${r1(p2[0])} ${r1(p2[1])}` }, c };
+}
+
+/** Marcador triangular que apunta hacia abajo, con la punta en (x, y). */
+export const marcador = (k, x, y, c = 'ambar') =>
+  ({ k, t: 'path', a: { d: `M ${r1(x - 7)} ${r1(y - 12)} L ${r1(x + 7)} ${r1(y - 12)} L ${r1(x)} ${r1(y)} Z` }, c, relleno: true });
