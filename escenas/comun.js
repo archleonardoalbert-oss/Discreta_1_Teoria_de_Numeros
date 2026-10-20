@@ -116,3 +116,16 @@ export function flecha(k, x1, y1, x2, y2, c = 'texto', curva = 0) {
 /** Marcador triangular que apunta hacia abajo, con la punta en (x, y). */
 export const marcador = (k, x, y, c = 'ambar') =>
   ({ k, t: 'path', a: { d: `M ${r1(x - 7)} ${r1(y - 12)} L ${r1(x + 7)} ${r1(y - 12)} L ${r1(x)} ${r1(y)} Z` }, c, relleno: true });
+
+/**
+ * Pizarra rodante para demostraciones largas: en el paso i se ven las notas i−filas+1 … i (la nueva abajo); las
+ * anteriores suben y la más vieja se va. `notas`: lista de [texto | redacciones, color] (una por paso; null = nada).
+ */
+export function rodante(notas, i, { filas = 5, x = 24, y = 28, dy = 22, id = 'nr', ancho = ANCHO - 48 } = {}) {
+  const hechas = notas.slice(0, i + 1).map((n, j) => [n, j]).filter(([n]) => n);
+  const vivas = hechas.slice(-filas), fuera = hechas.slice(0, -filas);
+  return [
+    ...fuera.map(([, j]) => ({ k: `${id}${j}`, quitar: true })),
+    ...vivas.map(([[txt, c], j], f) => rotulo(`${id}${j}`, x, y + f * dy, elegir(txt, ancho), j === i ? c : (c === 'verde' ? 'verde' : 'tenue'))),
+  ];
+}

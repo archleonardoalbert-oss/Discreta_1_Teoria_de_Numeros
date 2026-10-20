@@ -14,7 +14,11 @@ const ORDEN = {
   4: ['def-congruencia', 'teo-congruencia-divide', 'teo-equivalencia', ...Array.from({ length: 10 }, (_, i) => `prop-${i + 1}`),
     'teo-cancelacion', 'cor-cancelacion-coprimos', 'cor-cancelacion-primo', 'fuerte-1', 'fuerte-2', 'fuerte-3', 'fuerte-4',
     'def-solucion', 'teo-solucion-clase', 'teo-fermat'],
+  5: ['def-src', 'teo-src-k', 'def-ecuacion-lineal', 'teo-soluble', 'ej-3x-9', 'teo-d-soluciones', 'ej-18x-30', 'cor-unica',
+    'teo-chino', 'ej-chino'],
 };
+// Libros que ya tienen sus «ideas para tus demostraciones» en cada elemento.
+const CON_CLAVES = new Set(['5']);
 
 for (const l of readdirSync(new URL('../libros/', import.meta.url)).filter((d) => /^\d+$/.test(d))) {
   const { default: libro } = await import(`../libros/${l}/contenido.js`);
@@ -28,7 +32,8 @@ for (const l of readdirSync(new URL('../libros/', import.meta.url)).filter((d) =
       assert.equal(e.escena, `${l}/${e.id}`);
       assert.ok(existsSync(new URL(`../escenas/${e.escena}.js`, import.meta.url)), `${e.id}: falta la escena`);
       for (const p of e.pasos) assert.ok(p.marca === undefined || ['corregido', 'añadido'].includes(p.marca), `${e.id}: marca`);
-      for (const s of [e.nombre, e.enunciado, e.explicacion, ...e.pasos.map((p) => p.texto)])
+      if (CON_CLAVES.has(l)) assert.ok(e.claves?.length >= 2 && e.claves.every((c) => c.idea && c.texto), `${e.id}: faltan ideas clave`);
+      for (const s of [e.nombre, e.enunciado, e.explicacion, ...e.pasos.map((p) => p.texto), ...(e.claves ?? []).flatMap((c) => [c.idea, c.texto])])
         for (const f of formulas(s)) {
           assert.doesNotThrow(() => katex.renderToString(f.tex, { displayMode: f.display, throwOnError: true, macros: { ...MACROS }, trust: TRUST, strict: 'ignore' }), `${e.id}: ${f.tex}`);
           assert.ok(!/<[A-Za-z]/.test(f.tex), `${e.id}: «<» pegado a letra`);
