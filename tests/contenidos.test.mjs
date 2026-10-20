@@ -11,6 +11,9 @@ const TIPOS = ['DEF', 'LEMA', 'TEO', 'COR', 'PROP', 'EJ', 'MET', 'PRIN'];
 const ORDEN = {
   1: ['pbo', 'pim', 'teo-pbo-pim', 'ej-suma-impares', 'def-divide', 'lema-divisor-0', 'teo-divisor-menor', 'teo-transitiva',
     'teo-division', 'def-primo', 'cor-compuesto', 'lema-divisor-primo', 'teo-infinitos-primos'],
+  4: ['def-congruencia', 'teo-congruencia-divide', 'teo-equivalencia', ...Array.from({ length: 10 }, (_, i) => `prop-${i + 1}`),
+    'teo-cancelacion', 'cor-cancelacion-coprimos', 'cor-cancelacion-primo', 'fuerte-1', 'fuerte-2', 'fuerte-3', 'fuerte-4',
+    'def-solucion', 'teo-solucion-clase', 'teo-fermat'],
 };
 
 for (const l of readdirSync(new URL('../libros/', import.meta.url)).filter((d) => /^\d+$/.test(d))) {
@@ -43,4 +46,13 @@ test('libro I: erratas corregidas y añadidos marcados', async () => {
   for (const id of ['pbo', 'pim', 'def-divide', 'def-primo']) assert.equal(el(id).pasosAñadidos, 'idea', id);
   for (const id of ['lema-divisor-0', 'teo-divisor-menor', 'cor-compuesto']) assert.equal(el(id).pasosAñadidos, 'demostracion', id);
   assert.ok(el('teo-pbo-pim').pasos.filter((p) => p.marca === 'añadido').length >= 4, 'falta PIM ⇒ PBO');
+});
+
+test('libro IV: erratas corregidas y añadidos marcados', async () => {
+  const { default: libro } = await import('../libros/4/contenido.js');
+  const el = (id) => libro.elementos.find((x) => x.id === id), txt = JSON.stringify(libro);
+  assert.ok(!txt.includes('cogruente') && !txt.includes('múltiplicamos'));
+  assert.ok(el('prop-7').enunciado.includes('a^k \\equiv b^k'), 'propiedad 7 con potencias');
+  assert.equal(el('prop-2').marcaEnunciado, 'corregido');
+  assert.ok(el('teo-fermat').pasos.some((p) => p.marca === 'añadido' && p.texto.includes('cancelar')));
 });
