@@ -180,12 +180,12 @@ t('elemento: con movimiento reducido las transiciones son instantáneas', async 
   afirmar(t === '0s', `--t-paso = ${t}`);
 });
 
-t('portada: 5 libros de frente y solo el II se puede abrir', async (b, pg) => {
+t('portada: 5 libros de frente y se abren el II y el III', async (b, pg) => {
   const errores = await abrir(pg, 'index.html');
   await pg.waitForSelector('.portada');
   afirmar((await pg.locator('.portada').count()) === 5, 'no hay 5 portadas');
   const enlaces = await pg.$$eval('a.portada', (as) => as.map((a) => a.getAttribute('href')));
-  afirmar(JSON.stringify(enlaces) === JSON.stringify(['libro.html?l=2']), `enlaces: ${enlaces}`);
+  afirmar(JSON.stringify(enlaces) === JSON.stringify(['libro.html?l=2', 'libro.html?l=3']), `enlaces: ${enlaces}`);
   afirmar((await pg.locator('.portada svg').count()) === 5, 'faltan ilustraciones');
   afirmar(!errores.length, errores.join(' | '));
 });

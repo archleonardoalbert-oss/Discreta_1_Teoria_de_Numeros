@@ -10,7 +10,7 @@ export const catalogo = [
     ilustracion: '<line x1="2" y1="22" x2="118" y2="22" class="i-eje"/><g class="i-ciruela-r"><circle cx="10" cy="22" r="3"/><circle cx="40" cy="22" r="3"/><circle cx="70" cy="22" r="3"/><circle cx="100" cy="22" r="3"/></g><rect x="5" y="32" width="75" height="5" class="i-cian-r"/><rect x="5" y="41" width="105" height="5" class="i-ambar-r"/>',
   },
   {
-    numero: 3, romano: 'III', titulo: 'Primos · Teorema Fundamental', color: 'ambar', disponible: false,
+    numero: 3, romano: 'III', titulo: 'Primos · Teorema Fundamental', color: 'ambar', disponible: true,
     ilustracion: '<g class="i-ambar-r"><rect x="5" y="10" width="14" height="14"/><rect x="21" y="10" width="14" height="14"/><rect x="37" y="10" width="22" height="14"/></g><rect x="5" y="28" width="54" height="14" class="i-eje-r"/><text x="66" y="38" class="i-texto">=2·2·3</text>',
   },
   {
