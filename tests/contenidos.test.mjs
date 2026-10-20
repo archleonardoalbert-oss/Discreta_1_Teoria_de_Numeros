@@ -18,7 +18,7 @@ const ORDEN = {
     'teo-chino', 'ej-chino'],
 };
 // Libros que ya tienen sus «ideas para tus demostraciones» en cada elemento.
-const CON_CLAVES = new Set(['1', '4', '5']);
+const CON_CLAVES = new Set(['1', '3', '4', '5']);
 
 for (const l of readdirSync(new URL('../libros/', import.meta.url)).filter((d) => /^\d+$/.test(d))) {
   const { default: libro } = await import(`../libros/${l}/contenido.js`);

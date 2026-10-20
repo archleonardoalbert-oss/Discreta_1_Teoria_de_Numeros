@@ -1,9 +1,11 @@
 // p | aᵏ ⇒ p | a y pᵏ | aᵏ: aᵏ son k copias de a; p está en una copia, luego en todas.
-import { escenaPorCapas, rotulo, sup, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, sup, ANCHO } from '../comun.js';
 import { cajas } from '../piezas/cajas.js';
 import { validarPrimo } from './lema-p-no-divide.js';
 
 const X = 24, Y = 80;
+
+const ALTO0 = () => 210;
 
 export default escenaPorCapas({
   entradas: [
@@ -13,8 +15,8 @@ export default escenaPorCapas({
   ],
   validar: ({ a, k, p }) => validarPrimo(p) ?? (a % p !== 0 ? `${p} ∤ ${a}${sup(k)}: elige p que divida a a` : null),
   preparar: ({ a, k, p }) => ({ copias: Array(k).fill(a), m: a / p, ak: a ** k }),
-  alto: 210,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ a, k, p, copias, ak }) => [
       rotulo('n0', X, 28, `${a}${sup(k)} = ${copias.join('·')} = ${ak}  y  ${p} | ${ak}`, 'texto'),
       ...cajas('A', { x: X, y: Y, valores: copias, p, reservar: true }),
@@ -29,5 +31,7 @@ export default escenaPorCapas({
         .map((n) => (/^A:v\d+$/.test(n.k) ? { ...n, txt: `${p}·${m}` } : n)),
       rotulo('res', ANCHO / 2, Y + 104, `${ak} = ${p}${sup(k)} · ${m}${sup(k)} = ${p ** k} · ${m ** k}`, 'verde', 'middle'),
     ],
-  ],
+  ], {
+    1: () => ['el teorema con todos los factores iguales a a', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

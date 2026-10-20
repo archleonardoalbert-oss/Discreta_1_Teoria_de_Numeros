@@ -1,11 +1,13 @@
 // Lema de Euclides: (p, a) = 1 da ax + py = 1 (carriles de saltos). Multiplicar por b lleva a b; como ab = p·r,
 // los saltos de a se pueden contar como saltos de p, y b queda alcanzado solo con saltos de p: p | b.
-import { escenaPorCapas, planPara, carril, rotulo, linea, nota, por, num, nSaltos, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, planPara, carril, rotulo, linea, nota, por, num, nSaltos, ANCHO } from '../comun.js';
 import { recta, punto, rectangulo } from '../primitivas.js';
 import { combinacionMcd, mcd } from '../../motor/aritmetica.js';
 import { validarPrimo } from './lema-p-no-divide.js';
 
 const Y1 = 196, Y2 = 246, EJE = 304, RY = EJE + 70;
+
+const ALTO0 = ({ a, lado }) => RY + a * lado + 40;
 
 export default escenaPorCapas({
   entradas: [
@@ -19,9 +21,9 @@ export default escenaPorCapas({
     const r = (a * b) / p, lado = Math.max(4, Math.min(14, Math.floor(420 / b), Math.floor(130 / a)));
     return { x, y, r, lado, p1: planPara([a * x, 1, a * x * b, b, 0]) };
   },
-  alto: ({ a, lado }) => RY + a * lado + 40,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p1 }) => recta('eje', p1, EJE),
-  capas: [
+  capas: conPuentes([
     ({ p, a, x, y, p1 }) => [
       ...carril('l1', p1, Y1, { salto: a, n: x, c: 'cian', etiqueta: `x = ${num(x)}: ${nSaltos(x, a)}` }),
       ...carril('l2', p1, Y2, { salto: p, n: y, desde: a * x, c: 'violeta', etiqueta: `y = ${num(y)}: ${nSaltos(y, p)}` }),
@@ -48,5 +50,8 @@ export default escenaPorCapas({
       nota('n4', 4, [`abx = prx:  ${nSaltos(b * x, a)} miden lo mismo que ${nSaltos(r * x, p)}`, `abx = prx:  ${num(b * x)} saltos de ${a} = ${num(r * x)} saltos de ${p}`]),
     ],
     ({ p, b, x, y, r }) => [rotulo('res', ANCHO / 2, 28 + 5 * 22, `b = p(rx + by) = ${p}·(${num(r * x)} + ${y * b < 0 ? `(${num(b * y)})` : b * y}) = ${b}:  solo saltos de ${p}  ⇒  ${p} | ${b}`, 'verde', 'middle')],
-  ],
+  ], {
+    0: ({ p, a }) => [`si p | a ya está; si no, (${p}, ${a}) = 1 (lema anterior) y Bézout da ax + py = 1`, 'texto'],
+    4: () => ['se cambió ab por pr: ahora los dos sumandos llevan el factor p', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

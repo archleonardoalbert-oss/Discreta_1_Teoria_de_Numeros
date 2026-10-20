@@ -21,7 +21,7 @@ export const linea = (k, x1, y1, x2, y2, c = 'muy-tenue') =>
  */
 export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas, leyenda, camara }) {
   return {
-    entradas, validar, capas: capas.length, leyenda,
+    entradas, validar, capas: capas.length, leyenda, indices: capas.indices,
     // camara(ctx, paso) → [x, y, ancho, alto] o null (vista completa)
     ...(camara ? { camara: (e, paso) => camara({ ...e, ...preparar(e) }, paso) } : {}),
     vista: (e) => ({ ancho, alto: typeof alto === 'function' ? alto({ ...e, ...preparar(e) }) : alto }),
@@ -137,8 +137,13 @@ export function rodante(notas, i, { filas = 5, x = 24, y = 28, dy = 22, id = 'nr
  */
 export function conPuentes(capas, puentes, y) {
   const fila = (c) => (typeof y === 'function' ? y(c) : y);
-  return capas.flatMap((capa, i) => [
+  const indices = [];
+  let j = 0;
+  for (let i = 0; i < capas.length; i++) { indices.push(j); j += puentes[i] ? 2 : 1; }
+  const nuevas = capas.flatMap((capa, i) => [
     (c) => [{ k: 'puente', quitar: true }, ...capa(c)],
     ...(puentes[i] ? [(c) => { const [t, col = 'texto'] = puentes[i](c); return [rotulo('puente', 24, fila(c), elegir(t, ANCHO - 48), col)]; }] : []),
   ]);
+  Object.defineProperty(nuevas, 'indices', { value: indices });   // capa original i → paso nuevo
+  return nuevas;
 }

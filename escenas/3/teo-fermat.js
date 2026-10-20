@@ -1,12 +1,14 @@
 // Pequeño Teorema de Fermat: los múltiplos a, 2a, …, (p−1)a dejan restos distintos y no nulos; las propias cajas
 // de los restos se reordenan hasta quedar 1, 2, …, p−1 (se ve que es una permutación; queda la huella del orden
 // original). Comparando productos sale aᵖ⁻¹ con resto 1.
-import { escenaPorCapas, rotulo, elegir, sup, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, elegir, sup, ANCHO } from '../comun.js';
 import { cajas } from '../piezas/cajas.js';
 import { factorialBig } from '../../motor/primos.js';
 import { validarPrimo } from './lema-p-no-divide.js';
 
 const X = 24, YM = 64, YR = 176, YS = 286, HUECO = 10;
+
+const ALTO0 = () => YS + 110;
 
 export default escenaPorCapas({
   entradas: [
@@ -20,8 +22,8 @@ export default escenaPorCapas({
     const ap = BigInt(a) ** BigInt(p - 1);
     return { is, mult, restos, ap, F: factorialBig(p - 1) };
   },
-  alto: YS + 110,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ mult, restos, a }) => [
       rotulo('tm', X, YM - 34, `múltiplos de a = ${a}:`, 'texto'),
       ...cajas('M', { x: X, y: YM, valores: mult, hueco: HUECO }),
@@ -43,5 +45,8 @@ export default escenaPorCapas({
     },
     ({ p, a, F, ap }) => [rotulo('n3', X, YS + 40, elegir([`a·2a·…·(p−1)a = ${p - 1}!·${a}${sup(p - 1)} deja el mismo resto que ${p - 1}! = ${F}`, `${p - 1}!·${a}${sup(p - 1)} deja el mismo resto que ${p - 1}!`], ANCHO - 48), 'texto')],
     ({ p, a, ap }) => [rotulo('res', ANCHO / 2, YS + 76, `p ∤ ${p - 1}!  ⇒  ${a}${sup(p - 1)} = ${ap} = ${p}·${(ap - 1n) / BigInt(p)} + 1`, 'verde', 'middle')],
-  ],
+  ], {
+    1: () => ['ninguno es 0: p ∤ i y p ∤ a ⇒ p ∤ ia (Euclides); y 0 < j − i < p', 'texto'],
+    3: () => ['mismo resto ⇒ la diferencia (p − 1)!(aᵖ⁻¹ − 1) es múltiplo de p', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });
