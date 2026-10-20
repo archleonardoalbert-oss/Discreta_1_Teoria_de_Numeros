@@ -11,6 +11,7 @@ export default {
   ],
   validar: () => null,
   vista,
+  camara: (e, paso) => (paso === 2 ? [200, 60, 440, 140] : null),   // el último paso acerca la cámara al resto
   estado({ a, b }, paso) {
     const { q, r } = division(a, b);
     const p = planRecta({ min: Math.min(0, a) - b, max: Math.max(0, a) + b, ancho: vista().ancho });

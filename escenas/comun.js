@@ -18,9 +18,11 @@ export const linea = (k, x1, y1, x2, y2, c = 'muy-tenue') =>
  * `ref: true` reilumina una pieza anterior solo en el paso de esa capa; `{ k, quitar: true }` la elimina.
  * `preparar(e)` calcula una vez lo que necesitan las capas; reciben {...e, ...preparar(e)}.
  */
-export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas, leyenda }) {
+export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas, leyenda, camara }) {
   return {
     entradas, validar, capas: capas.length, leyenda,
+    // camara(ctx, paso) → [x, y, ancho, alto] o null (vista completa)
+    ...(camara ? { camara: (e, paso) => camara({ ...e, ...preparar(e) }, paso) } : {}),
     vista: (e) => ({ ancho, alto: typeof alto === 'function' ? alto({ ...e, ...preparar(e) }) : alto }),
     estado(e, paso) {
       const ctx = { ...e, ...preparar(e) };

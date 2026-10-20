@@ -18,10 +18,11 @@
   --violeta: #7d6cc4;
   --lectura: 'Lectura', Georgia, serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
-  --t-paso: .55s;
+  --t-paso: .75s;
+  --curva: cubic-bezier(.65, 0, .35, 1);   /* «smooth» de 3Blue1Brown: arranca y frena suave */
   color-scheme: dark;
 }
-@media (prefers-reduced-motion: reduce) { :root { --t-paso: 0s; } }
+@media (prefers-reduced-motion: reduce) { :root { --t-paso: 0s; } .escena .ref { animation: none; } }
 
 * { box-sizing: border-box; }
 body {
@@ -41,7 +42,10 @@ a:hover { text-decoration: underline; }
 .c-muy-tenue { --c: var(--muy-tenue); } .c-texto { --c: var(--texto); }
 .escena [data-k] {
   transition: opacity var(--t-paso), cx var(--t-paso), cy var(--t-paso), r var(--t-paso), x var(--t-paso), y var(--t-paso),
-              width var(--t-paso), height var(--t-paso), d var(--t-paso), stroke-dashoffset var(--t-paso), fill var(--t-paso), stroke var(--t-paso);
+              width var(--t-paso), height var(--t-paso), d var(--t-paso), stroke-dashoffset var(--t-paso), fill var(--t-paso), stroke var(--t-paso),
+              transform var(--t-paso);
+  transition-timing-function: var(--curva);
+  transform-box: fill-box; transform-origin: center;
 }
 .escena text[data-k] { fill: var(--c); stroke: none; }
 .escena circle[data-k] { fill: var(--c); stroke: none; }
@@ -52,8 +56,10 @@ a:hover { text-decoration: underline; }
 .escena .hecho { opacity: .62; }
 .escena text.hecho { opacity: .85; }      /* la memoria escrita debe seguir legible: ≥ 4,5:1 en cian, ámbar y verde */
 .escena .nuevo { opacity: 1; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--c) 70%, transparent)); }
-.escena .ref { opacity: 1; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 55%, transparent)); }
+.escena .ref { opacity: 1; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 55%, transparent)); animation: pulso .7s var(--curva) 1; }
+@keyframes pulso { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
 .escena .supuesto { stroke-dasharray: .035 .025 !important; }
+.escena text.entra:not([style*=translate]) { transform: translateY(7px); }   /* el texto sube un poco al aparecer */
 .escena text.supuesto { font-style: italic; opacity: .85; }
 .escena .entra { opacity: 0; stroke-dashoffset: 1; }
 .escena .sale { opacity: 0; }
