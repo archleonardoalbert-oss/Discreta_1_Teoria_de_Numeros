@@ -248,17 +248,17 @@ t('portada: 5 libros de frente y se abren los disponibles', async (b, pg) => {
 
 t('índice de libro: lista los elementos con su tipo y enlaza a cada página', async (b, pg) => {
   const errores = await abrir(pg, 'libro.html?base=tests/paginas/&l=0');
-  await pg.waitForSelector('ol.indice-libro a');
-  const hrefs = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => a.getAttribute('href')));
+  await pg.waitForSelector('#raiz > ol.indice-libro a');
+  const hrefs = await pg.$$eval('#raiz > ol.indice-libro a', (as) => as.map((a) => a.getAttribute('href')));
   afirmar(JSON.stringify(hrefs) === JSON.stringify(['elemento.html?base=tests/paginas/&l=0&e=division']), `hrefs: ${hrefs}`);
-  afirmar((await pg.textContent('ol.indice-libro')).includes('Teorema'), 'sin etiqueta de tipo');
+  afirmar((await pg.textContent('#raiz > ol.indice-libro')).includes('Teorema'), 'sin etiqueta de tipo');
   afirmar(!errores.length, errores.join(' | '));
 });
 
 t('el Libro II lista sus 22 elementos en orden', async (b, pg) => {
   await abrir(pg, 'libro.html?l=2');
-  await pg.waitForSelector('ol.indice-libro a');
-  const ids = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => new URL(a.href).searchParams.get('e')));
+  await pg.waitForSelector('#raiz > ol.indice-libro a');
+  const ids = await pg.$$eval('#raiz > ol.indice-libro a', (as) => as.map((a) => new URL(a.href).searchParams.get('e')));
   afirmar(ids.length === 22, `hay ${ids.length}`);
   afirmar(ids[0] === 'def-mcd' && ids[21] === 'cor-multiplo-mcm', `orden: ${ids[0]} … ${ids[21]}`);
 });
