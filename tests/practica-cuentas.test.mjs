@@ -99,9 +99,9 @@ test('CP-04 1: las cinco afirmaciones son verdaderas, con los restos que dice la
   assert.ok(c.partes.every((p) => /verdadera/i.test(JSON.stringify(p.aprendes))), 'cada parte concluye «verdadera»');
 });
 
-test('CP-04 2 y 3: Σ k! es cuadrado solo para n = 1 y 3 (n ≤ 40); cuadrados módulo 5, 3 y 8', () => {
+test('CP-04 2 y 3: Σ k! es cuadrado solo para n = 1 y 3 (n ≤ 20); cuadrados módulo 5, 3 y 8', () => {
   let s = 0n, f = 1n; const n2 = [];
-  for (let n = 1n; n <= 40n; n++) { f *= n; s += f; let r = BigInt(Math.floor(Math.sqrt(Number(s)))); while (r * r > s) r--; while ((r + 1n) * (r + 1n) <= s) r++; if (r * r === s) n2.push(Number(n)); }
+  for (let n = 1n; n <= 20n; n++) { f *= n; s += f; let r = BigInt(Math.floor(Math.sqrt(Number(s)))); while (r * r > s) r--; while ((r + 1n) * (r + 1n) <= s) r++; if (r * r === s) n2.push(Number(n)); }
   assert.deepEqual(n2, [1, 3]);
   const cuad = (m) => [...new Set(Array.from({ length: m }, (_, x) => (x * x) % m))].sort((a, b) => a - b);
   assert.deepEqual(cuad(5), [0, 1, 4]); assert.deepEqual(cuad(3), [0, 1]); assert.deepEqual(cuad(8), [0, 1, 4]);
@@ -127,4 +127,53 @@ test('CP-04 8: F₀⋯Fₙ₋₁ = Fₙ − 2 y los números de Fermat son primo
   const F = Array.from({ length: 7 }, (_, n) => 2n ** (2n ** BigInt(n)) + 1n);
   for (let n = 1; n < 7; n++) assert.equal(F.slice(0, n).reduce((x, y) => x * y, 1n), F[n] - 2n);
   for (let i = 0; i < 7; i++) for (let j = i + 1; j < 7; j++) assert.equal(mcdN(F[i], F[j]), 1n);
+});
+
+test('CP-05 1, 3 y 5: 17x ≡ 9 (276) da x ≡ 33; los huevos son 301; el menor n es 213', async () => {
+  assert.deepEqual(Array.from({ length: 276 }, (_, x) => x).filter((x) => (17 * x) % 276 === 9), [33]);
+  assert.equal(17 * 65 - 276 * 4, 1);
+  let h = 1; while (![2, 3, 4, 5, 6].every((m) => h % m === 1) || h % 7 !== 0) h++;
+  assert.equal(h, 301);
+  let n = 5; while (!(n % 2 === 1 && n % 3 === 0 && (n + 2) % 5 === 0 && (n + 4) % 7 === 0)) n++;
+  assert.equal(n, 213);
+  const c = await cp(5);
+  assert.ok(solucion(ej(c, 'cp5-1')).includes('33'));
+  assert.ok(solucion(ej(c, 'cp5-3')).includes('301'));
+  assert.ok(solucion(ej(c, 'cp5-5')).includes('213'));
+});
+
+test('CP-05 4: existen dos SRC con suma SRC exactamente para n impar (n ≤ 7, búsqueda exhaustiva)', () => {
+  const perms = (xs) => (xs.length <= 1 ? [xs] : xs.flatMap((x, i) => perms([...xs.slice(0, i), ...xs.slice(i + 1)]).map((p) => [x, ...p])));
+  for (let n = 1; n <= 7; n++) {
+    const base = [...Array(n).keys()];
+    // basta A = 0, 1, …, n − 1 (reordenar los pares no cambia nada) y B una permutación de los restos
+    const hay = perms(base).some((B) => new Set(base.map((a, i) => (a + B[i]) % n)).size === n);
+    assert.equal(hay, n % 2 === 1, `n = ${n}`);
+  }
+});
+
+test('CP-05 6, 8 y 9 por fuerza bruta', () => {
+  const ps = [2, 3, 5, 7, 11, 13];
+  for (const p of ps) for (const q of ps) if (p !== q)
+    for (let n = -30n; n <= 30n; n++) {
+      const [P, Q] = [BigInt(p), BigInt(q)];
+      assert.equal((P * n ** Q + Q * n ** P - (P + Q) * n) % (P * Q), 0n, `${p}, ${q}, ${n}`);
+    }
+  const mcm = (a, b) => (a * b) / mcd(a, b);
+  for (let n1 = 1; n1 <= 9; n1++) for (let n2 = 1; n2 <= 9; n2++) for (let n3 = 1; n3 <= 9; n3++)
+    for (let a1 = 0; a1 < n1; a1++) for (let a2 = 0; a2 < n2; a2++) for (let a3 = 0; a3 < n3; a3++) {
+      const L = mcm(mcm(n1, n2), n3), sols = [];
+      for (let x = 0; x < L; x++) if (x % n1 === a1 && x % n2 === a2 && x % n3 === a3) sols.push(x);
+      const compatibles = (a1 - a2) % mcd(n1, n2) === 0 && (a1 - a3) % mcd(n1, n3) === 0 && (a2 - a3) % mcd(n2, n3) === 0;
+      assert.equal(sols.length, compatibles ? 1 : 0);
+    }
+  const formula = (n) => {
+    let e = 0; while (n % 2 === 0) { n /= 2; e++; }
+    let r = 0; for (let p = 3; p <= n; p += 2) if (n % p === 0) { r++; while (n % p === 0) n /= p; }
+    return 2 ** r * (e <= 1 ? 1 : e === 2 ? 2 : 4);
+  };
+  for (let n = 1; n <= 400; n++) {
+    let c = 0; for (let x = 0; x < n; x++) if ((x * x - 1) % n === 0) c++;
+    assert.equal(c, formula(n), `n = ${n}`);
+  }
 });

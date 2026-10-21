@@ -18,7 +18,7 @@ export const catalogo = [
     ilustracion: '<circle cx="60" cy="25" r="20" class="i-verde"/><g class="i-verde-r"><circle cx="60" cy="5" r="3"/><circle cx="79" cy="31" r="3"/><circle cx="41" cy="31" r="3"/></g>',
   },
   {
-    numero: 5, romano: 'V', titulo: 'Sistemas residuales · TCR', color: 'violeta', disponible: true,
+    numero: 5, romano: 'V', titulo: 'Sistemas residuales · TCR', color: 'violeta', disponible: true, practica: true,
     ilustracion: '<circle cx="35" cy="25" r="14" class="i-violeta"/><circle cx="60" cy="25" r="14" class="i-cian"/><circle cx="85" cy="25" r="14" class="i-ciruela"/>',
   },
 ];
