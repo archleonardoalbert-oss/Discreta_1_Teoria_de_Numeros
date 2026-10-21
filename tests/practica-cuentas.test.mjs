@@ -50,3 +50,37 @@ test('CP-02 7 y 8: a | bc ⇒ a | (a,b)(a,c) y aⁿ | bⁿ ⇒ a | b, por fuerza
     for (let n = 1; n <= 4; n++) if (b ** n % a ** n === 0) assert.equal(b % a, 0);
   }
 });
+
+const esPrimo = (n) => { if (n < 2) return false; for (let d = 2; d * d <= n; d++) if (n % d === 0) return false; return true; };
+
+test('CP-03 1: si aⁿ − 1 es primo, a = 2 y n primo; si aⁿ + 1 es primo, a par y n potencia de 2 (a, n ≤ 30 con valor < 10¹²)', () => {
+  for (let a = 2; a <= 30; a++) for (let n = 2; n <= 30; n++) {
+    const v = a ** n; if (v > 1e12) continue;
+    if (esPrimo(v - 1)) assert.ok(a === 2 && esPrimo(n), `${a}^${n} − 1`);
+    if (esPrimo(v + 1)) assert.ok(a % 2 === 0 && (n & (n - 1)) === 0, `${a}^${n} + 1`);
+  }
+});
+
+test('CP-03 2: para 4 < n ≤ 300, n | (n − 1)! si y solo si n es compuesto; y 4 ∤ 3!', () => {
+  for (let n = 5; n <= 300; n++) {
+    let f = 1; for (let k = 1; k < n; k++) f = (f * k) % n;
+    assert.equal(f === 0, !esPrimo(n), `n = ${n}`);
+  }
+  assert.notEqual(6 % 4, 0);
+});
+
+test('CP-03 3: la descomposición canónica de 20! es 2¹⁸ · 3⁸ · 5⁴ · 7² · 11 · 13 · 17 · 19', async () => {
+  let f = 1n; for (let k = 1n; k <= 20n; k++) f *= k;
+  assert.equal(f, 2n ** 18n * 3n ** 8n * 5n ** 4n * 7n ** 2n * 11n * 13n * 17n * 19n);
+  const s = solucion(ej(await cp(3), 'cp3-3'));
+  for (const t of ['2^{18}', '3^{8}', '5^{4}', '7^{2}']) assert.ok(s.includes(t), t);
+});
+
+test('CP-03 4, 6 y 7: el 15.º primo es 47; solo p = 3 hace primo a p² + 2; pₙ ≤ 2^(2^(n−1)) para n ≤ 5', () => {
+  const primos = []; for (let n = 2; primos.length < 15; n++) if (esPrimo(n)) primos.push(n);
+  assert.equal(primos[14], 47);
+  for (let p = 2; p < 3000; p++) if (esPrimo(p) && esPrimo(p * p + 2)) assert.equal(p, 3);
+  assert.ok(esPrimo(29));
+  const ps = []; for (let n = 2; ps.length < 5; n++) if (esPrimo(n)) ps.push(n);
+  ps.forEach((p, i) => assert.ok(p <= 2 ** (2 ** i)));
+});
