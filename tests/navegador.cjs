@@ -360,6 +360,23 @@ t('ejercicio: planteamiento, nota, vecinos y sin scroll horizontal en pantalla e
   afirmar(errores.length === 0, errores.join(' | '));
 });
 
+t('índice de libro: la clase práctica aparece tras los elementos y enlaza cada ejercicio', async (b, pg) => {
+  const errores = await abrir(pg, 'libro.html?base=tests/paginas/&l=0');
+  await pg.waitForSelector('#practica a');
+  const r = await pg.$$eval('#practica a', (as) => as.map((a) => a.getAttribute('href')));
+  afirmar(r.length === 2 && r[0] === 'ejercicio.html?base=tests/paginas/&l=0&x=cp0-1', JSON.stringify(r));
+  afirmar((await pg.textContent('#practica')).includes('1 de enero de 2025'), 'falta la fecha');
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('elemento: «Se practica en» enlaza a los ejercicios que lo citan como concepto', async (b, pg) => {
+  const errores = await abrir(pg, FIX); await montada(pg);
+  await pg.waitForSelector('.practica-en a');
+  const r = await pg.$$eval('.practica-en a', (as) => as.map((a) => [a.getAttribute('href'), a.textContent]));
+  afirmar(r.length === 2 && r[0][0] === 'ejercicio.html?base=tests/paginas/&l=0&x=cp0-1' && r[0][1].includes('CP 0 · ejercicio 1'), JSON.stringify(r));
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
 const fs = require('node:fs');
 for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.test(d))) {
   t(`recorrido del libro ${l}: todos los pasos sin errores, KaTeX correcto y vuelta exacta al inicio`, async (b, pg) => {

@@ -2,6 +2,7 @@
 // la demostración paso a paso (izquierda) y la escena animada con sus entradas (derecha).
 import { MACROS, TRUST } from './macros.js';
 import { crearEstudio, h, marca, LEYENDA } from './estudio.js';
+import { cargarPracticas, ejerciciosQueCitan } from './practicas.js';
 
 export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedad', EJ: 'Ejemplo', MET: 'Método', PRIN: 'Principio' };
 export { LEYENDA };
@@ -21,7 +22,7 @@ export function rotuloPasos(el) {
 }
 
 /** Monta la página. `anterior`/`siguiente`: {href, nombre} o null. */
-export function montarElemento(raiz, { libro, elemento, escena, anterior, siguiente, hrefLibro }) {
+export function montarElemento(raiz, { libro, elemento, escena, anterior, siguiente, hrefLibro, practicaEn = [] }) {
   const estudio = crearEstudio({
     pasos: elemento.pasos, escena, nombre: elemento.nombre,
     rotulo: rotuloPasos(elemento), rotuloAñadido: !!elemento.pasosAñadidos,
@@ -42,6 +43,9 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
     ...(elemento.claves?.length ? [h('section', { className: 'claves' },
       h('p', { className: 'rotulo mono', textContent: 'para tus demostraciones · ideas que te llevas' }),
       h('ul', {}, ...elemento.claves.map((c) => h('li', {}, h('b', { innerHTML: c.idea }), h('span', { innerHTML: c.texto })))))] : []),
+    practicaEn.length ? h('section', { className: 'practica-en' },
+      h('p', { className: 'rotulo mono', textContent: 'se practica en' }),
+      h('ul', {}, ...practicaEn.map((x) => h('li', {}, h('a', { href: x.href, textContent: x.texto }), ' ', h('span', { innerHTML: x.nombre }))))) : null,
     h('nav', { className: 'vecinos' },
       anterior ? h('a', { href: anterior.href, className: 'ant', textContent: `← ${anterior.nombre}` }) : h('span'),
       siguiente ? h('a', { href: siguiente.href, className: 'sig', textContent: `${siguiente.nombre} →` }) : h('span')));
@@ -67,6 +71,7 @@ export async function arrancar() {
       libro, elemento, escena,
       anterior: enlace(libro.elementos[i - 1]), siguiente: enlace(libro.elementos[i + 1]),
       hrefLibro: `libro.html?${base ? `base=${base}&` : ''}l=${libro.numero}`,
+      practicaEn: ejerciciosQueCitan(await cargarPracticas(base, libro.numero), libro.numero, elemento.id, base),
     });
   } catch (err) {
     raiz.replaceChildren(h('p', { className: 'aviso', textContent: `No se pudo abrir la página: ${err.message}` }));
