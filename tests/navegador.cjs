@@ -286,6 +286,80 @@ t('elemento: la leyenda explica solo los colores que hay en la escena', async (b
 });
 
 // Recorre, para cada libro y cada elemento cuya escena ya existe, todos los pasos hacia delante y hacia atrás.
+const EJ = 'ejercicio.html?base=tests/paginas/&l=0&x=cp0-1';
+const parte = (p) => `.parte[data-p=${p}]`;
+const abrirEj = async (pg, ruta = EJ) => {
+  const errores = await abrir(pg, ruta);
+  await pg.evaluate(() => { try { localStorage.clear(); } catch {} });
+  await pg.reload({ waitUntil: 'load' });
+  await pg.waitForSelector('.parte');
+  return errores;
+};
+const visibles = (pg, sel) => pg.$$eval(sel, (els) => els.filter((e) => e.offsetParent !== null).length);
+
+t('ejercicio: las pistas se abren una a una y la solución está oculta hasta pedirla', async (b, pg) => {
+  const errores = await abrirEj(pg);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 0, 'hay pistas abiertas al llegar');
+  const txt = await pg.textContent(`${parte('a')} [data-a=pista]`);
+  afirmar(txt.includes('1 de 3') && txt.includes('concepto'), `botón: ${txt}`);
+  await pg.click(`${parte('a')} [data-a=pista]`);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 1, 'no abrió exactamente una');
+  afirmar((await pg.textContent(`${parte('a')} [data-a=pista]`)).includes('estrategia'), 'el botón no anuncia la siguiente');
+  await pg.click(`${parte('a')} [data-a=pista]`); await pg.click(`${parte('a')} [data-a=pista]`);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 3, 'no están las 3');
+  afirmar(await visibles(pg, `${parte('a')} [data-a=pista]`) === 0, 'sigue ofreciendo pistas sin quedar ninguna');
+  afirmar(await visibles(pg, `${parte('a')} .solucion`) === 0, 'la solución se ve sin pedirla');
+  await pg.click(`${parte('a')} [data-a=solucion]`);
+  afirmar(await visibles(pg, `${parte('a')} .solucion li`) === 1, 'la solución no empieza en el primer paso');
+  afirmar(await visibles(pg, `${parte('a')} .aprendes`) === 0, 'Qué te llevas antes de terminar');
+  await pg.click(`${parte('a')} [data-a=siguiente]`); await pg.click(`${parte('a')} [data-a=siguiente]`);
+  afirmar(await visibles(pg, `${parte('a')} .solucion li`) === 3, 'no reveló los 3 pasos');
+  afirmar(await visibles(pg, `${parte('a')} .aprendes`) === 1, 'falta Qué te llevas al terminar');
+  afirmar(await pg.$$eval('.katex', (k) => k.length) > 0 && !(await pg.$('.katex-error')), 'KaTeX');
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('ejercicio: el progreso sobrevive a recargar y es por parte', async (b, pg) => {
+  await abrirEj(pg);
+  await pg.click(`${parte('a')} [data-a=pista]`); await pg.click(`${parte('a')} [data-a=pista]`);
+  await pg.click(`${parte('b')} [data-a=solucion]`);
+  await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.parte');
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 2, 'parte a no conserva 2 pistas');
+  afirmar(await visibles(pg, `${parte('b')} .pista`) === 0, 'parte b heredó pistas');
+  afirmar(await visibles(pg, `${parte('b')} .solucion`) === 1 && await visibles(pg, `${parte('a')} .solucion`) === 0, 'solución vista no es por parte');
+  await pg.click(`${parte('a')} [data-a=reiniciar]`);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 0, '«empezar de cero» no borra');
+});
+
+t('ejercicio: la solución con escena revela los pasos uno a uno y termina en Qué te llevas', async (b, pg) => {
+  const errores = await abrirEj(pg);
+  await pg.click(`${parte('b')} [data-a=solucion]`);
+  await pg.waitForFunction(() => document.querySelector('.parte[data-p=b] .escena svg [data-k]'));
+  afirmar(await visibles(pg, `${parte('b')} .pasos li`) === 1, 'se ven pasos futuros');
+  await pg.click(`${parte('b')} [data-a=adelante]`); await pg.click(`${parte('b')} [data-a=adelante]`);
+  afirmar(await visibles(pg, `${parte('b')} .pasos li`) === 3 && await visibles(pg, `${parte('b')} .aprendes`) === 1, 'no terminó');
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('ejercicio: la pista-concepto enlaza a la página del elemento con su nombre', async (b, pg) => {
+  await abrirEj(pg);
+  await pg.click(`${parte('a')} [data-a=pista]`);
+  const a = await pg.$eval(`${parte('a')} .pista a`, (x) => ({ href: x.getAttribute('href'), txt: x.textContent }));
+  afirmar(a.href === 'elemento.html?base=tests/paginas/&l=0&e=division' && a.txt.includes('Algoritmo de la División (prueba)'), JSON.stringify(a));
+});
+
+t('ejercicio: planteamiento, nota, vecinos y sin scroll horizontal en pantalla estrecha', async (b, pg) => {
+  await pg.setViewportSize({ width: 380, height: 800 });
+  const errores = await abrirEj(pg);
+  afirmar(await visibles(pg, '.planteamiento .escena svg') === 1, 'falta el planteamiento');
+  afirmar((await pg.textContent('.nota')).includes('aclaración'), 'falta la nota');
+  afirmar(await pg.$eval('.vecinos .sig', (x) => x.getAttribute('href')).then((h) => h.includes('x=cp0-2')), 'siguiente ejercicio');
+  const ancho = await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  afirmar(ancho <= 0, `scroll horizontal de ${ancho}px`);
+  await pg.setViewportSize({ width: 1280, height: 800 });
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
 const fs = require('node:fs');
 for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.test(d))) {
   t(`recorrido del libro ${l}: todos los pasos sin errores, KaTeX correcto y vuelta exacta al inicio`, async (b, pg) => {

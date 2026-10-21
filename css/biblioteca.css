@@ -172,3 +172,33 @@ ol.indice-libro .tipo { justify-self: start; }
 /* símbolos de la demostración con el color de su pieza en el dibujo */
 .k-ambar { color: var(--ambar); } .k-cian { color: var(--cian); } .k-ciruela { color: var(--ciruela); }
 .k-violeta { color: var(--violeta); } .k-verde { color: var(--verde); }
+
+/* ============ clase práctica: página de ejercicio ============ */
+.tipo-CP { --c: var(--ambar); }
+.nota { max-width: 70ch; margin: 0 0 22px; padding: 10px 16px; border-left: 3px solid var(--ambar); background: var(--panel); border-radius: 0 10px 10px 0; color: var(--texto-2); font-size: 17px; }
+.planteamiento { margin: 0 0 30px; }
+.plan-texto { max-width: 70ch; color: var(--texto-2); margin-bottom: 14px; }
+.parte { margin: 26px 0 0; padding-top: 18px; border-top: 1px solid var(--borde); }
+.parte-cabecera { display: flex; gap: 12px; align-items: baseline; max-width: 70ch; margin-bottom: 12px; }
+.parte-cabecera .etiqueta { color: var(--ambar); font-size: 15px; }
+.pistas { display: grid; gap: 12px; max-width: 80ch; }
+.pista { padding: 10px 16px 12px; border-left: 3px solid var(--c); background: var(--panel); border-radius: 0 10px 10px 0; font-size: 17px; line-height: 1.7; --c: var(--cian); }
+.pista .rotulo { color: var(--c); }
+.pista-concepto { --c: var(--verde); } .pista-estrategia { --c: var(--cian); } .pista-arranque { --c: var(--ambar); } .pista-desbloqueo { --c: var(--violeta); }
+.pista .enlaces { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.pista .enlaces li { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.pista .donde { font-size: 11px; color: var(--tenue); }
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0; }
+.acciones button, .solucion .controles button { background: var(--panel); border: 1px solid var(--borde-2); color: var(--texto); border-radius: 8px; padding: 7px 14px; font-size: 14px; cursor: pointer; }
+.acciones button:hover, .solucion .controles button:hover { border-color: var(--ambar); }
+.acciones .ver-solucion { color: var(--texto-2); }
+.acciones .reiniciar { margin-left: auto; border-color: transparent; background: none; color: var(--tenue); font-size: 12px; }
+.solucion { margin-top: 8px; }
+ol.pasos-solucion { max-width: 80ch; }
+ol.pasos-solucion li { cursor: default; }
+ol.pasos.ocultar-futuros li.futuro { display: none; }
+.aprendes { max-width: 80ch; margin: 22px 0 6px; }
+.aprendes .resultado { padding: 10px 16px; border-left: 3px solid var(--verde); background: var(--panel); border-radius: 0 10px 10px 0; color: #ece7d8; }
+.aprendes ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+.aprendes li { padding: 12px 16px; border-left: 3px solid var(--violeta); background: var(--panel); border-radius: 0 10px 10px 0; font-size: 17px; line-height: 1.65; color: var(--texto-2); }
+.aprendes li b { display: block; color: #ece7d8; font-weight: 600; margin-bottom: 2px; }

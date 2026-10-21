@@ -1,28 +1,10 @@
 // Página de un elemento (definición, lema, teorema…): enunciado, explicación y, en dos columnas,
 // la demostración paso a paso (izquierda) y la escena animada con sus entradas (derecha).
-import { pintar } from './svg.js';
-import { crearEntradas } from './entradas.js';
 import { MACROS, TRUST } from './macros.js';
-import { moverCamara } from './camara.js';
+import { crearEstudio, h, marca, LEYENDA } from './estudio.js';
 
 export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedad', EJ: 'Ejemplo', MET: 'Método', PRIN: 'Principio' };
-// Significado fijo de cada color en todas las escenas (una escena puede precisarlo con `leyenda`).
-export const LEYENDA = { cian: 'saltos / divisor', ciruela: 'número dado', ambar: 'resto · paso actual', violeta: 'auxiliar (conjuntos, reglas)', verde: 'resultado' };
-const MARCAS = { corregido: 'corregido', añadido: 'añadido · no está en la conferencia' };
-
-const h = (tag, props = {}, ...hijos) => {
-  const el = document.createElement(tag);
-  for (const [k, v] of Object.entries(props)) {
-    if (k === 'dataset') Object.assign(el.dataset, v);
-    else if (k in el && k !== 'list') el[k] = v;
-    else el.setAttribute(k, v);
-  }
-  el.append(...hijos.filter((x) => x != null));
-  return el;
-};
-const marca = (m) => (m ? h('span', { className: `marca marca-${m}`, textContent: MARCAS[m] }) : null);
-const valoresIniciales = (escena) => Object.fromEntries(escena.entradas.map((e) => [e.id, Array.isArray(e.valor) ? [...e.valor] : e.valor]));
-
+export { LEYENDA };
 export const katex = (raiz) => window.renderMathInElement?.(raiz, {
   delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
   throwOnError: false,
@@ -40,19 +22,10 @@ export function rotuloPasos(el) {
 
 /** Monta la página. `anterior`/`siguiente`: {href, nombre} o null. */
 export function montarElemento(raiz, { libro, elemento, escena, anterior, siguiente, hrefLibro }) {
-  const N = elemento.pasos.length;
-  let e = valoresIniciales(escena), paso = 0, previo = null;
-
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('role', 'img');
-  const lista = h('ol', { className: 'pasos' }, ...elemento.pasos.map((p, i) =>
-    h('li', { dataset: { i } }, h('span', { className: 'texto', innerHTML: p.texto }), marca(p.marca))));
-  const cuenta = h('span', { className: 'cuenta mono' });
-  const aviso = h('p', { className: 'aviso', role: 'status', hidden: true });
-  const caja = h('div', { className: 'entradas' });
-  const tira = h('div', { className: 'tira', hidden: true, role: 'dialog', 'aria-label': 'todos los pasos' });
-  const leyenda = h('ul', { className: 'leyenda mono', 'aria-label': 'leyenda de colores' });
-  const boton = (a, txt, titulo) => h('button', { type: 'button', textContent: txt, title: titulo, dataset: { a } });
+  const estudio = crearEstudio({
+    pasos: elemento.pasos, escena, nombre: elemento.nombre,
+    rotulo: rotuloPasos(elemento), rotuloAñadido: !!elemento.pasosAñadidos,
+  });
 
   raiz.replaceChildren(
     h('nav', { className: 'migas mono' },
@@ -65,15 +38,7 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
     h('section', { className: 'explicacion' },
       h('p', { className: 'rotulo mono', textContent: 'explicación (no es de la conferencia)' }),
       h('div', { innerHTML: elemento.explicacion })),
-    h('div', { className: 'estudio' },
-      h('section', { className: 'columna-pasos' }, h('p', { className: `rotulo mono${elemento.pasosAñadidos ? ' rotulo-añadido' : ''}`, textContent: rotuloPasos(elemento) }), lista),
-      h('section', { className: 'columna-escena' },
-        h('div', { className: 'escena' }, svg),
-        leyenda,
-        h('div', { className: 'controles' },
-          boton('inicio', '⏮', 'al primer paso'), boton('atras', '◀', 'paso anterior (←)'),
-          cuenta, boton('adelante', '▶', 'paso siguiente (→)'), boton('tira', '▦ tira', 'ver todos los pasos')),
-        tira, caja, aviso)),
+    estudio.raiz,
     ...(elemento.claves?.length ? [h('section', { className: 'claves' },
       h('p', { className: 'rotulo mono', textContent: 'para tus demostraciones · ideas que te llevas' }),
       h('ul', {}, ...elemento.claves.map((c) => h('li', {}, h('b', { innerHTML: c.idea }), h('span', { innerHTML: c.texto })))))] : []),
@@ -82,67 +47,7 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
       siguiente ? h('a', { href: siguiente.href, className: 'sig', textContent: `${siguiente.nombre} →` }) : h('span')));
 
   katex(raiz);
-
-  const dibujar = (animar) => {
-    const { ancho, alto } = escena.vista(e);
-    // la escena puede acercar la cámara a una zona en un paso (zoom); si no, se ve entera
-    const ms = animar && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 750 : 0;
-    moverCamara(svg, escena.camara?.(e, paso) ?? [0, 0, ancho, alto], ms);
-    svg.setAttribute('aria-label', `${elemento.nombre}, paso ${paso + 1} de ${N}`);
-    const actual = escena.estado(e, paso);
-    // lo «nuevo» es lo que introduce este paso respecto al anterior, venga de donde venga el usuario
-    const referencia = paso > 0 ? escena.estado(e, paso - 1) : null;
-    pintar(svg, previo, actual, { animar, referencia });
-    previo = actual;
-    const colores = Object.keys(LEYENDA).filter((c) => actual.some((n) => n.c === c));
-    leyenda.replaceChildren(...colores.map((c) =>
-      h('li', { dataset: { color: c } }, h('i', { className: `muestra c-${c}` }), (escena.leyenda?.[c]) ?? LEYENDA[c])));
-    cuenta.textContent = `${paso + 1}/${N}`;
-    [...lista.children].forEach((li, i) => { li.className = i < paso ? 'hecho' : i === paso ? 'actual' : 'futuro'; });
-  };
-  const ir = (i) => {
-    const nuevo = Math.max(0, Math.min(N - 1, i));
-    if (nuevo === paso && previo) return;
-    paso = nuevo;
-    dibujar(true);
-  };
-
-  crearEntradas(caja, escena.entradas, ({ valores, error }) => {
-    const motivo = error ?? escena.validar(valores);
-    aviso.hidden = !motivo;
-    aviso.textContent = motivo || '';
-    if (motivo) return;
-    e = valores;
-    dibujar(true);
-  });
-
-  raiz.querySelector('[data-a=inicio]').addEventListener('click', () => ir(0));
-  raiz.querySelector('[data-a=atras]').addEventListener('click', () => ir(paso - 1));
-  raiz.querySelector('[data-a=adelante]').addEventListener('click', () => ir(paso + 1));
-  lista.addEventListener('click', (ev) => { const li = ev.target.closest('li'); if (li) ir(Number(li.dataset.i)); });
-  // Vista de tira: una miniatura estática por paso; pulsar una lleva a ese paso.
-  const abrirTira = () => {
-    const { ancho, alto } = escena.vista(e);
-    tira.replaceChildren(...elemento.pasos.map((_, i) => {
-      const mini = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      mini.setAttribute('viewBox', `0 0 ${ancho} ${alto}`);
-      pintar(mini, null, escena.estado(e, i), { animar: false, referencia: i > 0 ? escena.estado(e, i - 1) : null });
-      const b = h('button', { type: 'button', className: `miniatura${i === paso ? ' actual' : ''}`, title: `paso ${i + 1}` },
-        h('span', { className: 'mono', textContent: String(i + 1) }), h('div', { className: 'escena' }, mini));
-      b.addEventListener('click', () => { tira.hidden = true; ir(i); });
-      return b;
-    }));
-    tira.hidden = false;
-  };
-  raiz.querySelector('[data-a=tira]').addEventListener('click', () => (tira.hidden ? abrirTira() : (tira.hidden = true)));
-  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') tira.hidden = true; });
-  document.addEventListener('keydown', (ev) => {
-    if (ev.target.closest?.('input, textarea') || ev.altKey || ev.ctrlKey || ev.metaKey) return;
-    if (ev.key === 'ArrowRight') { ev.preventDefault(); ir(paso + 1); }
-    else if (ev.key === 'ArrowLeft') { ev.preventDefault(); ir(paso - 1); }
-  });
-
-  dibujar(false);
+  estudio.iniciar();
 }
 
 /** Arranque de elemento.html: lee ?l=&e=(&base=) y monta. */
