@@ -14,7 +14,7 @@ export const catalogo = [
     ilustracion: '<g class="i-ambar-r"><rect x="5" y="10" width="14" height="14"/><rect x="21" y="10" width="14" height="14"/><rect x="37" y="10" width="22" height="14"/></g><rect x="5" y="28" width="54" height="14" class="i-eje-r"/><text x="66" y="38" class="i-texto">=2·2·3</text>',
   },
   {
-    numero: 4, romano: 'IV', titulo: 'Congruencia', color: 'verde', disponible: true,
+    numero: 4, romano: 'IV', titulo: 'Congruencia', color: 'verde', disponible: true, practica: true,
     ilustracion: '<circle cx="60" cy="25" r="20" class="i-verde"/><g class="i-verde-r"><circle cx="60" cy="5" r="3"/><circle cx="79" cy="31" r="3"/><circle cx="41" cy="31" r="3"/></g>',
   },
   {

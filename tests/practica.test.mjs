@@ -9,7 +9,7 @@ const katex = createRequire(import.meta.url)('../vendor/katex/katex.min.js');
 const formulas = (s) => [...s.matchAll(/\$\$([\s\S]+?)\$\$|\$([^$]+?)\$/g)].map((m) => ({ tex: m[1] ?? m[2], display: !!m[1] }));
 const TIPOS = ['concepto', 'estrategia', 'arranque', 'desbloqueo'];
 // Libros que ya tienen su clase práctica (se exige el archivo).
-const CON_PRACTICA = ['1', '2', '3'];
+const CON_PRACTICA = ['1', '2', '3', '4'];
 const NUM_EJERCICIOS = { 1: 8, 2: 8, 3: 8, 4: 9, 5: 9 };
 
 const textos = (x) => [x.nombre, x.enunciado, x.nota, x.planteamiento?.texto, ...(x.planteamiento?.pasos ?? []).map((p) => p.texto),
