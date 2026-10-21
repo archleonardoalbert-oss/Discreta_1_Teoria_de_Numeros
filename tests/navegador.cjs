@@ -248,17 +248,17 @@ t('portada: 5 libros de frente y se abren los disponibles', async (b, pg) => {
 
 t('índice de libro: lista los elementos con su tipo y enlaza a cada página', async (b, pg) => {
   const errores = await abrir(pg, 'libro.html?base=tests/paginas/&l=0');
-  await pg.waitForSelector('ol.indice-libro a');
-  const hrefs = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => a.getAttribute('href')));
+  await pg.waitForSelector('#raiz > ol.indice-libro a');
+  const hrefs = await pg.$$eval('#raiz > ol.indice-libro a', (as) => as.map((a) => a.getAttribute('href')));
   afirmar(JSON.stringify(hrefs) === JSON.stringify(['elemento.html?base=tests/paginas/&l=0&e=division']), `hrefs: ${hrefs}`);
-  afirmar((await pg.textContent('ol.indice-libro')).includes('Teorema'), 'sin etiqueta de tipo');
+  afirmar((await pg.textContent('#raiz > ol.indice-libro')).includes('Teorema'), 'sin etiqueta de tipo');
   afirmar(!errores.length, errores.join(' | '));
 });
 
 t('el Libro II lista sus 22 elementos en orden', async (b, pg) => {
   await abrir(pg, 'libro.html?l=2');
-  await pg.waitForSelector('ol.indice-libro a');
-  const ids = await pg.$$eval('ol.indice-libro a', (as) => as.map((a) => new URL(a.href).searchParams.get('e')));
+  await pg.waitForSelector('#raiz > ol.indice-libro a');
+  const ids = await pg.$$eval('#raiz > ol.indice-libro a', (as) => as.map((a) => new URL(a.href).searchParams.get('e')));
   afirmar(ids.length === 22, `hay ${ids.length}`);
   afirmar(ids[0] === 'def-mcd' && ids[21] === 'cor-multiplo-mcm', `orden: ${ids[0]} … ${ids[21]}`);
 });
@@ -286,6 +286,106 @@ t('elemento: la leyenda explica solo los colores que hay en la escena', async (b
 });
 
 // Recorre, para cada libro y cada elemento cuya escena ya existe, todos los pasos hacia delante y hacia atrás.
+const EJ = 'ejercicio.html?base=tests/paginas/&l=0&x=cp0-1';
+const parte = (p) => `.parte[data-p=${p}]`;
+const abrirEj = async (pg, ruta = EJ) => {
+  const errores = await abrir(pg, ruta);
+  await pg.evaluate(() => { try { localStorage.clear(); } catch {} });
+  await pg.reload({ waitUntil: 'load' });
+  await pg.waitForSelector('.parte');
+  return errores;
+};
+const visibles = (pg, sel) => pg.$$eval(sel, (els) => els.filter((e) => e.offsetParent !== null).length);
+
+t('ejercicio: las pistas se abren una a una y la solución está oculta hasta pedirla', async (b, pg) => {
+  const errores = await abrirEj(pg);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 0, 'hay pistas abiertas al llegar');
+  const txt = await pg.textContent(`${parte('a')} [data-a=pista]`);
+  afirmar(txt.includes('1 de 3') && txt.includes('concepto'), `botón: ${txt}`);
+  await pg.click(`${parte('a')} [data-a=pista]`);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 1, 'no abrió exactamente una');
+  afirmar((await pg.textContent(`${parte('a')} [data-a=pista]`)).includes('estrategia'), 'el botón no anuncia la siguiente');
+  await pg.click(`${parte('a')} [data-a=pista]`); await pg.click(`${parte('a')} [data-a=pista]`);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 3, 'no están las 3');
+  afirmar(await visibles(pg, `${parte('a')} [data-a=pista]`) === 0, 'sigue ofreciendo pistas sin quedar ninguna');
+  afirmar(await visibles(pg, `${parte('a')} .solucion`) === 0, 'la solución se ve sin pedirla');
+  await pg.click(`${parte('a')} [data-a=solucion]`);
+  afirmar(await visibles(pg, `${parte('a')} .solucion li`) === 1, 'la solución no empieza en el primer paso');
+  afirmar(await visibles(pg, `${parte('a')} .aprendes`) === 0, 'Qué te llevas antes de terminar');
+  await pg.click(`${parte('a')} [data-a=siguiente]`); await pg.click(`${parte('a')} [data-a=siguiente]`);
+  afirmar(await visibles(pg, `${parte('a')} .solucion li`) === 3, 'no reveló los 3 pasos');
+  afirmar(await visibles(pg, `${parte('a')} .aprendes`) === 1, 'falta Qué te llevas al terminar');
+  afirmar(await pg.$$eval('.katex', (k) => k.length) > 0 && !(await pg.$('.katex-error')), 'KaTeX');
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('ejercicio: el progreso sobrevive a recargar y es por parte', async (b, pg) => {
+  await abrirEj(pg);
+  await pg.click(`${parte('a')} [data-a=pista]`); await pg.click(`${parte('a')} [data-a=pista]`);
+  await pg.click(`${parte('b')} [data-a=solucion]`);
+  await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.parte');
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 2, 'parte a no conserva 2 pistas');
+  afirmar(await visibles(pg, `${parte('b')} .pista`) === 0, 'parte b heredó pistas');
+  afirmar(await visibles(pg, `${parte('b')} .solucion`) === 1 && await visibles(pg, `${parte('a')} .solucion`) === 0, 'solución vista no es por parte');
+  await pg.click(`${parte('a')} [data-a=reiniciar]`);
+  afirmar(await visibles(pg, `${parte('a')} .pista`) === 0, '«empezar de cero» no borra');
+});
+
+t('ejercicio: la solución con escena revela los pasos uno a uno y termina en Qué te llevas', async (b, pg) => {
+  const errores = await abrirEj(pg);
+  await pg.click(`${parte('b')} [data-a=solucion]`);
+  await pg.waitForFunction(() => document.querySelector('.parte[data-p=b] .escena svg [data-k]'));
+  afirmar(await visibles(pg, `${parte('b')} .pasos li`) === 1, 'se ven pasos futuros');
+  await pg.click(`${parte('b')} [data-a=adelante]`); await pg.click(`${parte('b')} [data-a=adelante]`);
+  afirmar(await visibles(pg, `${parte('b')} .pasos li`) === 3 && await visibles(pg, `${parte('b')} .aprendes`) === 1, 'no terminó');
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('ejercicio: la pista-concepto enlaza a la página del elemento con su nombre', async (b, pg) => {
+  await abrirEj(pg);
+  await pg.click(`${parte('a')} [data-a=pista]`);
+  const a = await pg.$eval(`${parte('a')} .pista a`, (x) => ({ href: x.getAttribute('href'), txt: x.textContent }));
+  afirmar(a.href === 'elemento.html?base=tests/paginas/&l=0&e=division' && a.txt.includes('Algoritmo de la División (prueba)'), JSON.stringify(a));
+});
+
+t('ejercicio: planteamiento, nota, vecinos y sin scroll horizontal en pantalla estrecha', async (b, pg) => {
+  await pg.setViewportSize({ width: 380, height: 800 });
+  const errores = await abrirEj(pg);
+  afirmar(await visibles(pg, '.planteamiento .escena svg') === 1, 'falta el planteamiento');
+  afirmar((await pg.textContent('.nota')).includes('aclaración'), 'falta la nota');
+  afirmar(await pg.$eval('.vecinos .sig', (x) => x.getAttribute('href')).then((h) => h.includes('x=cp0-2')), 'siguiente ejercicio');
+  const ancho = await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  afirmar(ancho <= 0, `scroll horizontal de ${ancho}px`);
+  await pg.setViewportSize({ width: 1280, height: 800 });
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('índice de libro: la clase práctica aparece tras los elementos y enlaza cada ejercicio', async (b, pg) => {
+  const errores = await abrir(pg, 'libro.html?base=tests/paginas/&l=0');
+  await pg.waitForSelector('#practica a');
+  const r = await pg.$$eval('#practica a', (as) => as.map((a) => a.getAttribute('href')));
+  afirmar(r.length === 2 && r[0] === 'ejercicio.html?base=tests/paginas/&l=0&x=cp0-1', JSON.stringify(r));
+  afirmar((await pg.textContent('#practica')).includes('1 de enero de 2025'), 'falta la fecha');
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('elemento: «Se practica en» enlaza a los ejercicios que lo citan como concepto', async (b, pg) => {
+  const errores = await abrir(pg, FIX); await montada(pg);
+  await pg.waitForSelector('.practica-en a');
+  const r = await pg.$$eval('.practica-en a', (as) => as.map((a) => [a.getAttribute('href'), a.textContent]));
+  afirmar(r.length === 2 && r[0][0] === 'ejercicio.html?base=tests/paginas/&l=0&x=cp0-1' && r[0][1].includes('CP 0 · ejercicio 1'), JSON.stringify(r));
+  afirmar(errores.length === 0, errores.join(' | '));
+});
+
+t('páginas: ningún hueco opcional se pinta como el texto «null»', async (b, pg) => {
+  for (const ruta of ['ejercicio.html?base=tests/paginas/&l=0&x=cp0-2', 'elemento.html?l=1&e=pbo', 'ejercicio.html?l=3&x=cp3-1']) {
+    await abrir(pg, ruta);
+    await pg.waitForFunction(() => document.querySelector('#raiz').children.length > 2);
+    const nulos = await pg.evaluate(() => [...document.querySelector('#raiz').childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim() === 'null').length);
+    afirmar(nulos === 0, `${ruta}: ${nulos} «null»`);
+  }
+});
+
 const fs = require('node:fs');
 for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.test(d))) {
   t(`recorrido del libro ${l}: todos los pasos sin errores, KaTeX correcto y vuelta exacta al inicio`, async (b, pg) => {
@@ -304,6 +404,39 @@ for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.
       afirmar(vuelta === inicio, `${el.id}: al volver al paso 1 los nodos no coinciden`);
       afirmar(!(await pg.locator('.katex-error').count()), `${el.id}: fórmula KaTeX rota`);
       afirmar(!errores.length, `${el.id}: ${errores.join(' | ')}`);
+    }
+  });
+}
+
+for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => fs.existsSync(path.join(RAIZ, 'libros', d, 'practica.js')))) {
+  t(`recorrido de la clase práctica ${l}: pistas, solución y «qué te llevas» en cada ejercicio, sin errores`, async (b, pg) => {
+    const { default: cp } = await import(path.join(RAIZ, 'libros', l, 'practica.js'));
+    // el índice del libro la enlaza
+    await abrir(pg, `libro.html?l=${l}`);
+    await pg.waitForSelector('#practica a');
+    afirmar(await pg.locator('#practica a').count() === cp.ejercicios.length, 'el índice no lista todos los ejercicios');
+    for (const x of cp.ejercicios) {
+      const errores = await abrir(pg, `ejercicio.html?l=${l}&x=${x.id}`);
+      await pg.evaluate(() => { try { localStorage.clear(); } catch {} });
+      await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.parte');
+      if (x.planteamiento) {
+        await pg.waitForFunction(() => document.querySelector('.planteamiento .escena svg [data-k]'));
+        for (let i = 1; i < x.planteamiento.pasos.length; i++) await pg.click('.planteamiento [data-a=adelante]');
+      }
+      for (const p of x.partes) {
+        const sel = `.parte[data-p=${p.id}]`;
+        for (let i = 0; i < p.pistas.length; i++) await pg.click(`${sel} [data-a=pista]`);
+        const enl = await pg.$$eval(`${sel} .pista a`, (as) => as.map((a) => a.textContent));
+        afirmar(enl.every((t) => t.trim()), `${x.id}/${p.id}: enlace sin nombre`);
+        await pg.click(`${sel} [data-a=solucion]`);
+        if (p.solucion.escena) {
+          await pg.waitForFunction((s) => document.querySelector(`${s} .escena svg [data-k]`), sel);
+          for (let i = 1; i < p.solucion.pasos.length; i++) await pg.click(`${sel} [data-a=adelante]`);
+        } else await pg.click(`${sel} [data-a=todos]`);
+        afirmar(await pg.locator(`${sel} .aprendes`).isVisible(), `${x.id}/${p.id}: no aparece «qué te llevas»`);
+      }
+      afirmar(!(await pg.locator('.katex-error').count()), `${x.id}: fórmula KaTeX rota`);
+      afirmar(!errores.length, `${x.id}: ${errores.join(' | ')}`);
     }
   });
 }

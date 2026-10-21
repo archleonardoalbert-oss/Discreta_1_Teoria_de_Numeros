@@ -324,3 +324,74 @@ Teo. exactamente d soluciones · Ej. 18x ≡ 30 (42) · Cor. solución única ·
 - 18x ≡ 30 (42): las 6 soluciones en un reloj de 42 forman un hexágono regular.
 - TCR: la **matriz de «vectores base»** pⱼsⱼ (1 en su módulo, 0 en los demás); A = Σ aᵢpᵢsᵢ; unicidad con las series
   de saltos de cada nᵢ. Ejemplo de Sunzi: tres series de saltos sobre una recta 0…105 que coinciden solo en 23.
+
+## 17. Clases prácticas (CP-01…05), 2026-10-20
+
+Fuente: `~/Descargas/Telegram Desktop/Discreta/CP/MD-I-CP-0{1..5}.pdf` (copiados a `fuentes/cp/`). La CP n acompaña a la
+Conferencia n y vive dentro del Libro n. Leer las fórmulas del PDF renderizado: `pdftotext` pierde exponentes
+(«270 + 370» es $2^{70} + 3^{70}$).
+
+### Para qué (palabras del usuario)
+La CP sirve para **poner en práctica los conceptos de la conferencia**; la web es un **apoyo para que él resuelva**,
+no para ver la solución. Le cuesta sobre todo **el comienzo** (p. ej. ver qué descomposición hace visibles los factores).
+Quiere pedir **pistas muy estratégicas, poco a poco**, que lo encaminen sin dar una ayuda fuerte; cuando él decida, ver
+una **solución modelo paso a paso** y al final **qué se supone que aprenda**: el resultado, y sobre todo el método o la
+forma de pensar usada en medio, y cómo aplicarlo a otros problemas.
+
+### Reglas (del usuario, no deshacer)
+1. **La primera pista de cada ejercicio (y de cada apartado) es siempre el concepto de la conferencia que se aplica**,
+   con enlace a su página del libro. Es la pista más valiosa: la correspondencia conferencia ↔ CP es el objetivo.
+2. **Notación matemática correcta y cómoda**: nada de «/» ni «∗» ni símbolos raros; fracciones con `\frac`,
+   producto con `\cdot` o yuxtaposición, $\mid$, $\nmid$, $\equiv$, $\pmod{n}$ o $(n)$ como en la conferencia,
+   $(a, b)$ y $[a, b]$ para mcd y mcm. El enunciado se transcribe literal en contenido pero bien tipografiado
+   (el «∗» del PDF se escribe $\cdot$ o $\times$).
+3. Pistas **una a una, a petición**; nunca se ve la siguiente sin pedirla. Orden: concepto → estrategia (qué tipo de
+   movimiento) → arranque (dónde mirar para el primer movimiento, sin hacerlo) → desbloqueos de los atascos
+   siguientes. Como lo más duro es empezar, **la mayoría de las pistas trabajan el arranque**. Ninguna pista hace
+   una cuenta clave ni enuncia el paso que resuelve.
+4. **Planteamiento visual solo si es posible y práctico**: muestra qué se pide y los datos, nunca la idea clave.
+5. «Ver solución» cuando él quiera: paso a paso, cada implicación justificada (mismo rigor que los libros, §16 y
+   feedback de rigor), con las herramientas de la conferencia; si usa un resultado de otra conferencia, lo nombra y
+   enlaza.
+6. Al terminar la solución: **«Qué te llevas»** = resultado + 2–4 ideas/métodos reutilizables, cada uno con cuándo
+   reconocerlo en otro problema.
+7. Fuera de alcance (otra rama, más adelante): escribir y verificar sus propias soluciones en la web.
+
+### Estructura (decisiones del constructor)
+- Contenido: `libros/N/practica.js` → `{ numero, fecha, ejercicios: [...] }`. Ejercicio:
+  `{ id, numero, nombre, enunciado, marcaEnunciado?, nota?, planteamiento?, partes }`.
+  - `nota`: aclaración del enunciado (errata, convención como $0 \in \N$), marcada.
+  - `planteamiento`: `{ texto, pasos: [{texto}], escena }` (escena con el mismo contrato que las de los libros).
+  - `partes`: siempre una lista (un solo elemento sin `etiqueta` si no hay apartados). Parte:
+    `{ id, etiqueta?, enunciado?, pistas, solucion: { pasos, escena? }, aprendes: { resultado, ideas: [{idea, texto}] } }`.
+  - Pista: `{ tipo: 'concepto' | 'estrategia' | 'arranque' | 'desbloqueo', texto, enlaces?: [{ l, e }] }`.
+- Página `ejercicio.html?l=N&x=<id>`: migas · número y nombre · enunciado · nota · planteamiento (si hay; dos
+  columnas como los elementos) · por cada parte: botón «Pedir pista (k de n)» que muestra el tipo de la siguiente,
+  tarjetas de pistas abiertas, botón «Ver solución» → pasos que se revelan uno a uno con ▶ (los futuros ocultos, para
+  poder intentar adivinar el siguiente; «mostrar todos»); al revelar el último aparece «Qué te llevas».
+  Con escena de solución, distribución B como los elementos. Anterior/siguiente ejercicio.
+- Progreso (pistas abiertas, solución vista) en `localStorage` por parte, con botón «empezar de cero»; si el
+  almacenamiento falla, la página funciona igual.
+- Índice del libro: tras los elementos, sección «Clase práctica N · fecha» con los ejercicios.
+- Página de elemento: «Se practica en» con enlaces a los ejercicios cuya pista-concepto lo cita (correspondencia en
+  ambos sentidos).
+- Tests: estructura; primera pista de cada parte = concepto con enlaces a elementos existentes; ≥ 3 pistas por parte;
+  ≥ 3 pasos de solución; resultado + ≥ 2 ideas; KaTeX sin errores; ni «/» ni «∗» ni «*» dentro de fórmulas; todas las
+  respuestas numéricas verificadas por código; recorrido en navegador (pistas una a una, solución oculta hasta pedirla).
+
+### Erratas y aclaraciones detectadas
+- CP-02 5(c): $(a,b,c) = \frac{abc}{(ab,bc,ca)}$ es falso ($a = 2, b = 3, c = 1$: $1 \ne 6$); lo cierto es
+  $[a,b,c] = \frac{abc}{(ab,bc,ca)}$ → corregido y marcado, con el contraejemplo en la nota.
+- CP-03 1: «pimo» → primo. CP-01 3: «diferencia modular» = diferencia en valor absoluto, $|x - y| \le 1$.
+- CP-04 4: depende de si $0 \in \N$: con $a, b \ge 0$ hay 5 ternas, con $a, b \ge 1$ hay 4 (se dicen ambas).
+- CP-04 9: con $a = 1$ ambos números son $0$ y el mcd no está definido → se pide $a > 1$ (nota).
+- CP-04 5: redacción «Sea P un número primo tal que si…» → se lee «Demuestre que si $P$ es primo, $P \equiv 5 \pmod 8$…».
+- CP-01 8: el producto incluye el factor $(x - x) = 0$; el dato de la suma es una distracción (la solución lo dice).
+
+### Planteamientos visuales elegidos (constructor)
+CP-01 3 (descomposiciones como filas de cuadraditos, ejemplos y no-ejemplos), CP-01 5 (recta con lo alcanzable con
+saltos de 4 y 5), CP-01 6 (polígono simple y una triangulación de ejemplo), CP-01 7 (tablero $2^k \times 2^k$ sin una
+casilla y la pieza en L), CP-02 4 (marcas $a, 2a, \dots, ba$ y múltiplos de $b$), CP-02 6 (recta $ax + by = c$ con sus
+puntos enteros y un segmento de longitud $\sqrt{a^2 + b^2}$), CP-05 3 (los huevos agrupados de $m$ en $m$).
+Escenas de solución: CP-01 7 (la inducción por cuadrantes) y CP-02 6 (soluciones separadas por el vector $(b, -a)$).
+Los demás ejercicios son álgebra: sin dibujo.

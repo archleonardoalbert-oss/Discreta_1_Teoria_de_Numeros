@@ -28,12 +28,12 @@ function entradasAzar(entradas, r) {
   return e;
 }
 
-for (const l of libros) {
-  const { default: libro } = await import(`../libros/${l}/contenido.js`);
-  for (const el of libro.elementos) {
-    const archivo = path.join(RAIZ, 'escenas', `${el.escena}.js`);
-    if (!existsSync(archivo)) continue;
-    test(`escena ${el.escena}: pura, sin solapes de clave, dentro de la vista, en todos los pasos`, async () => {
+/** Una escena con su lista de pasos: pura, sin claves repetidas y dentro de la vista con entradas por defecto y al azar. */
+function probarEscena(ruta, pasos, semilla) {
+  const archivo = path.join(RAIZ, 'escenas', `${ruta}.js`);
+  if (!existsSync(archivo)) return;
+  const el = { pasos, id: semilla };
+    test(`escena ${ruta}: pura, sin solapes de clave, dentro de la vista, en todos los pasos`, async () => {
       const { default: esc } = await import(archivo);
       if (esc.capas !== undefined) assert.equal(esc.capas, el.pasos.length, 'capas ≠ pasos del contenido');
       const porDefecto = Object.fromEntries(esc.entradas.map((x) => [x.id, x.valor]));
@@ -59,5 +59,16 @@ for (const l of libros) {
         }
       }
     });
+}
+
+for (const l of libros) {
+  const { default: libro } = await import(`../libros/${l}/contenido.js`);
+  for (const el of libro.elementos) probarEscena(el.escena, el.pasos, el.id);
+  // las escenas de la clase práctica: planteamientos y soluciones
+  if (!existsSync(path.join(RAIZ, 'libros', l, 'practica.js'))) continue;
+  const { default: cp } = await import(`../libros/${l}/practica.js`);
+  for (const x of cp.ejercicios) {
+    if (x.planteamiento) probarEscena(x.planteamiento.escena, x.planteamiento.pasos, `${x.id}-plan`);
+    for (const p of x.partes) if (p.solucion.escena) probarEscena(p.solucion.escena, p.solucion.pasos, `${x.id}-${p.id}`);
   }
 }

@@ -175,7 +175,7 @@ const libro = {
       escena: '1/def-primo',
     },
     {
-      id: 'cor-compuesto', tipo: 'COR', nombre: R`$n$ es compuesto si y solo si $n = a * b$, $1 \lt a \le b \lt n$`,
+      id: 'cor-compuesto', tipo: 'COR', nombre: R`$n$ es compuesto si y solo si $n = a \cdot b$, $1 \lt a \le b \lt n$`,
       enunciado: R`$n \in \Z$, $n \gt 1$, es un número compuesto si y solo si $n = a * b$ con $a \in \Z$, $b \in \Z$, $1 \lt a \le b \lt n$`,
       explicacion: R`Ser compuesto es poder formar un rectángulo que no sea una fila. Sus dos lados son $a$ y $b$, los dos entre $1$ y $n$; girándolo, el lado corto es $a$.`,
       pasosAñadidos: 'demostracion',
