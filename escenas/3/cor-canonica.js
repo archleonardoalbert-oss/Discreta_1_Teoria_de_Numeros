@@ -17,10 +17,12 @@ export default escenaPorCapas({
       XB: columnasExponentes('XB', B.posHojas, { x: 356, y: base, ancho: 300, altoMax: 110 }),
     };
   },
-  alto: ({ base }) => base + 74,
+  alto: ({ base }) => base + 96,
   capas: [
-    ({ A, B }) => [...A, ...B],
-    ({ XA, XB }) => [...XA, ...XB],
-    ({ n, XA, base }) => [rotulo('res', ANCHO / 2, base + 58, `mismas columnas, misma forma canónica:  ${n} = ${XA.formula}`, 'verde', 'middle')],
+    ({ A, XA, base }) => [...A, ...XA, rotulo('t0', 24, base + 54, 'existencia: el árbol da los primos; agruparlos da la forma canónica', 'texto')],
+    ({ B, base }) => [...B, rotulo('t0', 24, base + 54, 'dos formas posibles = dos factorizaciones en primos (otro árbol)', 'texto')],
+    ({ XB, base }) => [...XB, rotulo('t0', 24, base + 54, 'TFA: mismos primos, cada uno el mismo número de veces', 'texto')],
+    ({ XA, XB, base }) => [...XA.map((n) => ({ ...n, ref: true })), ...XB.map((n) => ({ ...n, ref: true })), rotulo('t0', 24, base + 54, 'la altura de cada columna es el exponente: coinciden', 'texto')],
+    ({ n, XA, base }) => [rotulo('res', ANCHO / 2, base + 80, `y el orden está fijado: ${n} = ${XA.formula}, una sola forma`, 'verde', 'middle')],
   ],
 });

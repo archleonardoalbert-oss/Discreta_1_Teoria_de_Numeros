@@ -274,3 +274,53 @@ Representaciones elegidas (decisiones del constructor):
   cancelación de (p−1)! por el lema de Euclides. Es la misma prueba que la Conf 4 (sin el lenguaje de congruencias).
 - n compuestos consecutivos: (n+1)! como producto 1·2·…·(n+1) con el factor k reiluminado en «k | (n+1)! + k».
 - Ninguna escena exige recordar números de pasos anteriores; los «p | ·» quedan escritos en cada caja.
+
+## 16. Libros I, IV y V (Conferencias 1, 4 y 5), 2026-10-20
+
+El usuario aprobó el Libro III («está espectacular») y pidió terminar el resto con el mismo criterio: lo más educativo,
+correcto y claro posible, con el estilo y la creatividad de 3Blue1Brown. Mismas reglas que §15 (informe, conteos y
+etiquetas, hipótesis visibles, supuesto punteado, memoria dentro del dibujo, un movimiento por paso).
+
+Nuevo tipo de elemento: **Principio** (PBO y PIM no se demuestran).
+
+### Libro I — Conferencia 1 (13 elementos)
+PBO · PIM · Teo. PBO ⇔ PIM · Ej. Σ(2k−1) = n² · Def. a | b · Lema a | 0 · Teo. b | a ⇒ |a| ≥ |b| · Teo. transitividad ·
+Algoritmo de la división · Def. primo · Cor. compuesto ⇔ n = ab · Lema divisor primo (tres demostraciones) · Infinitud de primos.
+- PBO: **barrido** que sale de 1 y se detiene en el primer punto de A; contraste con ℤ (no hay de dónde salir).
+- PIM: **plantilla** P(n) ⇒ P(n+1) que se estampa casilla a casilla (no dominós).
+- PBO ⇒ PIM: patrón del **contraejemplo mínimo** sobre una cinta simbólica n₀, …, m−1, m; C punteado se desvanece.
+  PIM ⇒ PBO (añadida): un muro «ninguno de 1…n está en A» que avanza.
+- Σ(2k−1) = n²: **escuadras** de cuadraditos (gnomones) que envuelven el cuadrado (m−1)² y lo completan a m².
+- a | b: saltos desde 0 que caen en b + el mismo producto como rectángulo |a| × |q| (apoyo a la traducción).
+- Transitividad: cada salto de b se despliega en q₁ saltos de a; luego un muro de q₁ × q₂ ladrillos «a».
+- División: saltos de b desde a hacia el 0; S = {c₁, c₂, …} simbólico; r = mín S; r − b punteado a la izquierda del
+  mínimo; unicidad con la franja (−b, b) donde el único múltiplo de b es 0.
+- Primo: n cuadraditos que solo forman el rectángulo 1 × n (intentos con filas de 2, 3, … dejan sobrantes en ámbar).
+- Divisor primo: escalera de descenso con el suelo 1 dibujado; inducción fuerte como franja [2, n−1] supuesta; D concreto
+  con su mínimo y un p punteado que tendría que estar a su izquierda.
+- Infinitud: una serie de saltos por cada pᵢ que cae en P = p₁⋯p_k, y m = P + 1 a un paso de todas (resto 1);
+  contraste 30031 = 59·509 (m no tiene por qué ser primo).
+
+### Libro IV — Conferencia 4 (22 elementos)
+Def. congruencia · Teo. ⇔ n | a − b · Teo. relación de equivalencia · Propiedades básicas 1–10 (una página cada una) ·
+Teo. cancelación (n/d) · dos corolarios · Propiedades fuertes 1–4 · Def. solución de f(x) ≡ 0 · Teo. la clase entera es
+solución · Pequeño Teorema de Fermat (versión con congruencias).
+- Idioma base: **la recta enrollada en n columnas** (fila q = qn … qn + n − 1; negativos en filas por encima del 0).
+  Congruentes = misma columna; a − b = saltos verticales de n.
+- Propiedades: suma = desplazar dos representantes lo mismo; producto ac − bd = c(a − b) + b(c − d) como **rectángulo
+  en L** con tiras de anchura múltiplo de n; prop. 9 como **cambio de escala** (reglas dobles, la unidad pasa a ser c);
+  prop. 10 cada salto de n se parte en saltos de c.
+- Cancelación: **aplicación x ↦ cx** dibujada como dos filas 0…n−1 con flechas; con d > 1 la aplicación pliega
+  (llegan d flechas a cada imagen) y solo se recupera la clase mod n/d; con mcd = 1 es biyección.
+- Fermat: flechas i ↦ a·i (mod p) entre dos filas, cada casilla recibe exactamente una; producto de ambas filas.
+
+### Libro V — Conferencia 5 (9 elementos)
+Def. SRC · Teo. k·SRC es SRC · Def. ecuación lineal congruencial · Teo. soluble ⇔ (a, n) | b · Ej. 3x ≡ 9 (7) ·
+Teo. exactamente d soluciones · Ej. 18x ≡ 30 (42) · Cor. solución única · Teorema Chino del Resto · Ej. 2, 3, 2 (mod 3, 5, 7).
+- SRC: cada elemento vuela a su columna; cada columna recibe exactamente uno.
+- k·SRC: flechas x ↦ kx entre dos filas; la colisión supuesta (punteada) obligaría a una colisión arriba.
+- ax ≡ b: x ↦ ax con **contador de llegadas**: la imagen es una sola órbita espaciada d y cada casilla recibe d flechas.
+- d soluciones: saltos de n/d desde x₀; d saltos completan una vuelta n (t = qd + r).
+- 18x ≡ 30 (42): las 6 soluciones en un reloj de 42 forman un hexágono regular.
+- TCR: la **matriz de «vectores base»** pⱼsⱼ (1 en su módulo, 0 en los demás); A = Σ aᵢpᵢsᵢ; unicidad con las series
+  de saltos de cada nᵢ. Ejemplo de Sunzi: tres series de saltos sobre una recta 0…105 que coinciden solo en 23.

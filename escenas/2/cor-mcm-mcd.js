@@ -1,9 +1,11 @@
 // [a,b]·(a,b) = |ab|: dos rectángulos con el mismo número de cuadraditos.
-import { escenaPorCapas, rotulo, nota, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, nota, ANCHO } from '../comun.js';
 import { rectangulo } from '../primitivas.js';
 import { mcd, mcm } from '../../motor/aritmetica.js';
 
 const X = 110, Y1 = 128, HUECO = 64, ANCHO_MAX = ANCHO - 200;
+
+const ALTO0 = ({ y2, d, lado }) => y2 + d * lado + 60;
 
 export default escenaPorCapas({
   entradas: [
@@ -20,8 +22,8 @@ export default escenaPorCapas({
     const lado = Math.max(3, Math.min(16, Math.floor(ANCHO_MAX / Math.max(B, L)), Math.floor(160 / Math.max(A, d))));
     return { A, B, d, L, lado, y2: Y1 + A * lado + HUECO };
   },
-  alto: ({ y2, d, lado }) => y2 + d * lado + 60,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ A, B, lado }) => [
       ...rectangulo('r1', { x: X, y: Y1, filas: A, cols: B, lado, c: 'cian', etiquetaFilas: `|a| = ${A}`, etiquetaCols: `|b| = ${B}` }),
       rotulo('t1', 24, Y1 - 30, `|a| × |b| = ${A} × ${B} = ${A * B}`, 'cian'),
@@ -34,5 +36,7 @@ export default escenaPorCapas({
       rotulo('t2', 24, y2 - 30, `[a,b] × (a,b) = ${L} × ${d} = ${L * d}`, 'violeta'),
       rotulo('res', ANCHO / 2, y2 + d * lado + 40, `[a,b]·(a,b) = ${L}·${d} = ${A * B} = |a·b|`, 'verde', 'middle'),
     ],
-  ],
+  ], {
+    0: () => ['para k ≥ 1 los múltiplos crecen con k; con k ≤ 0 no son positivos', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

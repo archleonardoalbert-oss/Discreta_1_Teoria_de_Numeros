@@ -2,8 +2,9 @@
 // Texto literal de la conferencia (transcrito del PDF renderizado). Lo corregido lleva `marca: 'corregido'`;
 // las demostraciones e ideas que no están en la conferencia van con `pasosAñadidos` o `marca: 'añadido'`.
 const R = String.raw;
+import CLAVES from './claves.js';
 
-export default {
+const libro = {
   numero: 2, romano: 'II', titulo: 'mcd · Diofantinas · mcm', color: 'ciruela',
   conferencia: 'Conferencia 2 · 14 de septiembre de 2025',
   elementos: [
@@ -28,7 +29,9 @@ export default {
       pasos: [
         { texto: R`Si $d|a$ entonces $a = dq$ para algún $q \in \Z$, luego $-a = d(-q)$ y $d|-a$.` },
         { texto: R`Del mismo modo, si $d|-a$ entonces $d|a$: $a$ y $-a$ tienen los mismos divisores.` },
+        { texto: R`(Es lo mismo aplicado a $-a$ en lugar de $a$, porque $-(-a) = a$. Así $D(a) = D(-a)$: los conjuntos de divisores son iguales.)`, marca: 'añadido' },
         { texto: R`Por tanto los divisores comunes de $a$ y $b$ son los mismos que los de $-a$ y $b$, los de $a$ y $-b$ y los de $-a$ y $-b$.` },
+        { texto: R`(El mcd es el máximo de un conjunto: si dos conjuntos son iguales, sus máximos también.)`, marca: 'añadido' },
         { texto: R`Si coinciden los divisores comunes, coincide el mayor de ellos: los cuatro mcd son iguales.` },
       ],
       escena: '2/prop-signos',
@@ -40,7 +43,9 @@ export default {
       pasosAñadidos: 'demostracion',
       pasos: [
         { texto: R`$|a|$ divide a $a$ y, como $a|b$, también divide a $b$: $|a|$ es un divisor común.` },
+        { texto: R`($|a| | a$ porque $a = |a| \cdot (\pm 1)$; y $|a| | a$, $a | b$ dan $|a| | b$ por transitividad.)`, marca: 'añadido' },
         { texto: R`Todo divisor $d$ de $a$ cumple $|d| \le |a|$ (pues $a \neq 0$), así que ningún divisor común supera a $|a|$.` },
+        { texto: R`(Es el teorema de la Conferencia 1: si $d | a$ y $a \neq 0$, entonces $|a| \ge |d|$.)`, marca: 'añadido' },
         { texto: R`Luego el mayor divisor común es $|a|$: $\mcd(a,b) = |a|$.` },
         { texto: R`Como todo $a \neq 0$ divide a $0$ $(0 = a \cdot 0)$, en particular $\mcd(a,0) = |a|$.` },
       ],
@@ -81,14 +86,17 @@ export default {
         { texto: R`Partamos de $a_1x_1 + a_2x_2 + \dots + a_nx_n$.` },
         { texto: R`Tomando $x_i = a_i$ se tiene que $\sum_{i=1}^n a_ix_i = \sum_{i=1}^n a_i^2 \ge 0$` },
         { texto: R`Como existe $a_k \neq 0$ $(1 \le k \le n)$ entonces $\sum_{i=1}^n a_i^2 \gt 0$. Por tanto existe al menos una combinación lineal positiva.` },
+        { texto: R`(Cada $a_i^2 \ge 0$, y $a_k^2 \gt 0$: la suma es al menos $a_k^2 \gt 0$.)`, marca: 'añadido' },
         { texto: R`Sea $S = \{d \mid d \gt 0,\ d = a_1x_1 + a_2x_2 + \dots + a_nx_n,\ \forall(i)\ 1 \le i \le n\ x_i \in \Z\}$, $S \neq \emptyset$` },
         { texto: R`Por el <b>Principio del Buen Ordenamiento (PBO)</b> tomemos $s = a_1s_1 + a_2s_2 + \dots + a_ns_n$ como el menor elemento de $S$.` },
         { texto: R`Probemos que $s|a_1$. Por el <b>Algoritmo de la División</b> $a_1 = sq + \cResto{r}$, $0 \le \cResto{r} \lt s$` },
         { texto: R`Supongamos que $\cResto{r} \gt 0$: $\cResto{r} = a_1 - sq = a_1 - (a_1s_1 + a_2s_2 + \dots + a_ns_n)q = a_1(1 - s_1q) + a_2(-s_2q) + \dots + a_n(-s_nq)$` },
+        { texto: R`(Se agrupan los términos de cada $a_i$: los coeficientes $1 - s_1q$, $-s_2q$, … son enteros, así que $r$ es una combinación lineal entera de los $a_i$.)`, marca: 'añadido' },
         { texto: R`Por tanto $\cResto{r}$ es una combinación lineal positiva de los $a_i$ tal que $\cResto{r} \lt s$ pero $s$ es la menor de las combinaciones lineales positivas. ¡Y esto es una contradicción!` },
         { texto: R`Luego $\cResto{r} = 0$ y, por tanto, $s|a_1$. Análogamente, se puede demostrar que $s|a_i$, $1 \le i \le n$. Entonces $s$ es divisor común de $a_i$, $1 \le i \le n$` },
         { texto: R`Ahora, sea $d$ el mayor de los divisores comunes de $a_i$, entonces $s \le d$`, marca: 'corregido' },
         { texto: R`Por otra parte, $d$ divide a cualquier combinación lineal de $a_i$, entonces $d|s$ y, por tanto, $d \le s$` },
+        { texto: R`(Si $d | a_i$ para cada $i$, divide a cada $a_ix_i$ y a su suma. Y $s$ es una de esas sumas. Luego $d \le s$ por el teorema $|a| \ge |b|$.)`, marca: 'añadido' },
         { texto: R`Entonces, como $d \le s \le d$ se tiene que $s = d$` },
       ],
       escena: '2/teo-menor-combinacion',
@@ -101,6 +109,7 @@ export default {
       pasos: [
         { texto: R`Sea $d = \mcd(a,b)$. Por el teorema anterior existen $x, y \in \Z$ con $d = ax + by$.` },
         { texto: R`Si $c|a$ y $c|b$, entonces $c$ divide a cualquier combinación lineal de $a$ y $b$; en particular $c|ax + by = d$.` },
+        { texto: R`(En detalle: $c | a \Rightarrow c | ax$; $c | b \Rightarrow c | by$; y si divide a dos números divide a su suma.)`, marca: 'añadido' },
         { texto: R`Recíprocamente, si $c|d$, como $d|a$ y $d|b$, por transitividad $c|a$ y $c|b$.` },
         { texto: R`Luego los divisores comunes de $a$ y $b$ son exactamente los divisores de $\mcd(a,b)$.` },
       ],
@@ -127,6 +136,7 @@ export default {
       pasos: [
         { texto: R`Sea $d = (a,b)$. Existen $x, y \in \Z$ con $ax + by = d$.` },
         { texto: R`Dividiendo entre $d$: $\frac{a}{d}x + \frac{b}{d}y = 1$.` },
+        { texto: R`($d | a$ y $d | b$, así que $\frac{a}{d}$ y $\frac{b}{d}$ son enteros; se divide toda la igualdad entre $d \neq 0$.)`, marca: 'añadido' },
         { texto: R`Todo divisor común de $\frac{a}{d}$ y $\frac{b}{d}$ divide a esa combinación lineal, es decir, divide a 1.` },
         { texto: R`Luego $\mcd(\frac{a}{d}, \frac{b}{d}) = 1$: son primos relativos.` },
       ],
@@ -141,8 +151,10 @@ export default {
         { texto: R`Caso $n = 2$: $a|b_1b_2$ y $(a, b_1) = 1$. Existen $x, y \in \Z$ con $ax + b_1y = 1$.` },
         { texto: R`Multiplicando por $b_2$: $ab_2x + b_1b_2y = b_2$.` },
         { texto: R`$a$ divide a $ab_2x$ y a $b_1b_2y$, luego divide a su suma: $a|b_2$.` },
+        { texto: R`($a | ab_2x$ porque contiene el factor $a$; $a | b_1b_2y$ porque $a | b_1b_2$ por hipótesis.)`, marca: 'añadido' },
         { texto: R`Caso general: $a|b_1 * (b_2 * \dots * b_n)$ y $(a, b_1) = 1$, así que por el caso $n = 2$, $a|b_2 * \dots * b_n$.` },
         { texto: R`Repitiendo el argumento con $b_2, \dots, b_{n-1}$ se quitan uno a uno los factores primos relativos con $a$, hasta llegar a $a|b_n$.` },
+        { texto: R`(Con rigor, es una inducción en el número de factores: cada vez se quita uno y queda el mismo problema con un factor menos.)`, marca: 'añadido' },
       ],
       escena: '2/teo-divide-producto',
     },
@@ -179,8 +191,10 @@ export default {
       pasos: [
         { texto: R`Se debe demostrar en ambos sentidos. Demostremos que si $ax + by = c$ tiene solución entonces $\mcd(a,b)|c$.` },
         { texto: R`Como $ax + by = c$ tiene solución tomemos $d = \mcd(a,b)$, luego se sabe que $d|ax + by$ y, por tanto, $d|c$.` },
+        { texto: R`($d | a$ y $d | b$ dan $d | ax$ y $d | by$, luego $d$ divide a la suma: es el teorema de los divisores comunes.)`, marca: 'añadido' },
         { texto: R`Demostremos ahora que si $\mcd(a,b)|c$ entonces $ax + by = c$ tiene solución. Si $\mcd(a,b)|c$ entonces existe $k$, $k \in \Z$ tal que $c = k(a,b)$.` },
         { texto: R`Ahora, sabemos que existe $x_0, y_0 \in \Z$ tal que $ax_0 + by_0 = (a,b)$` },
+        { texto: R`(Es el teorema de la menor combinación lineal: el mcd se escribe como combinación lineal entera de $a$ y $b$.)`, marca: 'añadido' },
         { texto: R`por lo que $akx_0 + bky_0 = k(a,b)$` },
         { texto: R`Entonces, si se toma $x = kx_0$ y $y = ky_0$ se cumple que existe $x, y \in \Z$ tal que $ax + by = c$` },
       ],
@@ -227,8 +241,10 @@ export default {
       explicacion: R`Es Euclides recorrido al revés: se empieza en la penúltima división, donde $r_k$ se escribe con los dos restos anteriores, y se va sustituyendo cada resto por la división de arriba hasta que solo quedan $a$ y $b$. Los cocientes se usan de abajo arriba ($q_k$ primero, $q_1$ al final).`,
       pasos: [
         { texto: R`$A_1 = 1$, $B_1 = -q_k$` },
+        { texto: R`(De la penúltima división, $r_{k-2} = q_k r_{k-1} + r_k$, se despeja $r_k = 1 \cdot r_{k-2} + (-q_k) \cdot r_{k-1}$: ese es el par $A_1, B_1$.)`, marca: 'añadido' },
         { texto: R`$A_2 = B_1$, $B_2 = A_1 - q_{k-1} * B_1$` },
         { texto: R`$A_{i+1} = B_i$, $B_{i+1} = A_i - q_{k-i} * B_i$, … , $A_{k-1} = B_{k-2}$, $B_{k-1} = A_{k-2} - q_2 * B_{k-2}$` },
+        { texto: R`(En cada paso, el resto más reciente de la expresión se sustituye por su despeje en la división anterior, $r_j = r_{j-2} - q_j r_{j-1}$, y se agrupan los términos.)`, marca: 'añadido' },
         { texto: R`$A_k = B_{k-1}$, $B_k = A_{k-1} - q_1 * B_{k-1}$` },
         { texto: R`Luego $r_k = a * A_k + b * B_k$ y, por lo tanto, $r_k = a * A_k + b * B_k = \mcd(a,b)$` },
       ],
@@ -256,12 +272,16 @@ export default {
       pasos: [
         { texto: R`Se debe demostrar, primero que es solución y luego que toda solución es de esa forma.` },
         { texto: R`La demostración de lo primero es trivial, basta sustituir en la ecuación original.` },
+        { texto: R`(Con $d = (a,b)$: $a(x_0 + k\frac{b}{d}) + b(y_0 - k\frac{a}{d}) = ax_0 + by_0 + k\frac{ab}{d} - k\frac{ab}{d} = c$.)`, marca: 'añadido' },
         { texto: R`Para demostrar lo segundo, asumamos que $x_1, y_1$ son otra solución de la ecuación, luego $ax_0 + by_0 = ax_1 + by_1$` },
         { texto: R`$a(x_0 - x_1) = b(y_1 - y_0)$` },
+        { texto: R`(Se divide toda la igualdad entre $(a,b) \neq 0$, para que los coeficientes queden coprimos.)`, marca: 'añadido' },
         { texto: R`$\frac{a}{(a,b)}(x_0 - x_1) = \frac{b}{(a,b)}(y_1 - y_0)$` },
         { texto: R`Esto implica que $\frac{b}{(a,b)} \mid \frac{a}{(a,b)}(x_0 - x_1)$` },
         { texto: R`pero como se sabe que $(\frac{a}{(a,b)}, \frac{b}{(a,b)}) = 1$ entonces $\frac{b}{(a,b)} \mid x_0 - x_1$` },
+        { texto: R`(Es el teorema «si $m | nx$ y $(m, n) = 1$ entonces $m | x$», con $m = \frac{b}{(a,b)}$ y $n = \frac{a}{(a,b)}$.)`, marca: 'añadido' },
         { texto: R`por tanto existe $k \in \Z$ tal que $x_1 = x_0 + k\frac{b}{(a,b)}$ luego sustituyendo en la ecuación inicial se obtiene: $y_1 = y_0 - k\frac{a}{(a,b)}$` },
+        { texto: R`(En detalle: sustituyendo, $\frac{a}{(a,b)} \cdot k\frac{b}{(a,b)} = \frac{b}{(a,b)}(y_0 - y_1)$, y dividiendo entre $\frac{b}{(a,b)}$ sale $y_0 - y_1 = k\frac{a}{(a,b)}$.)`, marca: 'añadido' },
         { texto: R`Entonces $x = x_0 + k\frac{b}{(a,b)}$ y $y = y_0 - k\frac{a}{(a,b)}$ son solución general de la ecuación.` },
       ],
       escena: '2/teo-solucion-general',
@@ -287,6 +307,7 @@ export default {
       pasos: [
         { texto: R`Sea $m$ múltiplo común de $a$ y $b$, entonces $m = k_1a = k_2b$` },
         { texto: R`$k_1\frac{a}{(a,b)} = k_2\frac{b}{(a,b)}$` },
+        { texto: R`(Se dividió $k_1a = k_2b$ entre $(a,b)$, para tener coeficientes coprimos: corolario de los cocientes.)`, marca: 'añadido' },
         { texto: R`Por tanto $\frac{b}{(a,b)} \mid k_1\frac{a}{(a,b)}$ pero como $(\frac{a}{(a,b)}, \frac{b}{(a,b)}) = 1$` },
         { texto: R`$\frac{b}{(a,b)} \mid k_1$ luego existe $k \in \Z$ tal que $k_1 = k\frac{b}{(a,b)}$` },
         { texto: R`y por tanto $m = k_1a = k\frac{a * b}{(a,b)}$` },
@@ -300,6 +321,7 @@ export default {
       pasosAñadidos: 'demostracion',
       pasos: [
         { texto: R`Por el teorema anterior, para $a, b$ positivos todo múltiplo común es $k\frac{ab}{(a,b)}$, $k \in \Z$.` },
+        { texto: R`(Para $k \ge 1$, los múltiplos $k\frac{ab}{(a,b)}$ crecen con $k$; con $k \le 0$ no son positivos.)`, marca: 'añadido' },
         { texto: R`El menor positivo se obtiene con $k = 1$: $[a,b] = \frac{ab}{(a,b)}$.` },
         { texto: R`Los múltiplos de $a$ y de $-a$ son los mismos, y $(a,b)$ no depende del signo; por eso, en general, $[a,b] = \frac{|a * b|}{(a,b)}$.` },
         { texto: R`Multiplicando por $(a,b)$: $[a,b] \cdot (a,b) = |a * b|$, lo que es lo mismo $(a,b) = \frac{|a * b|}{[a,b]}$.` },
@@ -321,3 +343,6 @@ export default {
     },
   ],
 };
+
+libro.elementos = libro.elementos.map((e) => ({ ...e, claves: CLAVES[e.id] }));
+export default libro;

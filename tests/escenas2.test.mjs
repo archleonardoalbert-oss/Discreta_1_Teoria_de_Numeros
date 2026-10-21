@@ -3,7 +3,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 
-const cargar = async (id) => (await import(`../escenas/2/${id}.js`)).default;
+// Los tests se escribieron con los pasos originales; `estado` traduce al paso nuevo si la escena tiene pasos puente.
+const cargar = async (id) => {
+  const esc = (await import(`../escenas/2/${id}.js`)).default;
+  return { ...esc, crudo: esc, estado: (e, i) => esc.estado(e, esc.indices?.[i] ?? i) };
+};
 const ultimo = (esc, e, n) => esc.estado(e, n - 1);
 const textoVerde = (ns, s) => ns.some((n) => n.t === 'text' && n.c === 'verde' && n.txt.includes(s));
 const solo = (id, nombre, fn) => test(`${id}: ${nombre}`, { skip: !process.env.TODAS && !existsSync(new URL(`../escenas/2/${id}.js`, import.meta.url)) }, fn);

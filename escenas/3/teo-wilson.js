@@ -1,11 +1,13 @@
 // Teorema de Wilson: en el reloj de p posiciones, cada x se une con su inverso (x·y deja resto 1). 1 y p − 1
 // son su propio inverso. En (p−1)! cada cuerda vale 1 y queda 1·(p−1): resto p − 1, es decir −1.
-import { escenaPorCapas, rotulo, elegir, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, elegir, ANCHO } from '../comun.js';
 import { reloj, posReloj } from '../piezas/reloj.js';
 import { esPrimo, inversoMod, factorialBig } from '../../motor/primos.js';
 import { r1 } from '../../motor/escala.js';
 
 const GEO = { cx: 180, cy: 220, R: 136 }, XL = 380;
+
+const ALTO0 = () => 470;
 
 export default escenaPorCapas({
   entradas: [{ id: 'p', etiqueta: 'p', valor: 13, min: 2, max: 23 }],
@@ -17,8 +19,8 @@ export default escenaPorCapas({
     let a = 2; while (c % a) a++;
     return { pares, F: factorialBig(p - 1), comp: c, a, Fc: factorialBig(c - 1) };
   },
-  alto: 470,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ p }) => [
       ...reloj('W', p, GEO, { apagados: [0] }),
       rotulo('tp', GEO.cx, GEO.cy + 4, `p = ${p}`, 'texto', 'middle'),
@@ -47,5 +49,9 @@ export default escenaPorCapas({
     ],
     ({ p, F }) => [rotulo('res', ANCHO / 2, 22, `${p - 1}! + 1 = ${F + 1n}:  ${p} | ${F + 1n}`, 'verde', 'middle')],
     ({ comp, a, Fc }) => [rotulo('rec', ANCHO / 2, 452, elegir([`recíproco, n = ${comp} = ${a}·${comp / a}:  ${a} | ${comp - 1}!,  ${a} ∤ ${comp - 1}! + 1  ⇒  ${comp} ∤ ${Fc + 1n}`, `recíproco, n = ${comp}:  ${a} | ${comp - 1}! y ${a} ∤ ${comp - 1}! + 1  ⇒  ${comp} ∤ ${comp - 1}! + 1`], ANCHO - 8), 'ambar', 'middle')],
-  ],
+  ], {
+    1: ({ p }) => [`p ∤ x ⇒ (x, ${p}) = 1 ⇒ xy ≡ 1 tiene una única solución y`, 'texto'],
+    2: () => ['x² − 1 = (x − 1)(x + 1): p divide a un factor ⇒ x = 1 o x = p − 1', 'texto'],
+    3: () => ['las cuerdas reparten 2 … p − 2 en parejas sin repetir', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

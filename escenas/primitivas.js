@@ -11,10 +11,10 @@ export function recta(id, plan, y) {
   const ns = [{ k: `${id}:eje`, t: 'line', a: { x1: plan.x(plan.min), y1: y, x2: plan.x(plan.max), y2: y }, c: 'tenue', fijo: true }];
   for (const m of plan.marcas) {
     ns.push({ k: `${id}:m${m}`, t: 'line', a: { x1: plan.x(m), y1: y - 4, x2: plan.x(m), y2: y + 4 }, c: 'tenue', fijo: true });
-    const x = plan.x(m), medio = (String(m).length * 7.8) / 2;     // los números de los bordes se anclan hacia dentro
+    const x = plan.x(m), medio = (String(m).length * 7.8) / 2, txt = m < 0 ? `−${-m}` : String(m);     // los números de los bordes se anclan hacia dentro
     const ancla = x - medio < 0 ? 'start' : x + medio > plan.ancho ? 'end' : 'middle';
     const xt = ancla === 'start' ? Math.max(0, x - 4) : ancla === 'end' ? Math.min(plan.ancho, x + 4) : x;
-    ns.push({ ...texto(`${id}:n${m}`, xt, y + 20, String(m), 'tenue', { 'text-anchor': ancla }), fijo: true });
+    ns.push({ ...texto(`${id}:n${m}`, xt, y + 20, txt, 'tenue', { 'text-anchor': ancla }), fijo: true });
   }
   return ns;
 }

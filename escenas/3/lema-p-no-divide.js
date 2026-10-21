@@ -12,12 +12,13 @@ export default escenaPorCapas({
     { id: 'a', etiqueta: 'a', valor: 12, min: 1, max: 200 },
   ],
   validar: ({ p, a }) => validarPrimo(p) ?? (a % p === 0 ? `el lema pide p ∤ a, y ${p} | ${a}` : null),
-  alto: 190,
+  alto: 220,
   capas: [
-    ({ p }) => conjunto('Dp', { x: 24, y: 40, nombre: `D(${p})`, elementos: ['1', String(p)], c: 'cian' }),
+    ({ p, a }) => [rotulo('h', 24, 200, `(${p}, ${a}) divide a ${p} y a ${a}: es un divisor positivo de ${p}`, 'texto')],
+    ({ p }) => [...conjunto('Dp', { x: 24, y: 40, nombre: `D(${p})`, elementos: ['1', String(p)], c: 'cian' }), rotulo('h', 24, 200, `luego (${p}, a) es 1 o ${p}`, 'texto')],
     ({ p, a }) => [
       ...conjunto('Da', { x: 24, y: 84, nombre: `D(${a})`, elementos: divisores(a).map(String), c: 'cian' }),
-      rotulo('fuera', 24, 118, `${p} ∉ D(${a}) porque ${p} ∤ ${a}`, 'ambar'),
+      rotulo('fuera', 24, 118, `${p} ∉ D(${a}) porque ${p} ∤ ${a}: descartado ${p}`, 'ambar'),
     ],
     ({ p, a }) => [
       ...conjunto('Di', { x: 24, y: 152, nombre: `D(${p}) ∩ D(${a})`, elementos: ['1'], c: 'verde' }),

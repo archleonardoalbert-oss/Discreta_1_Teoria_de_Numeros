@@ -5,7 +5,7 @@ import { crearEntradas } from './entradas.js';
 import { MACROS, TRUST } from './macros.js';
 import { moverCamara } from './camara.js';
 
-export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedades', EJ: 'Ejemplo', MET: 'Método' };
+export const TIPOS = { DEF: 'Definición', LEMA: 'Lema', TEO: 'Teorema', COR: 'Corolario', PROP: 'Propiedad', EJ: 'Ejemplo', MET: 'Método', PRIN: 'Principio' };
 // Significado fijo de cada color en todas las escenas (una escena puede precisarlo con `leyenda`).
 export const LEYENDA = { cian: 'saltos / divisor', ciruela: 'número dado', ambar: 'resto · paso actual', violeta: 'auxiliar (conjuntos, reglas)', verde: 'resultado' };
 const MARCAS = { corregido: 'corregido', añadido: 'añadido · no está en la conferencia' };
@@ -74,6 +74,9 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
           boton('inicio', '⏮', 'al primer paso'), boton('atras', '◀', 'paso anterior (←)'),
           cuenta, boton('adelante', '▶', 'paso siguiente (→)'), boton('tira', '▦ tira', 'ver todos los pasos')),
         tira, caja, aviso)),
+    ...(elemento.claves?.length ? [h('section', { className: 'claves' },
+      h('p', { className: 'rotulo mono', textContent: 'para tus demostraciones · ideas que te llevas' }),
+      h('ul', {}, ...elemento.claves.map((c) => h('li', {}, h('b', { innerHTML: c.idea }), h('span', { innerHTML: c.texto })))))] : []),
     h('nav', { className: 'vecinos' },
       anterior ? h('a', { href: anterior.href, className: 'ant', textContent: `← ${anterior.nombre}` }) : h('span'),
       siguiente ? h('a', { href: siguiente.href, className: 'sig', textContent: `${siguiente.nombre} →` }) : h('span')));

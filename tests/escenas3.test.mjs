@@ -4,8 +4,12 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { cajas } from '../escenas/piezas/cajas.js';
 
-const cargar = async (id) => (await import(`../escenas/3/${id}.js`)).default;
-const ultimo = (esc, e, n) => esc.estado(e, n - 1);
+// Los tests se escribieron con los pasos originales; `estado` traduce al paso nuevo si la escena tiene pasos puente.
+const cargar = async (id) => {
+  const esc = (await import(`../escenas/3/${id}.js`)).default;
+  return { ...esc, crudo: esc, estado: (e, i) => esc.estado(e, esc.indices?.[i] ?? i) };
+};
+const ultimo = (esc, e) => esc.crudo.estado(e, esc.crudo.capas - 1);   // el último paso, sea cual sea el número de pasos
 const textos = (ns) => ns.filter((n) => n.t === 'text').map((n) => n.txt).join(' | ');
 const textoVerde = (ns, s) => ns.some((n) => n.t === 'text' && n.c === 'verde' && n.txt.includes(s));
 const solo = (id, nombre, fn) => test(`${id}: ${nombre}`, { skip: !process.env.TODAS && !existsSync(new URL(`../escenas/3/${id}.js`, import.meta.url)) }, fn);

@@ -82,3 +82,12 @@ test('volver a emitir un carril con menos saltos borra los arcos sobrantes', asy
   const arcos = esc.estado({}, 1).filter((n) => /^c:a\d+$/.test(n.k));
   assert.equal(arcos.length, 4);
 });
+
+test('conPuentes inserta una capa tras la indicada y la siguiente la borra', async () => {
+  const { conPuentes, escenaPorCapas, rotulo } = await import('../escenas/comun.js');
+  const capas = conPuentes([() => [rotulo('a', 0, 0, 'A')], () => [rotulo('b', 0, 0, 'B')]], { 0: () => ['porque…', 'ambar'] }, 300);
+  assert.equal(capas.length, 3);
+  const esc = escenaPorCapas({ entradas: [], alto: 320, capas });
+  assert.equal(esc.estado({}, 1).find((n) => n.k === 'puente').txt, 'porque…');
+  assert.ok(!esc.estado({}, 2).some((n) => n.k === 'puente'));
+});

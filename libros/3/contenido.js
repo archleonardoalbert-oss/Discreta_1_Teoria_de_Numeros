@@ -2,8 +2,9 @@
 // Texto literal de la conferencia (transcrito del PDF renderizado). Lo corregido lleva `marca: 'corregido'`;
 // lo que no está en la conferencia va con `pasosAñadidos` o `marca: 'añadido'`.
 const R = String.raw;
+import CLAVES from './claves.js';
 
-export default {
+const libro = {
   numero: 3, romano: 'III', titulo: 'Primos · Teorema Fundamental', color: 'ambar',
   conferencia: 'Conferencia 3 · primos y descomposición',
   elementos: [
@@ -13,9 +14,10 @@ export default {
       explicacion: R`Un primo solo tiene dos divisores positivos, $1$ y él mismo. Si $p$ no divide a $a$, el único divisor que pueden compartir es el $1$.`,
       pasosAñadidos: 'demostracion',
       pasos: [
-        { texto: R`Los únicos divisores positivos de $p$ son $1$ y $p$: $D(p) = \{1, p\}$.` },
-        { texto: R`Como $p \nmid a$, $p$ no está en $D(a)$.` },
-        { texto: R`El único divisor común positivo es $1$: $(p,a) = 1$.` },
+        { texto: R`$(p,a)$ es un divisor positivo común de $p$ y de $a$; en particular, un divisor positivo de $p$.` },
+        { texto: R`Por ser $p$ primo, sus únicos divisores positivos son $1$ y $p$: $D(p) = \{1, p\}$. Luego $(p,a) \in \{1, p\}$.` },
+        { texto: R`$(p,a)$ divide a $a$. Si fuera $(p,a) = p$, tendríamos $p | a$, contra la hipótesis $p \nmid a$: $p$ no está en $D(a)$.` },
+        { texto: R`Descartado $p$, el único divisor común positivo es $1$: $(p,a) = 1$.` },
       ],
       escena: '3/lema-p-no-divide',
     },
@@ -25,10 +27,12 @@ export default {
       explicacion: R`Como $p$ y $a$ no comparten divisores, existe una combinación $ax + py = 1$. Multiplicarla por $b$ la convierte en una forma de llegar a $b$ dando solo saltos de $p$: por eso $p$ divide a $b$.`,
       pasos: [
         { texto: R`Supongamos, sin pérdida de generalidad, que $p$ es primo relativo con $a$ (o sea $(p,a) = 1$) y que $p|ab$, entonces $ax + py = 1$ para $x$ e $y$ enteros.`, marca: 'corregido' },
+        { texto: R`(¿Por qué se puede suponer? Si $p | a$ ya terminamos. Si $p \nmid a$, el lema anterior da $(p,a) = 1$. Y $ax + py = 1$ es Bézout: el mcd es combinación lineal, Conferencia 2.)`, marca: 'añadido' },
         { texto: R`Multiplicando $b$ en ambos miembros se tiene $b(ax + py) = b$` },
         { texto: R`luego $bax + bpy = b$` },
         { texto: R`pero como $p|ab$ existe un $r$ entero tal que $pr = ab$` },
         { texto: R`entonces $prx + bpy = b$` },
+        { texto: R`(Se sustituyó $ab$ por $pr$ en el primer sumando: así los dos sumandos tienen el factor $p$.)`, marca: 'añadido' },
         { texto: R`luego $p(rx + by) = b$ y como $rx + by$ es entero entonces $p|b$` },
       ],
       escena: '3/lema-euclides',
@@ -40,6 +44,7 @@ export default {
       pasos: [
         { texto: R`Para $n = 1$ es trivial` },
         { texto: R`Asumamos $n = 2$ y que $p|a_1 * a_2$. Si se cumple $p|a_1$ ya estaría demostrado. Ahora, si se supone que $p \nmid a_1$ entonces $p|a_2$ y también quedaría demostrado.` },
+        { texto: R`(El paso «$p \nmid a_1 \Rightarrow p | a_2$» es el Lema de Euclides: $p \nmid a_1$ da $(p, a_1) = 1$ por el lema anterior.)`, marca: 'añadido' },
         { texto: R`Ahora, supongamos que para $n = k$ se cumple, entonces para $n = k + 1$ como $p|a_1 * a_2 * \dots * a_k * a_{k+1}$ si se tiene que $p|a_{k+1}$ ya quedaría demostrado.` },
         { texto: R`Por el Lema de Euclides con los dos factores $A = a_1 * \dots * a_k$ y $a_{k+1}$: si $p \nmid a_{k+1}$, entonces $p|A$.`, marca: 'añadido' },
         { texto: R`Pero, si $p \nmid a_{k+1}$ se sabe que sí se cumple que $p|a_1 * a_2 * \dots * a_k$ (que fue lo que se supuso) y, por tanto, existe $j$, $1 \le j \le k + 1$ tal que $p|a_j$` },
@@ -53,9 +58,11 @@ export default {
       explicacion: R`El teorema anterior dice que $p$ divide a uno de los $q_k$. Pero un primo $q_k$ solo tiene como divisores a $1$ y a sí mismo, y $p$ no es $1$.`,
       pasosAñadidos: 'demostracion',
       pasos: [
-        { texto: R`Por el teorema anterior, $p|q_k$ para algún $k$.` },
-        { texto: R`Como $q_k$ es primo, sus únicos divisores positivos son $1$ y $q_k$.` },
-        { texto: R`Como $p$ es primo, $p \neq 1$; luego $p = q_k$.` },
+        { texto: R`Por el teorema anterior (con $a_i = q_i$), $p|q_k$ para algún $k$.` },
+        { texto: R`Como $q_k$ es primo, sus únicos divisores positivos son $1$ y $q_k$: $D(q_k) = \{1, q_k\}$.` },
+        { texto: R`$p \gt 0$ y $p | q_k$, así que $p \in D(q_k)$: $p = 1$ o $p = q_k$.` },
+        { texto: R`Como $p$ es primo, $p \ge 2$, así que $p \neq 1$.` },
+        { texto: R`Luego $p = q_k$.` },
       ],
       escena: '3/cor-primos',
     },
@@ -66,6 +73,7 @@ export default {
       pasos: [
         { texto: R`Como $p|a^k$ entonces $p|a_1 * a_2 * \dots * a_k$ donde cada $a_i = a$ con $1 \le i \le k$,` },
         { texto: R`luego, por el teorema anterior, existe un $i$ tal que $p|a_i$ por lo que $p|a$` },
+        { texto: R`(Es el teorema anterior con todos los factores iguales a $a$; el $a_i$ que encuentra es el propio $a$.)`, marca: 'añadido' },
         { texto: R`y, por tanto, $p^k|a^k$` },
         { texto: R`Pues si $a = pm$, entonces $a^k = p^k m^k$.`, marca: 'añadido' },
       ],
@@ -85,6 +93,7 @@ export default {
         { texto: R`Para $n = 2$ se cumple.` },
         { texto: R`Ahora, asumamos que para todos los enteros estrictamente menores que $n$ y mayores o iguales que 2, se cumple que su descomposición es única.` },
         { texto: R`Sea $n = p_1 * p_2 * \dots * p_R = q_1 * q_2 * \dots * q_S$ donde $p_i$ y $q_j$ son primos con $1 \le i \le R$, $1 \le j \le S$, y están ordenados. Partiendo de esto se tiene que $p_1|n \Rightarrow p_1|q_1 * q_2 * \dots * q_S$ luego $p_1|q_j$ tal que $1 \le j \le S$. Entonces, como son primos $p_1 = q_j$ y como están ordenados $p_1 \ge q_1$.`, marca: 'corregido' },
+        { texto: R`(El paso «$p_1 | q_j \Rightarrow p_1 = q_j$» es el corolario de los primos; y $q_j \ge q_1$ porque $q_1$ es el menor de los $q$.)`, marca: 'añadido' },
         { texto: R`De manera análoga se puede llegar a que $q_1 \ge p_1$ por lo que $p_1 = q_1$.` },
         { texto: R`Entonces $\frac{n}{p_1} = p_2 * \dots * p_R = q_2 * \dots * q_S$ y como $\frac{n}{p_1} \lt n$ entonces, por lo supuesto, $\frac{n}{p_1}$ se descompone en factores de forma única, luego $R = S$ y $p_i = q_i$`, marca: 'corregido' },
       ],
@@ -108,9 +117,11 @@ export default {
       explicacion: R`Dos árboles de factores distintos dan las mismas hojas; agruparlas y ordenarlas da siempre las mismas barras.`,
       pasosAñadidos: 'demostracion',
       pasos: [
-        { texto: R`Por el Teorema Fundamental, $n$ es un producto de primos y ese multiconjunto de primos es único.` },
-        { texto: R`Agrupar los primos iguales y ordenarlos de menor a mayor se puede hacer de una sola manera.` },
-        { texto: R`Luego los $p_i$ y sus exponentes $\alpha_i$ quedan determinados: la forma canónica es única.` },
+        { texto: R`Existencia: por el Teorema Fundamental, $n$ es un producto de primos; agrupando los iguales y ordenándolos sale una forma canónica.` },
+        { texto: R`Unicidad: supongamos dos formas canónicas de $n$. Desarrollando cada potencia ($p^3 = p \cdot p \cdot p$) las dos son factorizaciones de $n$ en primos.` },
+        { texto: R`Por la unicidad del Teorema Fundamental, las dos factorizaciones tienen los mismos primos, cada uno repetido el mismo número de veces.` },
+        { texto: R`El número de veces que aparece $p_i$ es su exponente $\alpha_i$: los exponentes coinciden.` },
+        { texto: R`Y el orden $p_1 \lt p_2 \lt \dots$ está fijado: las dos formas canónicas son la misma.` },
       ],
       escena: '3/cor-canonica',
     },
@@ -121,7 +132,9 @@ export default {
       pasos: [
         { texto: R`Como el número es entero entonces, por el <b>Algoritmo de la División</b>, se puede expresar como $6q + r$ con $0 \le r \lt 6$` },
         { texto: R`Ahora, como $6 = 2 * 3$ siendo 2 y 3 primos, si $r$ toma los valores 0, 2 y 4 $6q + r$ sería par y, por tanto, no sería primo.` },
+        { texto: R`(Con $r$ par, $6q + r = 2(3q + \frac{r}{2})$ es múltiplo de $2$; para ser primo tendría que ser el propio $2$, y buscamos primos mayores que $3$.)`, marca: 'añadido' },
         { texto: R`Por su parte si $r$ es 3 $6q + r$ sería múltiplo de 3. Entonces para que el número pueda ser primo $r$ debería ser 1 o 5.`, marca: 'corregido' },
+        { texto: R`($6q + 3 = 3(2q + 1)$, múltiplo de $3$ y distinto de $3$ si es mayor que $3$.)`, marca: 'añadido' },
         { texto: R`Para $r = 1$ se tiene $6q + 1$.` },
         { texto: R`Para $r = 5$ se tendría entonces $6q + 5$ pero si se hace $q = k - 1$ entonces se tendría $6(k - 1) + 5 = 6k - 6 + 5 = 6k - 1$` },
         { texto: R`Cuidado: el recíproco es falso. $25 = 6 * 4 + 1$ y $35 = 6 * 6 - 1$ no son primos.`, marca: 'añadido' },
@@ -136,8 +149,11 @@ export default {
       pasos: [
         { texto: R`Sea $p$ primo. Se colocan $1, 2, \dots, p - 1$ en un reloj de $p$ posiciones.` },
         { texto: R`Cada $x$ tiene un único $y$ entre $1$ y $p - 1$ con $x * y$ que deja resto $1$ al dividir entre $p$ (su inverso): se unen con una cuerda.` },
+        { texto: R`(¿Por qué existe y es único? $p \nmid x$, así que $(x, p) = 1$, y $xy \equiv 1\ (p)$ tiene una única solución módulo $p$; no es $0$.)`, marca: 'añadido' },
         { texto: R`Solo $1$ y $p - 1$ son su propio inverso: si $x * x$ deja resto 1, $p|(x - 1)(x + 1)$ y, por el Lema de Euclides, $x = 1$ o $x = p - 1$.` },
+        { texto: R`($x^2 - 1 = (x - 1)(x + 1)$; si $p$ divide al producto, divide a un factor. $x - 1 \equiv 0$ da $x = 1$ y $x + 1 \equiv 0$ da $x = p - 1$.)`, marca: 'añadido' },
         { texto: R`En $(p - 1)!$ cada cuerda aporta un producto con resto $1$; queda $1 * (p - 1)$, con resto $p - 1$.` },
+        { texto: R`(Las cuerdas reparten $2, 3, \dots, p - 2$ en parejas sin repetir: el producto de todos es el producto de las parejas, y cada pareja deja resto $1$.)`, marca: 'añadido' },
         { texto: R`Luego $(p - 1)! + 1$ deja resto $p - 1 + 1 = p$, es decir $0$: $p|(p - 1)! + 1$.` },
         { texto: R`Recíproco: si $p$ es compuesto, $p = a * b$ con $1 \lt a \lt p$; $a$ aparece en $(p - 1)!$, así que $a|(p - 1)!$ y $a \nmid (p - 1)! + 1$; por tanto $p \nmid (p - 1)! + 1$.` },
       ],
@@ -151,8 +167,10 @@ export default {
       pasos: [
         { texto: R`Se toman los múltiplos $a, 2a, 3a, \dots, (p - 1)a$ y sus restos al dividir entre $p$.` },
         { texto: R`Ninguno deja resto 0 y no hay dos con el mismo resto: si $ia$ y $ja$ dejaran el mismo resto, $p|(j - i)a$, y como $p \nmid a$, $p|j - i$, imposible si $0 \lt j - i \lt p$.` },
+        { texto: R`(Ninguno deja resto $0$: $p \nmid i$ y $p \nmid a$, luego $p \nmid ia$ por el Lema de Euclides. Y $0 \lt j - i \lt p$ impide $p | j - i$.)`, marca: 'añadido' },
         { texto: R`Por tanto sus restos son $1, 2, \dots, p - 1$ en algún orden.` },
         { texto: R`Multiplicando: $a * 2a * \dots * (p - 1)a = (p - 1)! \, a^{p-1}$ deja el mismo resto que $(p - 1)!$.` },
+        { texto: R`(Dos productos con el mismo resto: su diferencia, $(p - 1)!\,a^{p-1} - (p - 1)! = (p - 1)!(a^{p-1} - 1)$, es múltiplo de $p$.)`, marca: 'añadido' },
         { texto: R`Así $p|(p - 1)! \, (a^{p-1} - 1)$ y $p \nmid (p - 1)!$ (Lema de Euclides), luego $p|a^{p-1} - 1$.` },
       ],
       escena: '3/teo-fermat',
@@ -175,9 +193,13 @@ export default {
       pasos: [
         { texto: R`Si se tiene la secuencia de $n$ números: $(n + 1)! + 2$, $(n + 1)! + 3$, $\dots$, $(n + 1)! + n$, $(n + 1)! + n + 1$` },
         { texto: R`Entonces es evidente que: $2|(n + 1)! + 2$, $3|(n + 1)! + 3$, $\dots$, $n|(n + 1)! + n$, $(n + 1)|(n + 1)! + n + 1$` },
+        { texto: R`(¿Por qué? $k \le n + 1$ es uno de los factores de $(n+1)! = 1 \cdot 2 \cdots (n+1)$, así que $k | (n+1)!$; y $k | k$. Divide a la suma.)`, marca: 'añadido' },
         { texto: R`Cada $k$ cumple $1 \lt k \lt (n + 1)! + k$, así que $(n + 1)! + k$ tiene un divisor propio: es compuesto.`, marca: 'añadido' },
       ],
       escena: '3/lema-compuestos',
     },
   ],
 };
+
+libro.elementos = libro.elementos.map((e) => ({ ...e, claves: CLAVES[e.id] }));
+export default libro;

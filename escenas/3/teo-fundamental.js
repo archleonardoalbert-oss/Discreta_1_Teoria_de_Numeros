@@ -1,11 +1,13 @@
 // Teorema Fundamental de la Aritmética. Existencia: el árbol de factores crece nivel a nivel (inducción fuerte;
 // cada hijo nace de su padre). Unicidad: un segundo árbol con otra forma; las hojas de ambos bajan volando a dos
 // filas ordenadas p₁ ≤ … ≤ p_R y q₁ ≤ … ≤ q_S, y los pares iguales se cancelan uno a uno (p₁ = q₁, luego n/p₁).
-import { escenaPorCapas, rotulo, linea, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, linea, ANCHO } from '../comun.js';
 import { cajas, anchoCaja } from '../piezas/cajas.js';
 import { construirArbol, otroArbol, arbolFactores, hojas } from '../piezas/arbol.js';
 
 const YA = 108, CAJA_A = { x: 24, ancho: 300 }, CAJA_B = { x: 356, ancho: 300 }, XF = 150;
+
+const ALTO0 = ({ YQ }) => YQ + 104;
 
 export default escenaPorCapas({
   entradas: [{ id: 'n', etiqueta: 'n', valor: 180, min: 2, max: 9999 }],
@@ -25,8 +27,8 @@ export default escenaPorCapas({
     const fila = (id, hs, y, colores = {}) => cajas(id, { x: XF, y, hueco, minAncho, valores: hs.map((h) => h.v), desde: hs.map((h) => h.k), colores: hs.map((_, i) => colores[i] ?? 'cian') });
     return { A, B, P, Q, xs, fila, YP, YQ, primo: L === 1, unaForma: hojas(raizB).length <= 2 };
   },
-  alto: ({ YQ }) => YQ + 104,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     () => [rotulo('tA', CAJA_A.x, 30, 'existencia', 'tenue'), rotulo('tB', CAJA_B.x, 30, 'unicidad', 'tenue')],
     ({ n }) => [{ ...rotulo('tA', CAJA_A.x, 30, 'existencia', 'cian'), ref: true }, rotulo('A:nr', CAJA_A.x + CAJA_A.ancho / 2, YA, String(n), 'cian', 'middle')],
     () => [rotulo('baseA', CAJA_A.x + 110, 30, 'n = 2: ya es primo', 'ambar')],
@@ -59,5 +61,7 @@ export default escenaPorCapas({
         .filter((m) => /:(b|v)\d+$/.test(m.k) && !/:(b|v)0$/.test(m.k)).map((m) => ({ ...m, orden: Number(m.k.match(/\d+$/)[0]) })),
       rotulo('n10', 24, YQ + 88, primo ? `${n} es primo: n/p₁ = 1 y no queda nada más que comparar` : 'quitando p₁ = q₁ queda n/p₁ < n, que es única:  R = S y pᵢ = qᵢ', 'verde'),
     ],
-  ],
+  ], {
+    8: () => ['p₁ | qⱼ ⇒ p₁ = qⱼ (corolario de los primos); qⱼ ≥ q₁ por el orden', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

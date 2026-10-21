@@ -1,10 +1,12 @@
 // p | a₁⋯aₙ ⇒ p | aⱼ. Arriba la plantilla con letras (base y paso k → k+1, no dominós); abajo el mismo
 // razonamiento con números: cada caja lleva escrito si p la divide.
-import { escenaPorCapas, rotulo, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, ANCHO } from '../comun.js';
 import { cajas } from '../piezas/cajas.js';
 import { validarPrimo } from './lema-p-no-divide.js';
 
 const X = 24, YT = 84, YE = 232;
+
+const ALTO0 = () => YE + 60;
 
 export default escenaPorCapas({
   entradas: [
@@ -13,12 +15,12 @@ export default escenaPorCapas({
   ],
   validar: ({ p, as }) => validarPrimo(p) ?? (as.every((v) => v % p !== 0) ? `${p} ∤ ${as.join('·')}: el teorema no aplica (prueba con un factor múltiplo de ${p})` : null),
   preparar: ({ p, as }) => ({ marcas: as.map((v) => (v % p === 0 ? '|' : '∤')), producto: as.reduce((s, v) => s * v, 1) }),
-  alto: YE + 60,
+  alto: (c) => ALTO0(c) + 26,
   base: ({ p, as, producto }) => [
     rotulo('Et', X, YE - 50, `ejemplo: p = ${p},  ${as.join('·')} = ${producto}`, 'texto'),
     ...cajas('E', { x: X, y: YE, valores: as }),
   ],
-  capas: [
+  capas: conPuentes([
     () => [rotulo('Tt', X, YT - 52, 'plantilla (con letras)', 'tenue'), ...cajas('T', { x: X, y: YT, valores: ['a₁'], marcas: ['|'] })],
     () => [
       ...cajas('T', { x: X, y: YT, valores: ['a₁', 'a₂'], marcas: ['∤', '|'] }),
@@ -43,5 +45,7 @@ export default escenaPorCapas({
         rotulo('res', ANCHO / 2, YE + 52, `${p} | a${'₁₂₃₄'[j]} = ${as[j]}`, 'verde', 'middle'),
       ];
     },
-  ],
+  ], {
+    1: () => ['p ∤ a₁ ⇒ (p, a₁) = 1 ⇒ p | a₂: es el Lema de Euclides', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

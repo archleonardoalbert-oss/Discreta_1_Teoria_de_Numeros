@@ -21,7 +21,7 @@ export const linea = (k, x1, y1, x2, y2, c = 'muy-tenue') =>
  */
 export function escenaPorCapas({ entradas, validar = () => null, alto, ancho = ANCHO, preparar = () => ({}), base = () => [], capas, leyenda, camara }) {
   return {
-    entradas, validar, capas: capas.length, leyenda,
+    entradas, validar, capas: capas.length, leyenda, indices: capas.indices,
     // camara(ctx, paso) → [x, y, ancho, alto] o null (vista completa)
     ...(camara ? { camara: (e, paso) => camara({ ...e, ...preparar(e) }, paso) } : {}),
     vista: (e) => ({ ancho, alto: typeof alto === 'function' ? alto({ ...e, ...preparar(e) }) : alto }),
@@ -101,3 +101,49 @@ const DIG_SUB = '₀₁₂₃₄₅₆₇₈₉', DIG_SUP = '⁰¹²³⁴⁵⁶�
 /** Índices tipográficos: sub(12) → '₁₂', sup(3) → '³'. */
 export const sub = (n) => String(n).split('').map((c) => DIG_SUB[c] ?? c).join('');
 export const sup = (n) => String(n).split('').map((c) => DIG_SUP[c] ?? c).join('');
+
+/** Flecha recta de (x1, y1) a (x2, y2) con punta; `curva` > 0 la arquea hacia la izquierda del sentido de avance. */
+export function flecha(k, x1, y1, x2, y2, c = 'texto', curva = 0) {
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+  const cx = (x1 + x2) / 2 - uy * curva, cy = (y1 + y2) / 2 + ux * curva;
+  // la punta sigue la tangente final (de control a destino)
+  const tx = x2 - cx, ty = y2 - cy, T = Math.hypot(tx, ty) || 1, vx = tx / T, vy = ty / T, P = 7;
+  const p1 = [x2 - P * vx + P * 0.5 * vy, y2 - P * vy - P * 0.5 * vx], p2 = [x2 - P * vx - P * 0.5 * vy, y2 - P * vy + P * 0.5 * vx];
+  const cuerpo = curva ? `M ${r1(x1)} ${r1(y1)} Q ${r1(cx)} ${r1(cy)} ${r1(x2)} ${r1(y2)}` : `M ${r1(x1)} ${r1(y1)} L ${r1(x2)} ${r1(y2)}`;
+  return { k, t: 'path', a: { d: `${cuerpo} M ${r1(p1[0])} ${r1(p1[1])} L ${r1(x2)} ${r1(y2)} L ${r1(p2[0])} ${r1(p2[1])}` }, c };
+}
+
+/** Marcador triangular que apunta hacia abajo, con la punta en (x, y). */
+export const marcador = (k, x, y, c = 'ambar') =>
+  ({ k, t: 'path', a: { d: `M ${r1(x - 7)} ${r1(y - 12)} L ${r1(x + 7)} ${r1(y - 12)} L ${r1(x)} ${r1(y)} Z` }, c, relleno: true });
+
+/**
+ * Pizarra rodante para demostraciones largas: en el paso i se ven las notas i−filas+1 … i (la nueva abajo); las
+ * anteriores suben y la más vieja se va. `notas`: lista de [texto | redacciones, color] (una por paso; null = nada).
+ */
+export function rodante(notas, i, { filas = 5, x = 24, y = 28, dy = 22, id = 'nr', ancho = ANCHO - 48 } = {}) {
+  const hechas = notas.slice(0, i + 1).map((n, j) => [n, j]).filter(([n]) => n);
+  const vivas = hechas.slice(-filas), fuera = hechas.slice(0, -filas);
+  return [
+    ...fuera.map(([, j]) => ({ k: `${id}${j}`, quitar: true })),
+    ...vivas.map(([[txt, c], j], f) => rotulo(`${id}${j}`, x, y + f * dy, elegir(txt, ancho), j === i ? c : (c === 'verde' ? 'verde' : 'tenue'))),
+  ];
+}
+
+/**
+ * Inserta pasos «puente» (justificaciones añadidas) en una lista de capas. `puentes[i](ctx)` → [texto, color] crea una
+ * capa nueva justo DESPUÉS de la capa original i, que escribe la justificación en la línea reservada `y`; la capa
+ * siguiente la borra. El índice i es el de la lista ORIGINAL.
+ */
+export function conPuentes(capas, puentes, y) {
+  const fila = (c) => (typeof y === 'function' ? y(c) : y);
+  const indices = [];
+  let j = 0;
+  for (let i = 0; i < capas.length; i++) { indices.push(j); j += puentes[i] ? 2 : 1; }
+  const nuevas = capas.flatMap((capa, i) => [
+    (c) => [{ k: 'puente', quitar: true }, ...capa(c)],
+    ...(puentes[i] ? [(c) => { const [t, col = 'texto'] = puentes[i](c); return [rotulo('puente', 24, fila(c), elegir(t, ANCHO - 48), col)]; }] : []),
+  ]);
+  Object.defineProperty(nuevas, 'indices', { value: indices });   // capa original i → paso nuevo
+  return nuevas;
+}

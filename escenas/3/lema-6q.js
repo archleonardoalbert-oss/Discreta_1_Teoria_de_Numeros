@@ -1,12 +1,14 @@
 // Todo primo > 3 es 6q ± 1: la recta enrollada en filas de 6 (cada columna es un resto r). Las columnas 0, 2, 4
 // (pares) y 3 (múltiplos de 3) se apagan; los primos mayores que 3 solo quedan en las columnas 1 y 5.
-import { escenaPorCapas, rotulo, ANCHO } from '../comun.js';
+import { escenaPorCapas, conPuentes, rotulo, ANCHO } from '../comun.js';
 import { esPrimo } from '../../motor/primos.js';
 import { r1 } from '../../motor/escala.js';
 
 const X0 = 150, DX = 84, Y0 = 92;
 const xCol = (r) => X0 + r * DX;
 const encabezado = (r, txt, c = 'tenue') => rotulo(`h${r}`, xCol(r), 56, txt, c, 'middle');
+
+const ALTO0 = ({ alto }) => alto;
 
 export default escenaPorCapas({
   entradas: [{ id: 'N', etiqueta: 'hasta', valor: 60, min: 36, max: 120 }],
@@ -18,8 +20,8 @@ export default escenaPorCapas({
     const aro = (k, n, c, extra = {}) => ({ k, t: 'circle', a: { cx: r1(pos(n).x), cy: r1(pos(n).y - 4), r: r1(Math.min(13, dy / 2 - 0.5)) }, c, hueco: true, ...extra });
     return { filas, dy, pos, numeros, columna, aro, alto: Y0 + filas * dy + 70 };
   },
-  alto: ({ alto }) => alto,
-  capas: [
+  alto: (c) => ALTO0(c) + 26,
+  capas: conPuentes([
     ({ numeros, pos }) => [
       ...[0, 1, 2, 3, 4, 5].map((r) => encabezado(r, `6q + ${r}`)),
       // la recta se enrolla: cada número nace del anterior y llegan uno tras otro
@@ -55,5 +57,8 @@ export default escenaPorCapas({
         rotulo('rec', 24, Y0 + filas * dy + 52, `recíproco falso: ${falsos.slice(0, 4).join(', ')} están en las columnas 1 y 5 y no son primos`, 'ambar'),
       ];
     },
-  ],
+  ], {
+    1: () => ['r par: 6q + r = 2(3q + r/2) es múltiplo de 2 (y mayor que 2)', 'texto'],
+    2: () => ['6q + 3 = 3(2q + 1): múltiplo de 3 y mayor que 3', 'texto'],
+  }, (c) => ALTO0(c) + 8),
 });

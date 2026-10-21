@@ -28,6 +28,15 @@ export default {
 };
 ```
 
+**Ideas para tus demostraciones** (obligatorio, lo comprueba `tests/contenidos.test.mjs`): cada libro tiene un
+`libros/<n>/claves.js` con, para cada elemento, al menos dos `{ idea, texto }`: la técnica o el atajo que se lleva el
+lector (contraejemplo mínimo, contrarrecíproco, sumar y restar lo mismo, reducir antes de operar…) y cuándo usarlo.
+`contenido.js` las une con `libro.elementos.map((e) => ({ ...e, claves: CLAVES[e.id] }))`.
+
+**Rigor** (petición del usuario): ningún paso puede saltarse una implicación. Si el texto literal salta, se intercala
+un paso `marca: 'añadido'` que nombra el resultado usado («lema de Euclides», «cancelación», «transitividad»…). Las
+demostraciones añadidas por completo llevan un paso por implicación.
+
 Reglas: transcribir mirando el PDF renderizado (`pdftoppm -r 110 -png fuentes/MD-I-Conf-0N.pdf …`), no el
 texto extraído. Dentro de `$…$` usa `\lt` y `\gt`, nunca `<` pegado a una letra. Las macros `\mcd`, `\mcm` y `\Z`
 están en `motor/macros.js` (añade ahí las que hagan falta).
@@ -63,7 +72,8 @@ Piezas disponibles:
 | Dónde | Qué |
 |---|---|
 | `escenas/primitivas.js` | `recta`, `saltos` (negativos hacia la izquierda; agrupa si no caben), `punto`, `llave`, `cuadricula` (con su unidad), `rectangulo` (producto con lados rotulados), `conjunto` (con su definición; `señalado` para el PBO), `simbolos`, `reglasDobles` (cambio de escala) |
-| `escenas/comun.js` | `escenaPorCapas`, `planPara`, `carril` (fila de saltos con etiqueta), `nota` (pizarra de resultados), `rotulo`, `linea`, `filas`, `num`, `por`, `nSaltos` |
+| `escenas/comun.js` | `escenaPorCapas`, `planPara`, `carril` (fila de saltos con etiqueta), `nota` (pizarra de resultados), `rodante` (pizarra que solo muestra las últimas líneas, para demostraciones largas), `conPuentes` (inserta capas de justificación tras capas existentes; `esc.indices` traduce pasos viejos a nuevos), `flecha`, `marcador`, `rotulo`, `linea`, `filas`, `num`, `por`, `nSaltos` |
+| `escenas/piezas/modular.js` | recta enrollada en `n` columnas (`geoTabla`, `tabla`, `columna`, `aro`, `saltoVertical`) y aplicación `x ↦ f(x)` entre dos filas con contador de llegadas (`geoFilas`, `filasFlechas`) |
 | `escenas/piezas/` | `euclides.js` (divisiones apiladas), `coeficientes.js` (tabla Aᵢ, Bᵢ), `multiplos.js` (dos saltadores y coincidencias) |
 | `motor/aritmetica.js` | `division`, `mcd`, `mcm`, `divisores`, `euclides`, `coeficientes`, `combinacionMcd`, `diofantica` |
 
