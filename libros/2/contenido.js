@@ -251,7 +251,7 @@ const libro = {
       escena: '2/teo-coeficientes',
     },
     {
-      id: 'ej-coeficientes-3088', tipo: 'EJ', nombre: R`$8 = 3088 * (-22) + 456 * 149$`,
+      id: 'ej-coeficientes-3088', tipo: 'EJ', nombre: R`$8 = 3088 \cdot (-22) + 456 \cdot 149$`,
       enunciado: R`Para calcular la combinación lineal de 3088 y 456 con la que se obtiene su $\mcd$ se tiene:`,
       explicacion: R`La tabla da los coeficientes. En la recta: 22 saltos de 3088 hacia la izquierda y después 149 saltos de 456 hacia la derecha, y se aterriza exactamente en 8.`,
       pasos: [
@@ -301,7 +301,7 @@ const libro = {
       escena: '2/def-mcm',
     },
     {
-      id: 'teo-multiplos-comunes', tipo: 'TEO', nombre: R`Todo múltiplo común es $k\frac{a * b}{(a,b)}$`,
+      id: 'teo-multiplos-comunes', tipo: 'TEO', nombre: R`Todo múltiplo común es $k\frac{ab}{(a,b)}$`,
       enunciado: R`Sean $a, b$, $a \in \Z_+$, $b \in \Z_+$, todo múltiplo común de $a$ y $b$ se expresa como $k\frac{a * b}{(a,b)}$ donde $k \in \Z$`,
       explicacion: R`Los saltos de $a$ y los de $b$ coinciden por primera vez en $\frac{ab}{d}$, con $d = (a,b)$. Todo múltiplo común es un número entero de veces ese tramo.`,
       pasos: [
@@ -315,7 +315,7 @@ const libro = {
       escena: '2/teo-multiplos-comunes',
     },
     {
-      id: 'cor-mcm-mcd', tipo: 'COR', nombre: R`$[a,b] = \frac{|a * b|}{(a,b)}$`,
+      id: 'cor-mcm-mcd', tipo: 'COR', nombre: R`$[a,b] = \frac{|ab|}{(a,b)}$`,
       enunciado: R`El $[a,b] = \frac{|a * b|}{(a,b)}$, lo que es lo mismo $(a,b) = \frac{|a * b|}{[a,b]}$`,
       explicacion: R`Un rectángulo de $|a| \times |b|$ y otro de $[a,b] \times (a,b)$ tienen exactamente la misma área.`,
       pasosAñadidos: 'demostracion',

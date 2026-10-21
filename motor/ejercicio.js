@@ -97,7 +97,8 @@ export async function montarEjercicio(raiz, { libro, practica, ejercicio, base, 
     : null;
   const partes = ejercicio.partes.map((parte) => montarParte({ ejercicio, parte, base, nombres }));
 
-  raiz.replaceChildren(
+  // los huecos opcionales llegan como null: replaceChildren los pintaría como el texto «null»
+  raiz.replaceChildren(...[
     h('nav', { className: 'migas mono' },
       h('a', { href: 'index.html', textContent: 'Biblioteca' }), ' / ',
       h('a', { href: hrefLibro, textContent: `Libro ${libro.romano}` }), ' / ',
@@ -114,7 +115,7 @@ export async function montarEjercicio(raiz, { libro, practica, ejercicio, base, 
     ...partes.map((p) => p.raiz),
     h('nav', { className: 'vecinos' },
       anterior ? h('a', { href: anterior.href, className: 'ant', innerHTML: `← ${anterior.nombre}` }) : h('span'),
-      siguiente ? h('a', { href: siguiente.href, className: 'sig', innerHTML: `${siguiente.nombre} →` }) : h('span')));
+      siguiente ? h('a', { href: siguiente.href, className: 'sig', innerHTML: `${siguiente.nombre} →` }) : h('span'))].filter((x) => x != null));
 
   katex(raiz);
   estudioPlan?.iniciar();

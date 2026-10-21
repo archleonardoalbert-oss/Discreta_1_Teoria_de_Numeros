@@ -377,6 +377,15 @@ t('elemento: «Se practica en» enlaza a los ejercicios que lo citan como concep
   afirmar(errores.length === 0, errores.join(' | '));
 });
 
+t('páginas: ningún hueco opcional se pinta como el texto «null»', async (b, pg) => {
+  for (const ruta of ['ejercicio.html?base=tests/paginas/&l=0&x=cp0-2', 'elemento.html?l=1&e=pbo', 'ejercicio.html?l=3&x=cp3-1']) {
+    await abrir(pg, ruta);
+    await pg.waitForFunction(() => document.querySelector('#raiz').children.length > 2);
+    const nulos = await pg.evaluate(() => [...document.querySelector('#raiz').childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim() === 'null').length);
+    afirmar(nulos === 0, `${ruta}: ${nulos} «null»`);
+  }
+});
+
 const fs = require('node:fs');
 for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.test(d))) {
   t(`recorrido del libro ${l}: todos los pasos sin errores, KaTeX correcto y vuelta exacta al inicio`, async (b, pg) => {

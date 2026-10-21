@@ -29,7 +29,8 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
     rotulo: rotuloPasos(elemento), rotuloAñadido: !!elemento.pasosAñadidos,
   });
 
-  raiz.replaceChildren(
+  // los huecos opcionales llegan como null: replaceChildren los pintaría como el texto «null»
+  raiz.replaceChildren(...[
     h('nav', { className: 'migas mono' },
       h('a', { href: 'index.html', textContent: 'Biblioteca' }), ' / ',
       h('a', { href: hrefLibro, textContent: `Libro ${libro.romano}` })),
@@ -49,7 +50,7 @@ export function montarElemento(raiz, { libro, elemento, escena, anterior, siguie
       h('ul', {}, ...practicaEn.map((x) => h('li', {}, h('a', { href: x.href, textContent: x.texto }), ' ', h('span', { innerHTML: x.nombre }))))) : null,
     h('nav', { className: 'vecinos' },
       anterior ? h('a', { href: anterior.href, className: 'ant', textContent: `← ${anterior.nombre}` }) : h('span'),
-      siguiente ? h('a', { href: siguiente.href, className: 'sig', textContent: `${siguiente.nombre} →` }) : h('span')));
+      siguiente ? h('a', { href: siguiente.href, className: 'sig', textContent: `${siguiente.nombre} →` }) : h('span'))].filter((x) => x != null));
 
   katex(raiz);
   estudio.iniciar();

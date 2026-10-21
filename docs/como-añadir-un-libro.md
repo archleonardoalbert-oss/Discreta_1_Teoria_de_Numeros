@@ -81,6 +81,37 @@ Colores con significado (la leyenda bajo cada escena los explica sola; una escen
 conjuntos auxiliares en **violeta** y conclusión en **verde**. Un movimiento por paso; los números que use el
 texto del paso tienen que estar escritos en el dibujo.
 
+## 3b. Clase práctica: `libros/<n>/practica.js`
+
+La CP n vive dentro del Libro n (en el catálogo, `practica: true`). Formato y reglas (spec §17):
+
+```js
+export default {
+  numero: n, fecha: '…',
+  ejercicios: [{
+    id: 'cpN-k', numero: k, nombre: R`…`, enunciado: R`…` /* literal, bien tipografiado */,
+    marcaEnunciado: 'corregido' /* si se corrigió */, nota: R`aclaración o errata` /* opcional */,
+    sinConcepto: true /* solo si de verdad no usa ningún resultado de la conferencia */,
+    planteamiento: { texto, pasos: [{ texto }], escena: 'cpN/…' } /* opcional: qué se pide, nunca la idea clave */,
+    partes: [{ id, etiqueta, enunciado,
+      pistas: [{ tipo: 'concepto', texto, enlaces: [{ l, e }] }, { tipo: 'estrategia' | 'arranque' | 'desbloqueo', texto }, …],
+      solucion: { pasos: [{ texto }], escena: 'cpN/…' /* opcional */ },
+      aprendes: { resultado, ideas: [{ idea, texto }] } }],
+  }],
+};
+```
+
+- **La primera pista de cada parte es el concepto de la conferencia**, con enlaces a sus elementos (pueden ser de
+  otro libro). Luego estrategia → arranque (la mayoría: lo difícil es empezar) → desbloqueos. Ninguna pista hace la
+  cuenta clave.
+- **Notación**: dentro de `$…$` no se admiten `/`, `*` ni `∗` (el test lo comprueba): `\frac`, `\cdot`, `\mid`,
+  `\equiv`, `\pmod{n}`. Un «$» de dinero va como `<span class="sin-tex">&#36;188</span>`.
+- **Solución**: cada implicación justificada, nombrando el resultado que se usa.
+- **Qué te llevas**: el resultado y 2–4 ideas reutilizables, cada una con cuándo usarla.
+- Las respuestas numéricas se verifican por fuerza bruta en `tests/practica-cuentas.test.mjs`.
+- Revisar una escena de ejercicio: `AMBITO='.parte[data-p=x]' PRE='.parte[data-p=x] [data-a=solucion]'
+  herramientas/escena.sh 'ejercicio.html?l=N&x=cpN-k' salida 0,3`.
+
 ## 4. Comprobar
 
 ```sh
