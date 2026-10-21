@@ -15,7 +15,7 @@ un resumen de las ideas reutilizables.
 
 Para construir la web se utilizaron las **conferencias y clases prácticas reales** de la asignatura en el
 curso 2025–2026: cinco conferencias de Teoría de Números y sus cinco clases prácticas. Los enunciados, las
-definiciones y los ejercicios son los mismos que se trabajan en clase, con la misma notación y en el mismo
+definiciones y los ejercicios son los mismos que se trabajan en clase, en el mismo
 orden.
 
 > **Aviso importante.** No es material oficial de la asignatura ni sustituye a las conferencias, las clases
