@@ -8,9 +8,9 @@ import functools
 import http.server
 import os
 import socket
-import subprocess
 import sys
 import threading
+import webbrowser
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,8 +43,7 @@ def main():
     url = f"http://localhost:{puerto}/"
     print(f"Biblioteca en {url}  (Ctrl+C para salir)", flush=True)
     if "--sin-abrir" not in sys.argv:
-        threading.Timer(0.4, lambda: subprocess.Popen(
-            ["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)).start()
+        threading.Timer(0.4, lambda: webbrowser.open(url)).start()   # Linux, macOS y Windows
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
