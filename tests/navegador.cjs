@@ -399,6 +399,39 @@ for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => /^\d+$/.
   });
 }
 
+for (const l of fs.readdirSync(path.join(RAIZ, 'libros')).filter((d) => fs.existsSync(path.join(RAIZ, 'libros', d, 'practica.js')))) {
+  t(`recorrido de la clase práctica ${l}: pistas, solución y «qué te llevas» en cada ejercicio, sin errores`, async (b, pg) => {
+    const { default: cp } = await import(path.join(RAIZ, 'libros', l, 'practica.js'));
+    // el índice del libro la enlaza
+    await abrir(pg, `libro.html?l=${l}`);
+    await pg.waitForSelector('#practica a');
+    afirmar(await pg.locator('#practica a').count() === cp.ejercicios.length, 'el índice no lista todos los ejercicios');
+    for (const x of cp.ejercicios) {
+      const errores = await abrir(pg, `ejercicio.html?l=${l}&x=${x.id}`);
+      await pg.evaluate(() => { try { localStorage.clear(); } catch {} });
+      await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.parte');
+      if (x.planteamiento) {
+        await pg.waitForFunction(() => document.querySelector('.planteamiento .escena svg [data-k]'));
+        for (let i = 1; i < x.planteamiento.pasos.length; i++) await pg.click('.planteamiento [data-a=adelante]');
+      }
+      for (const p of x.partes) {
+        const sel = `.parte[data-p=${p.id}]`;
+        for (let i = 0; i < p.pistas.length; i++) await pg.click(`${sel} [data-a=pista]`);
+        const enl = await pg.$$eval(`${sel} .pista a`, (as) => as.map((a) => a.textContent));
+        afirmar(enl.every((t) => t.trim()), `${x.id}/${p.id}: enlace sin nombre`);
+        await pg.click(`${sel} [data-a=solucion]`);
+        if (p.solucion.escena) {
+          await pg.waitForFunction((s) => document.querySelector(`${s} .escena svg [data-k]`), sel);
+          for (let i = 1; i < p.solucion.pasos.length; i++) await pg.click(`${sel} [data-a=adelante]`);
+        } else await pg.click(`${sel} [data-a=todos]`);
+        afirmar(await pg.locator(`${sel} .aprendes`).isVisible(), `${x.id}/${p.id}: no aparece «qué te llevas»`);
+      }
+      afirmar(!(await pg.locator('.katex-error').count()), `${x.id}: fórmula KaTeX rota`);
+      afirmar(!errores.length, `${x.id}: ${errores.join(' | ')}`);
+    }
+  });
+}
+
 // ---------------------------------------------------------------- ejecución
 
 (async () => {
