@@ -6,7 +6,7 @@ export const catalogo = [
     ilustracion: '<line x1="2" y1="40" x2="118" y2="40" class="i-eje"/><path d="M5 40Q20 12 35 40M35 40Q50 12 65 40M65 40Q80 12 95 40" class="i-cian"/><circle cx="95" cy="40" r="4" class="i-ciruela-r"/>',
   },
   {
-    numero: 2, romano: 'II', titulo: 'mcd · Diofánticas · mcm', color: 'ciruela', disponible: true,
+    numero: 2, romano: 'II', titulo: 'mcd · Diofánticas · mcm', color: 'ciruela', disponible: true, practica: true,
     ilustracion: '<line x1="2" y1="22" x2="118" y2="22" class="i-eje"/><g class="i-ciruela-r"><circle cx="10" cy="22" r="3"/><circle cx="40" cy="22" r="3"/><circle cx="70" cy="22" r="3"/><circle cx="100" cy="22" r="3"/></g><rect x="5" y="32" width="75" height="5" class="i-cian-r"/><rect x="5" y="41" width="105" height="5" class="i-ambar-r"/>',
   },
   {

@@ -9,6 +9,7 @@ export { LEYENDA };
 export const katex = (raiz) => window.renderMathInElement?.(raiz, {
   delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
   throwOnError: false,
+  ignoredClasses: ['sin-tex'],   // texto con «$» que no es una fórmula (precios)
   macros: { ...MACROS },
   trust: TRUST,
   strict: (codigo) => (codigo === 'htmlExtension' ? 'ignore' : 'warn'),   // \htmlClass es intencionado (colores)
